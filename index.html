@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>死人数 ─ Dead Man Number ─</title>
+<meta property="og:title" content="死人数 ─ Dead Man Number">
+<meta property="og:description" content="死した者を裁く目から、生者の弱きところを名指す。生まれた日、ただ一点で観る占術。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="ogp.png">
+<meta name="twitter:image" content="ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Old+Mincho:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#e7e2d6;
+    --ink-dim:#8a8478;
+    --ink-faint:#5a564c;
+    --bg:#0a0908;
+    --bg-2:#13110e;
+    --panel:#181612;
+    --line:#2c2820;
+    --blood:#7d1f1c;
+    --blood-bright:#a8312c;
+    --bone:#cbbf9e;
+    --gold:#9c8348;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Zen Old Mincho','Shippori Mincho',serif;
+    line-height:1.95;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(125,31,28,0.10), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 110%, rgba(60,55,40,0.12), transparent 70%);
+    background-attachment:fixed;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative;z-index:2;max-width:680px;margin:0 auto;padding:0 22px 100px;}
+
+  /* ── 表紙 ── */
+  header{text-align:center;padding:72px 0 36px;}
+  .seal{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:70px;height:70px;margin-bottom:26px;
+    border:1.5px solid var(--blood);border-radius:50%;
+    box-shadow:0 0 28px rgba(125,31,28,0.28), inset 0 0 14px rgba(125,31,28,0.18);
+  }
+  .seal svg{width:34px;height:34px;display:block;}
+  h1{
+    font-family:'Zen Old Mincho',serif;font-weight:900;
+    font-size:clamp(48px,13vw,82px);letter-spacing:0.16em;
+    color:var(--bone);line-height:1.1;text-indent:0.16em;
+    text-shadow:0 2px 30px rgba(0,0,0,0.8);
+  }
+  .romaji{
+    margin-top:14px;font-family:'Shippori Mincho',serif;
+    font-size:12px;letter-spacing:0.44em;color:var(--blood-bright);
+    text-transform:uppercase;text-indent:0.44em;
+  }
+  .yomi{
+    margin-top:14px;font-family:'Zen Old Mincho',serif;
+    font-size:13px;letter-spacing:0.42em;color:var(--ink-dim);
+    text-indent:0.42em;
+  }
+  .tagline{
+    margin:30px auto 0;max-width:430px;
+    font-size:14.5px;color:var(--ink-dim);letter-spacing:0.04em;
+  }
+  .rule{
+    width:46px;height:1px;background:var(--line);margin:34px auto 0;
+    position:relative;
+  }
+  .rule::before{
+    content:"";position:absolute;top:-2px;left:50%;transform:translateX(-50%);
+    width:5px;height:5px;background:var(--blood);border-radius:50%;
+  }
+
+  /* ── 序文 ── */
+  .preface{
+    margin-top:38px;padding:30px 30px 32px;
+    background:linear-gradient(180deg,var(--bg-2),var(--panel));
+    border:1px solid var(--line);
+    position:relative;
+  }
+  .preface::before{
+    content:"序";position:absolute;top:-13px;left:24px;
+    background:var(--bg);padding:0 12px;
+    color:var(--gold);font-size:14px;letter-spacing:0.3em;
+    font-family:'Zen Old Mincho',serif;font-weight:900;
+  }
+  .preface p{
+    font-size:14px;color:var(--ink-dim);letter-spacing:0.02em;
+    text-align:justify;
+  }
+  .preface p + p{margin-top:13px;}
+  .preface .emph{color:var(--bone);}
+
+  /* ── 入力 ── */
+  .gate{margin-top:42px;text-align:center;}
+  .gate-label{
+    font-size:13px;letter-spacing:0.32em;color:var(--ink-dim);
+    text-indent:0.32em;margin-bottom:22px;
+  }
+  .date-row{
+    display:flex;justify-content:center;align-items:flex-end;
+    gap:10px;flex-wrap:wrap;
+  }
+  .field{display:flex;flex-direction:column;align-items:center;gap:7px;}
+  .field span{font-size:10.5px;letter-spacing:0.22em;color:var(--ink-faint);}
+  select{
+    appearance:none;-webkit-appearance:none;
+    background:var(--panel);color:var(--bone);
+    border:1px solid var(--line);
+    font-family:'Zen Old Mincho',serif;font-size:18px;
+    padding:11px 16px;min-width:96px;text-align:center;text-align-last:center;
+    cursor:pointer;transition:border-color .2s,box-shadow .2s;
+  }
+  select:focus{
+    outline:none;border-color:var(--blood);
+    box-shadow:0 0 16px rgba(125,31,28,0.25);
+  }
+  .summon{
+    margin-top:30px;
+    background:transparent;color:var(--bone);
+    border:1.5px solid var(--blood);
+    font-family:'Zen Old Mincho',serif;font-weight:600;
+    font-size:17px;letter-spacing:0.3em;text-indent:0.3em;
+    padding:16px 50px;cursor:pointer;
+    transition:all .25s ease;
+  }
+  .summon:hover{
+    background:var(--blood);color:#f3ede0;
+    box-shadow:0 0 32px rgba(125,31,28,0.45);
+  }
+  .summon:active{transform:translateY(1px);}
+  .err{
+    margin-top:16px;font-size:12.5px;color:var(--blood-bright);
+    letter-spacing:0.06em;min-height:18px;
+  }
+
+  /* ── 結果 ── */
+  #result{margin-top:50px;display:none;}
+  #result.show{display:block;animation:rise .9s ease both;}
+  @keyframes rise{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+
+  .verdict-head{text-align:center;margin-bottom:30px;}
+  .day-branch{
+    font-size:12px;letter-spacing:0.26em;color:var(--ink-faint);
+    margin-bottom:14px;
+  }
+  .day-branch b{color:var(--blood-bright);font-weight:600;}
+  .phase-num{
+    font-size:13px;letter-spacing:0.4em;color:var(--gold);
+    text-indent:0.4em;
+  }
+  .phase-name{
+    font-family:'Zen Old Mincho',serif;font-weight:900;
+    font-size:clamp(64px,18vw,104px);color:var(--bone);
+    line-height:1;margin:10px 0 6px;text-shadow:0 4px 34px rgba(0,0,0,0.7);
+  }
+  .phase-read{font-size:13px;letter-spacing:0.3em;color:var(--ink-dim);}
+
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    border:1px solid var(--line);
+    padding:0;overflow:hidden;
+  }
+  .soji{
+    padding:26px 28px;
+    border-bottom:1px solid var(--line);
+    background:
+      linear-gradient(180deg,rgba(125,31,28,0.07),transparent);
+  }
+  .soji-label{
+    font-size:10.5px;letter-spacing:0.34em;color:var(--blood-bright);
+    margin-bottom:11px;
+  }
+  .soji-text{
+    font-family:'Zen Old Mincho',serif;font-weight:600;
+    font-size:17.5px;color:var(--bone);line-height:1.85;
+    letter-spacing:0.02em;
+  }
+  .judge{padding:26px 28px 30px;}
+  .judge-label{
+    font-size:10.5px;letter-spacing:0.34em;color:var(--ink-faint);
+    margin-bottom:13px;
+  }
+  .judge-body{
+    font-size:14.5px;color:var(--ink);letter-spacing:0.015em;
+    text-align:justify;
+  }
+  .judge-body .repent{
+    color:var(--blood-bright);font-weight:600;
+  }
+  .judge-body .act{
+    display:block;margin-top:14px;padding-top:14px;
+    border-top:1px dashed var(--line);
+    color:var(--ink-dim);
+  }
+  .judge-body .act b{color:var(--bone);font-weight:600;}
+
+  /* ── 共有 ── */
+  .share{margin-top:28px;text-align:center;}
+  .share-note{
+    font-size:11px;letter-spacing:0.18em;color:var(--ink-faint);
+    margin-bottom:16px;
+  }
+  .share-btns{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+  .sbtn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Zen Old Mincho',serif;font-size:13px;
+    letter-spacing:0.16em;padding:12px 22px;cursor:pointer;
+    border:1px solid var(--line);background:var(--panel);
+    color:var(--ink-dim);text-decoration:none;
+    transition:all .22s ease;
+  }
+  .sbtn:hover{
+    border-color:var(--blood);color:var(--bone);
+    background:var(--bg-2);
+  }
+  .sbtn.x:hover{box-shadow:0 0 20px rgba(125,31,28,0.3);}
+  .sbtn svg{width:15px;height:15px;fill:currentColor;}
+
+  .again{
+    margin-top:34px;text-align:center;
+  }
+  .again button{
+    background:none;border:none;cursor:pointer;
+    font-family:'Zen Old Mincho',serif;font-size:13px;
+    color:var(--ink-faint);letter-spacing:0.22em;
+    border-bottom:1px solid var(--line);padding-bottom:3px;
+    transition:color .2s,border-color .2s;
+  }
+  .again button:hover{color:var(--ink-dim);border-color:var(--ink-faint);}
+
+  footer{
+    margin-top:64px;padding-top:26px;border-top:1px solid var(--line);
+    text-align:center;
+  }
+  footer p{
+    font-size:11px;color:var(--ink-faint);letter-spacing:0.08em;
+    line-height:2;
+  }
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+    background:var(--blood);color:#f3ede0;
+    font-size:12.5px;letter-spacing:0.1em;padding:11px 26px;
+    opacity:0;pointer-events:none;transition:all .3s ease;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="seal">
+      <svg viewBox="0 0 34 34" aria-label="下弦の月">
+        <defs>
+          <clipPath id="moon"><circle cx="17" cy="17" r="13"/></clipPath>
+        </defs>
+        <g clip-path="url(#moon)">
+          <circle cx="17" cy="17" r="13" fill="#c0463f"/>
+          <circle cx="26" cy="14.5" r="13" fill="#181612"/>
+        </g>
+      </svg>
+    </div>
+    <h1>死人数</h1>
+    <div class="yomi">─ し び と す う ─</div>
+    <div class="romaji">Dead&nbsp;Man&nbsp;Number</div>
+    <p class="tagline">死した者を裁く目から、生者の弱きところを名指す。<br>生まれた日、ただ一点で観る占術。</p>
+    <div class="rule"></div>
+  </header>
+
+  <section class="preface">
+    <p>天保のころ淘宮の術を布いた横山丸三の門流に、<span class="emph">百鬼兎玄</span>と呼ばれた傍流の者がいたと伝わる。湯灌、野辺送り、行き倒れの始末を生業とし、人の死に常に立ち会う者であったという。</p>
+    <p>兎玄は説いた。「人の本性は、生まれた月ではなく、死ぬ日にこそ正直に現れる。野辺に積もる死の日を数えてみよ。同じ十二の型が、繰り返し立ち現れる。」これを<span class="emph">死人数</span>──死した人の、数えあげられた相──と名づけた。</p>
+    <p>死人数は慰めない。生まれた日のただ一点を観て、まず己の欠けたるところを告げ、次いで<span class="emph">悔い改めよ</span>と命じる。これを酷いと見る者は、ここで閉じてよい。死人数は、裁かれる覚悟のある者のためにのみ書かれている。</p>
+  </section>
+
+  <section class="gate">
+    <p class="gate-label">生 ま れ た 日 を 数 え よ</p>
+    <div class="date-row">
+      <label class="field"><span>年</span><select id="y"></select></label>
+      <label class="field"><span>月</span><select id="m"></select></label>
+      <label class="field"><span>日</span><select id="d"></select></label>
+    </div>
+    <br>
+    <button class="summon" id="go">相 を 観 る</button>
+    <p class="err" id="err"></p>
+  </section>
+
+  <section id="result">
+    <div class="verdict-head">
+      <p class="day-branch">生まれた日の十二支 ── <b id="branch"></b></p>
+      <p class="phase-num" id="pnum"></p>
+      <h2 class="phase-name" id="pname"></h2>
+      <p class="phase-read" id="pread"></p>
+    </div>
+
+    <div class="card">
+      <div class="soji">
+        <p class="soji-label">相 辞</p>
+        <p class="soji-text" id="soji"></p>
+      </div>
+      <div class="judge">
+        <p class="judge-label">裁 き</p>
+        <p class="judge-body" id="judge"></p>
+      </div>
+    </div>
+
+    <div class="share">
+      <p class="share-note">─ 自らの相を、誰かに告げてもよい ─</p>
+      <div class="share-btns">
+        <a class="sbtn x" id="xshare" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M18.9 1.2h3.7l-8 9.1L24 22.8h-7.4l-5.8-7.6-6.6 7.6H.5l8.5-9.8L0 1.2h7.6l5.2 6.9zM17.6 20.6h2L6.5 3.3H4.3z"/></svg>
+          Xに告げる
+        </a>
+        <button class="sbtn" id="copy">この相のリンクを写す</button>
+      </div>
+    </div>
+
+    <div class="again">
+      <button id="reset">別の日を数える</button>
+    </div>
+  </section>
+
+  <footer>
+    <p>『死人数控』は版に起こされたことがなく、写本ごとに相辞の文言は少しずつ異なると伝わる。<br>本アプリはその一写本を現代に改めたものであり、成立も筆者も詳らかでない。<br>娯楽として供する。鑑定の結果はいかなる事柄も保証しない。</p>
+  </footer>
+
+</div>
+<div class="toast" id="toast">リンクを写した</div>
+
+<script>
+"use strict";
+
+/* ───── 十二相データ ───── */
+/* 日支 index: 子0 丑1 寅2 卯3 辰4 巳5 午6 未7 申8 酉9 戌10 亥11 */
+const BRANCHES = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+
+const PHASES = [
+ { /* 子 */
+  num:"第 一 相", name:"甦", read:"そ ── 子の日に死す者",
+  soji:"甦るとは、一度死を通った者にのみ許される。まだ死なぬ者は、まだ生まれてもいない。",
+  judge:`あなたは始めることに長け、終えることに弱い。新しい計画には火がつくが、前のものを弔わぬまま次へ移る癖がある。その「やり直し」は前進に見えて、実は逃走だ。同じ失敗を、舞台だけ変えて反復している。<span class="repent">悔い改めるべきは、終わらせる作業から目を背けていること。</span><span class="act"><b>具体策。</b>今手をつけている物事のうち最も古いものを一つ選び、それが「成功して終わった」のか「飽きて放置した」のかを紙に書け。後者なら、新しい何かを始める前に、まずそれを正式に終わらせる手続き──関係者への連絡、データの整理、区切りの言葉──を済ませよ。弔いを済ませた数しか、あなたは本当には始められない。</span>`
+ },
+ { /* 丑 */
+  num:"第 二 相", name:"臨終", read:"りんじゅう ── 丑の日に死す者",
+  soji:"臨終とは、際に立ち続けること。あなたは生涯、誰かの死に目に間に合う側の人間である。",
+  judge:`あなたは忍耐づよく、限界まで人に付き添える。だがその忍耐は美徳ではなく、断り方を知らないだけだ。背負い続けることと、背負わされることの区別がついていない。気づけば他人の問題で予定が埋まり、自分の番は無期延期されている。<span class="repent">悔い改めるべきは、「我慢している自分」に静かに酔っていること。</span><span class="act"><b>具体策。</b>この一週間で引き受けた頼まれごとを書き出し、それぞれに「断れたか／断れなかったか」を記せ。断れなかったものが半分を超えるなら、次の依頼には即答せず「一日考える」とだけ返す習慣をつけよ。即答しないだけで、あなたが背負う総量は確実に減る。</span>`
+ },
+ { /* 寅 */
+  num:"第 三 相", name:"安息", read:"あんそく ── 寅の日に死す者",
+  soji:"安息とは、死者にのみ約束された静けさ。生者がそれを求めれば、それは停滞と呼ばれる。",
+  judge:`あなたは場を和ませ、波風を平らにする。だがその穏やかさは、必要な対立まで避けるための隠れ蓑になっている。言うべきことを飲み込み「角を立てたくない」と自分に言い聞かせるとき、あなたが守っているのは平和ではなく、自分の居心地だ。<span class="repent">悔い改めるべきは、不作為を優しさと呼び替えていること。</span><span class="act"><b>具体策。</b>最近「言わずに飲み込んだこと」を一つ思い出し、それを言わなかったことで誰が損をしたかを考えよ。損をしたのが自分だけなら見送ってよい。だが他人や全体が損をしているなら、次の機会に、最も穏やかな言い方でよいから必ず口に出せ。和は、選んで守るときだけ徳になる。</span>`
+ },
+ { /* 卯 */
+  num:"第 四 相", name:"荒", read:"あら ── 卯の日に死す者",
+  soji:"荒ぶる者は早く燃える。火葬の薪は、よく乾いた木から先に尽きる。",
+  judge:`あなたは勢いがあり、停滞を破る力を持つ。だがその勢いは、しばしば人を踏み越え、配慮を置き去りにする。「進めば正しい」と思い込み、進めないことの理由を弱さだと断じる。結果、力はあるのに人が離れ、いつも独りで燃え尽きる。<span class="repent">悔い改めるべきは、速さを正しさと取り違えていること。</span><span class="act"><b>具体策。</b>次に何かを強く推し進めたくなったら、着手の前に「これに反対しそうな人物を一人」名指しし、その人の言い分を声に出して代弁してみよ。代弁できなければ、まだ進む準備ができていない。荒さは、向ける先を選んだときだけ武器になる。</span>`
+ },
+ { /* 辰 */
+  num:"第 五 相", name:"断", read:"だん ── 辰の日に死す者",
+  soji:"断つとは、自らの手で野辺を作ること。あなたは縁を、埋葬する側の人間である。",
+  judge:`あなたは決断が速く、不要なものを切り離せる。だがその速さに慣れすぎて、切らずに済む道を探さなくなった。人も、機会も、選択肢も、まず「切る」前提で眺めている。潔さに酔っているうちに、あなたの周りは更地になっていく。<span class="repent">悔い改めるべきは、切ることを問題解決と混同していること。</span><span class="act"><b>具体策。</b>最近「もう関わらない」と決めた相手や物事を一つ思い出し、切る以外に取り得た選択肢──距離を置く、頻度を減らす、条件を変える──を三つ書き出せ。三つ書けたなら、次に断つときは必ずこの「中間の三手」を先に検討せよ。断つ前に一度、弔えるかを問え。</span>`
+ },
+ { /* 巳 */
+  num:"第 六 相", name:"満", read:"まん ── 巳の日に死す者",
+  soji:"満ちた月は、その夜から欠ける。完成とは、死のもう一つの名である。",
+  judge:`あなたは物事を極みまで仕上げる力がある。だが満ちた後の下り坂を認められず、過ぎた頂にしがみつく。かつての成功、最も輝いた時期、完成された自分──それを手放せないせいで、次の上昇が始められない。<span class="repent">悔い改めるべきは、保とうとする執着を、努力と勘違いしていること。</span><span class="act"><b>具体策。</b>今のあなたが「守ろうとしているもの」を一つ挙げよ。それが過去三年以内に手にしたものなら守ってよい。三年より古いなら、それは既に欠け始めている。守る労力を半分に減らし、空いた半分を「まだ満ちていない新しい何か」に回せ。満を手放せる者だけが、次の満を迎える。</span>`
+ },
+ { /* 午 */
+  num:"第 七 相", name:"遇", read:"ぐう ── 午の日に死す者",
+  soji:"遇とは、別れの稽古である。逢うたびに、人はひと匙ずつ死ぬ。",
+  judge:`あなたは出会いに恵まれ、そして出会いに削られる。誘いを断てないのは、巡りを信じすぎているからだ。「来た縁は受けるもの」という構えは美しく見えるが、実態は選別の放棄であり、全員に薄く接することで、本当に大切な相手にも薄くしか向き合えていない。<span class="repent">悔い改めるべきは、来た縁をすべて受けることを、誠実さと取り違えていること。</span><span class="act"><b>具体策。</b>直近一ヶ月に新しく関わった相手を書き出し、「この人に時間を割いて後悔がないか」で二分せよ。後悔がない側が三人を超えるなら、あなたは広げすぎだ。次の新しい誘いは一度見送り、その時間を後悔のない側の誰か一人に使え。選ばないことは、迎えた者への不実になる。</span>`
+ },
+ { /* 未 */
+  num:"第 八 相", name:"隠", read:"おん ── 未の日に死す者",
+  soji:"隠れる者は、生きながら喪に服している。あなたは自分の葬列を、自分で歩く。",
+  judge:`あなたは退くこと、身を引くことの賢さを知る。だが引きすぎて、本来そこにいるべき場からも消えている。「関わらなければ傷つかない」という計算は正しいが、その計算で守った安全と引き換えに、あなたは存在ごと忘れられていく。<span class="repent">悔い改めるべきは、撤退を慎重さと呼び、不在を平穏と呼んでいること。</span><span class="act"><b>具体策。</b>あなたが「最近顔を出していない場」を一つ挙げよ。仕事でも集まりでも関係でもよい。次の機会に、たとえ五分でも、たとえ一言でもいいから必ず姿を見せ、自分がそこにいることを示せ。隠は、出るべき時を見極める者の徳であって、出ない口実ではない。</span>`
+ },
+ { /* 申 */
+  num:"第 九 相", name:"塞", read:"そく ── 申の日に死す者",
+  soji:"塞がるとは、内に墓を一つ抱えること。あなたは時折、自分の中の死者と暮らす。",
+  judge:`あなたは苦しい時期を耐え抜く粘りがある。だがその粘りの裏で、「塞がっているのが自分の本性だ」と思い込み、開けようとする努力そのものをやめている。挑戦する前から「どうせ通らない」と先回りし、その諦めを現実主義と呼んでいる。<span class="repent">悔い改めるべきは、一時の地形を、生涯の地と決めつけていること。</span><span class="act"><b>具体策。</b>「どうせ無理だから」と最近見送ったことを一つ思い出し、それを「無理だと確認する作業」だけ実行せよ──応募するだけ、問い合わせるだけ、一通送るだけ。通すことではなく、確かめることが目的だ。塞がりは、自分の手で一度叩いてみるまで、本当に塞がっているかは分からない。</span>`
+ },
+ { /* 酉 */
+  num:"第 十 相", name:"観", read:"かん ── 酉の日に死す者",
+  soji:"観るとは、生から少し離れて立つこと。死者だけが、生をまっすぐ見られる。",
+  judge:`あなたは物事を見通し、人の本質を見抜く目を持つ。だがその目は、見抜いたところで止まる。分析し、論評し、構造を理解し──そして動かない。あなたの聡明さは、関わらないことの上等な言い訳に使われている。<span class="repent">悔い改めるべきは、「分かること」を「為したこと」と錯覚していること。</span><span class="act"><b>具体策。</b>あなたが最近「よく見えている」物事を一つ選び、その理解を、何か一つの具体的な行動に変換せよ。意見を本人に直接伝える、改善案を提出する、関係者に動くよう促す──形は問わない。観たことを行動に落とした回数だけが、あなたの洞察に意味を与える。</span>`
+ },
+ { /* 戌 */
+  num:"第 十 一 相", name:"剥", read:"はく ── 戌の日に死す者",
+  soji:"剥がれるとは、余分を死なせること。失うたびに、あなたは軽くなる。",
+  judge:`あなたは喪失をくぐり抜け、削ぎ落とすことに強い。だが失うことに慣れすぎて、守る努力そのものを惜しむようになった。「どうせいつか無くなる」という諦めを、執着のなさという美名で呼んでいる。その投げやりさのせいで、本来なら残せたはずのものまで手放している。<span class="repent">悔い改めるべきは、喪失への耐性を、何も守らない言い訳にしていること。</span><span class="act"><b>具体策。</b>今あなたの手元にあるもの──人、技能、関係、習慣──のうち「これだけは最後まで残す」という一つを明確に名指しせよ。名指ししたら、それを守るための具体的な行為を、今週中に一つ実行せよ。剥は、すべてを失うための術ではなく、最後に残す一つを見定めるための術である。</span>`
+ },
+ { /* 亥 */
+  num:"第 十 二 相", name:"沈", read:"ちん ── 亥の日に死す者",
+  soji:"沈むとは、底に着くこと。底は、すべての死者がいずれ横たわる場所である。",
+  judge:`あなたはすべてを受け容れる深さと包容力がある。だが受け容れすぎて、自分の輪郭が消えている。誰の頼みも断れず、誰の感情も引き受け、気づけば自分が何を望んでいたのか分からなくなる。その優しさは、底のない器であり、注がれるほどあなた自身が薄まっていく。<span class="repent">悔い改めるべきは、断れないことを、優しさと呼んでいること。</span><span class="act"><b>具体策。</b>この一週間のうち、一度でいいから、頼まれごとに対して理由をつけずに「今回はできません」とだけ答えよ。相手は思ったほど傷つかない。沈は底に留まることではなく、底を一度蹴って、自分の輪郭を取り戻すための期間である。</span>`
+ }
+];
+
+/* 日支 index → 相 index の写像（子=復=第一相 を起点に淘宮術の元の循環順）*/
+/* 子0→相0, 丑1→相1, …… 亥11→相11。本術では日支と相が一対一対応 */
+function branchToPhase(branchIndex){ return branchIndex; }
+
+/* ───── 日支算出 ───── */
+/* 基準: 2000-01-01 = 干支「戊午」→ 地支「午」(index 6) */
+function dayBranchIndex(y, m, d){
+  const base = Date.UTC(2000, 0, 1);
+  const target = Date.UTC(y, m - 1, d);
+  const diff = Math.round((target - base) / 86400000);
+  return ((6 + diff) % 12 + 12) % 12;
+}
+
+/* ───── DOM ───── */
+const $ = id => document.getElementById(id);
+const ySel=$("y"), mSel=$("m"), dSel=$("d");
+
+(function fillSelectors(){
+  const now = new Date().getFullYear();
+  for(let y=now; y>=1920; y--){
+    const o=document.createElement("option"); o.value=y; o.textContent=y; ySel.appendChild(o);
+  }
+  for(let m=1;m<=12;m++){
+    const o=document.createElement("option"); o.value=m; o.textContent=m; mSel.appendChild(o);
+  }
+  refreshDays();
+  ySel.value=1990; mSel.value=1;
+})();
+
+function refreshDays(){
+  const y=+ySel.value||2000, m=+mSel.value||1;
+  const last=new Date(y, m, 0).getDate();
+  const cur=+dSel.value;
+  dSel.innerHTML="";
+  for(let d=1;d<=last;d++){
+    const o=document.createElement("option"); o.value=d; o.textContent=d; dSel.appendChild(o);
+  }
+  if(cur && cur<=last) dSel.value=cur; else dSel.value=1;
+}
+ySel.addEventListener("change",refreshDays);
+mSel.addEventListener("change",refreshDays);
+
+/* ───── 鑑定実行 ───── */
+function divine(y,m,d){
+  const bi = dayBranchIndex(y,m,d);
+  const phase = PHASES[branchToPhase(bi)];
+  $("branch").textContent = BRANCHES[bi] + "（" + phase.read.split("──")[0].trim() + "）";
+  $("pnum").textContent = phase.num;
+  $("pname").textContent = phase.name;
+  $("pread").textContent = phase.read;
+  $("soji").textContent = phase.soji;
+  $("judge").innerHTML = phase.judge;
+
+  /* 共有リンク・X投稿の組み立て */
+  const url = location.origin + location.pathname + "?y="+y+"&m="+m+"&d="+d;
+  const xText =
+    "【死人数】私の相は ── " + phase.name + "（" + phase.read.split("──")[0].trim() + "）\n\n" +
+    "「" + phase.soji + "」\n\n" +
+    "死した者を裁く目で、生者の弱きところを名指す占術。あなたの相は。";
+  $("xshare").href =
+    "https://twitter.com/intent/tweet?text=" + encodeURIComponent(xText) +
+    "&url=" + encodeURIComponent(url) +
+    "&hashtags=" + encodeURIComponent("死人数");
+  $("copy").dataset.url = url;
+
+  const res=$("result");
+  res.classList.add("show");
+  res.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+$("go").addEventListener("click",()=>{
+  $("err").textContent="";
+  const y=+ySel.value, m=+mSel.value, d=+dSel.value;
+  if(!y||!m||!d){ $("err").textContent="生まれた日を、すべて数えよ。"; return; }
+  divine(y,m,d);
+});
+
+$("reset").addEventListener("click",()=>{
+  $("result").classList.remove("show");
+  document.querySelector("header").scrollIntoView({behavior:"smooth"});
+  history.replaceState(null,"",location.pathname);
+});
+
+/* ───── リンク複写 ───── */
+$("copy").addEventListener("click",async ()=>{
+  const url=$("copy").dataset.url||location.href;
+  try{ await navigator.clipboard.writeText(url); }
+  catch(e){
+    const t=document.createElement("textarea");
+    t.value=url; document.body.appendChild(t); t.select();
+    document.execCommand("copy"); t.remove();
+  }
+  const toast=$("toast");
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),1900);
+});
+
+/* ───── URLパラメータからの自動鑑定（X経由の流入対応）───── */
+(function fromQuery(){
+  const p=new URLSearchParams(location.search);
+  const y=+p.get("y"), m=+p.get("m"), d=+p.get("d");
+  if(y&&m&&d&&y>=1920&&m>=1&&m<=12&&d>=1&&d<=31){
+    const last=new Date(y,m,0).getDate();
+    if(d<=last){
+      ySel.value=y; mSel.value=m; refreshDays(); dSel.value=d;
+      divine(y,m,d);
+    }
+  }
+})();
+</script>
+</body>
+</html>
