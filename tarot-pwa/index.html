@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBDマルセイユタロット占い - 目線展開</title>
+    
+    <!-- PWA対応 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- iOS用メタタグ -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="タロット占い">
+    <link rel="apple-touch-icon" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+    
+    <!-- ファビコン -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .question-input:focus {
+            border-color: #764ba2;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-shuffle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-shuffle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-expand {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-expand:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-expand:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background: #95a5a6;
+            padding: 15px 25px;
+        }
+
+        .btn-reset:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .spread-container {
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 40px 20px;
+            min-height: 600px;
+            width: 100%;
+        }
+
+        .spread-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: flex-start;
+            min-width: min-content;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .spread-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .row-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            margin-right: 10px;
+        }
+
+        .card-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 150px;
+        }
+
+        .card-slot {
+            position: relative;
+            width: 150px;
+            height: 290px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .card-slot.empty {
+            border: none;
+            background: transparent;
+            visibility: hidden;
+        }
+
+        .card-back {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-back:hover {
+            transform: scale(1.05);
+        }
+
+        .card-front {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-front.reversed img {
+            transform: rotate(180deg);
+        }
+
+        .card-label {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .gaze-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .gaze-left {
+            left: -25px;
+        }
+
+        .gaze-right {
+            right: -25px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .expansion-info {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .expansion-info.active {
+            display: block;
+        }
+
+        .expansion-info h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .interpretation-section {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .interpretation-section.active {
+            display: block;
+        }
+
+        .advice-card-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border: 3px solid #f5576c;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .advice-card-display {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .advice-card-image {
+            flex-shrink: 0;
+        }
+
+        .advice-card-image img {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .advice-card-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .advice-card-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+
+        .advice-calculation {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: #666;
+            border-left: 3px solid #f5576c;
+        }
+
+        .advice-calculation strong {
+            color: #c62828;
+        }
+
+        .advice-meaning {
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .interpretation-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .interpretation-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .interpretation-card .card-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #764ba2;
+        }
+
+        .interpretation-card .reversed-label {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .interpretation-card .meaning {
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .interpretation-card .message {
+            background: white;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #27ae60;
+        }
+
+        .interpretation-card .message::before {
+            content: "💫 メッセージ: ";
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .about-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .about-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .advice-card-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(253, 203, 110, 0.3);
+        }
+
+        .advice-card-section h2 {
+            color: #d63031;
+            text-align: center;
+        }
+
+        .advice-card-section p {
+            text-align: center;
+        }
+
+        .advice-card-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .advice-card-container .card-column {
+            min-width: auto;
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0.8;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .card-slot.appearing {
+            /* アニメーション無効化 - 多数のカードで問題が起きるため */
+            /* animation: cardAppear 0.5s ease-out; */
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .card-slot {
+                width: 120px;
+                height: 232px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔮 CBDマルセイユタロット占い</h1>
+            <p class="subtitle">目線展開スプレッド</p>
+        </header>
+
+        <div class="main-content">
+            <div class="question-section">
+                <input type="text" 
+                       class="question-input" 
+                       id="questionInput" 
+                       placeholder="質問を入力してください">
+            </div>
+
+            <div class="controls">
+                <button class="btn-shuffle" onclick="drawInitialCards()">
+                    🎴 初期カードを引く（3枚）
+                </button>
+                <button class="btn-expand" id="nextCardBtn" onclick="drawNextCard()" disabled>
+                    ✨ 次のカードを引く
+                </button>
+                <button class="btn-reset" onclick="resetReading()">
+                    🔄 リセット
+                </button>
+            </div>
+
+            <div class="expansion-info" id="expansionInfo">
+                <h4>📖 展開ログ</h4>
+                <div id="expansionLog"></div>
+            </div>
+
+            <div class="spread-container">
+                <div class="spread-rows" id="spreadRows"></div>
+            </div>
+
+            <div class="advice-card-section" id="adviceCardSection" style="display: none;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">💡 アドバイスカード</h2>
+                <p style="margin-bottom: 15px; color: #666;">過去・現在・未来の3枚の数字を合計し、22で割った余りのカードです。</p>
+                <div class="advice-card-container">
+                    <div class="card-column" id="adviceCardDisplay">
+                        <!-- アドバイスカードがここに表示される -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="interpretation-section" id="interpretationSection">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📖 リーディング結果</h2>
+                
+                <!-- アドバイスカードセクション -->
+                <div class="advice-card-section" id="adviceCardSection" style="display: none;">
+                    <h3 style="color: #f5576c; margin-bottom: 15px;">🎯 アドバイスカード</h3>
+                    <div class="advice-card-display" id="adviceCardDisplay"></div>
+                </div>
+                
+                <h3 style="color: #667eea; margin: 30px 0 20px 0;">🔮 スプレッド全体の解釈</h3>
+                <div id="interpretationContent"></div>
+            </div>
+
+            <div class="about-section">
+                <h3>目線展開スプレッドについて</h3>
+                <p>
+                    <strong>目線の概念：</strong><br>
+                    • <strong>右向き</strong>（未来を見る）：愚者、女帝、教皇、力、13<br>
+                    • <strong>左向き</strong>（過去を見る）：魔術師、女教皇、皇帝、戦車、隠者、節制、星、世界<br>
+                    • <strong>目線なし</strong>：恋人、正義、運命の輪、吊された男、悪魔、塔、月、太陽、審判<br>
+                    <br>
+                    <strong>展開ルール：</strong><br>
+                    1. 過去・現在・未来の3枚を引きます<br>
+                    2. 「次のカードを引く」をクリックすると、<strong>1クリックにつき1枚</strong>カードが追加されます<br>
+                    3. カードの向きと目線に従って、上段または下段にカードが配置されます<br>
+                    4. 目線なしのカードが出るか、目線の先にカードがある場合、その方向への展開は終了します<br>
+                    5. 残り枚数がゼロになると展開完了です<br>
+                    <br>
+                    <strong>アドバイスカード：</strong><br>
+                    • 過去・現在・未来の3枚のカード番号を合計し、22で割った余りのカードです<br>
+                    • スプレッド全体へのアドバイスを示します<br>
+                    • 初期3枚を引いた時点で自動的に表示されます<br>
+                    <br>
+                    <strong>1クリック1枚のメリット：</strong><br>
+                    • 展開の様子を見ながら楽しめる<br>
+                    • 問題が起きた瞬間が分かりやすい<br>
+                    • 自分のペースで進められる
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tarotCards = {
+            major: [
+                { id: 'a01', name: 'LE BATELEUR - 魔術師', number: 'I', gaze: 'left',
+                    upright: '何かの始まり。ビギナーズ・ラック。自由に使えるさまざまな道具や手段がある状態。超自然的な力を使う。精神の力で現実を創り出す。実用的スキルの訓練と獲得。即興。他の人たちへの披露。',
+                    reversed: 'ぺてん、手品、ごまかし。ひけらかし、見せかけ。身体・セクシャリティもしくは基本動機に関する自覚の欠如。経験不足や正確さに欠けることが原因であと一歩及ばず。',
+                    message: '新たな現実を創り出しなさい。' },
+                { id: 'a02', name: 'LA PAPESSE - 女教皇', number: 'II', gaze: 'left',
+                    upright: '知性と直観が結びついた英知。精神的な母。男性世界にあって力を隠している女性。慎み。秘密、隠されたもの、神秘。ほとんど知られぬままのことに関しヒントを得る。今は明確な回答を出せない。',
+                    reversed: '一般社会の因習の陰に本当の自分を隠さざるを得ない。セックスや身体に対する保守的な態度。感情的な妨げ。',
+                    message: '境界の定め方を知りなさい。' },
+                { id: 'a03', name: "L'IMPERATRICE - 女帝", number: 'III', gaze: 'right',
+                    upright: '豊かさ、成長、生産性。人工的な枠組みの内にある自然なまたは人間的な感じ。感情豊かな知性。保護と世話。母性。力強い女性像。女性としての強いアイデンティティ。',
+                    reversed: '衝動的なふるまい、度し難い人物。過保護、他人の生活への過干渉。強烈な母親像に伴う問題。',
+                    message: '直感で行動しなさい。' },
+                { id: 'a04', name: "L'EMPEREUR - 皇帝", number: 'IIII', gaze: 'left',
+                    upright: '現実的・物質的達成。職場や収入源に関わる問題。権威と支配、人に命令する立場。保護者的な父親像、後援者やスポンサー。自己主張。軍事問題。',
+                    reversed: '攻撃的な態度、暴力、力で物事を解決しようとする。独裁。性的虐待の可能性。支配者的な父親像になかなか対抗できない。内面の弱さを否定したり隠したりする。',
+                    message: 'リーダーシップや責任感を見せなさい。' },
+                { id: 'a05', name: 'LE PAPE - 法王', number: 'V', gaze: 'right',
+                    upright: '教師、指導者、相談役。教育と知識、学術的な専門知識。組織化された宗教、伝統的な医学や心理学。精神的な父。専門家による診断や処置。結婚。',
+                    reversed: '因習や時代遅れの規範にこだわり過ぎる。官僚支配。圧政的な支配者層。偽善、差別。離婚。',
+                    message: '知識や教育を尊重しなさい。' },
+                { id: 'a06', name: "L'AMOVREVX - 恋人", number: 'VI', gaze: null,
+                    upright: '愛情、恋愛関係。感情の絡み合い。選択をする必要、もしくは過去の影響から自由になる必要あり。その意向は天意に叶っている。現実のその小さな一歩が内なる願いの表れ。',
+                    reversed: '三角関係・嫁姑問題などの複雑な人間関係。ためらい、板挟み。気持ちや意思が混乱する。',
+                    message: '心の赴くままに。' },
+                { id: 'a07', name: 'LE CHARIOT - 戦車', number: 'VII', gaze: 'left',
+                    upright: '勝利、もしくは質問者を保護された強い立場に立たせるような功績。野心、エネルギー、前進するモチベーション。公的な栄誉。権力と高い地位。',
+                    reversed: '見せかけの背後に隠された内なる弱さ。傲慢、虚栄。過保護、感情的な囲い込み。自分の目標に関する混乱。人々や現実との当たり前の接触を失う。',
+                    message: '大胆さが勝利を生む。' },
+                { id: 'a08', name: 'LA JUSTICE - 正義', number: 'VIII', gaze: null,
+                    upright: '法と秩序、法的問題。公正で偏りのない判断。しっかり善悪を見極められる。理性、明快な規則や一般規範による論理づけ。客観的な思考を超えた寛大さや人間味。',
+                    reversed: '説明能力の乏しさ、批判的で頭ごなしな態度、罪悪感。自分や他者を抑圧する。変化や進歩を阻害する否定的な考え。',
+                    message: '理性をもって、世間に認められた規範に則って行動しなさい。' },
+                { id: 'a09', name: "L'HERMITE - 隠者", number: 'VIIII', gaze: 'left',
+                    upright: '真理や霊的理解の探求。明確な目的に専念する。用心、慎重な調査。大義のため不自由に甘んじる。主義信条に忠実、強い信念。',
+                    reversed: '閉鎖的で孤立した態度。隔絶、孤独。固定観念。過剰な用心や疑念、あら探しするような批判的な姿勢。隠され打ち消される願望。',
+                    message: '物事の本質を探求しなさい。' },
+                { id: 'a10', name: "L'A ROVE DE FORTVNE - 運命の輪", number: 'X', gaze: null,
+                    upright: '状況や立場の変化。転落の後の上昇。ギャンブル。気まぐれな運を信じる。ライフサイクル。巡り巡っていたものが終結。日常生活のルーティンに適応する。前世のヒント。',
+                    reversed: '上昇期の後の衰退。上り詰めたところに潜む危険。閉ざされた範囲内で動く。気まぐれな気分の変化。自分の状況に対する無力感。',
+                    message: '人生の浮き沈みを受け入れなさい。' },
+                { id: 'a11', name: 'LA FORCE - 力', number: 'XI', gaze: 'right',
+                    upright: '試練に立ち向かう力と勇気。抑制を効かせたクリエイティブな衝動・欲求の表現。共通目標に向かって内的資質を結集する。リスクを負う。',
+                    reversed: '何かを制御し続けなければならないことで絶え間ない緊張が生じる。支配力を失う危険性。内的葛藤や自分の力を見誤ることが失敗につながるかも。',
+                    message: '自分自身をコントロールしなさい。' },
+                { id: 'a12', name: 'LE PENDU - 吊された男', number: 'XII', gaze: null,
+                    upright: '独自の視点で物事を見る。立派な目的のために困難を耐え忍ぶ。深い自己分析の時期。受動的、期待と逆であっても現実を受け入れる。',
+                    reversed: '隔絶。被害者意識。行動できない。自分らしさの否定、何が何でも「普通」であろうと懸命になる。自分だけの仮想現実に生きる。',
+                    message: '逆の視点から物事を見てみなさい。' },
+                { id: 'a13', name: '（無題）', number: 'XIII', gaze: 'right',
+                    upright: '時が来て何かが終わる。過去のしがらみや支配的人物への愛着を断ち切る。ムダを捨て大事なものだけを残す。古いものが崩れれば新しいもののための余地ができる。',
+                    reversed: '何かを失ったことや変化に対処するのに苦労する。当面の困難、辛い試練。崩壊。堪え難い事実を知る。将来の死を予告するものではないが死への不安や既に生じた損失への悲しみを表わすことがある。',
+                    message: '終わったことには見切りをつけなさい。' },
+                { id: 'a14', name: 'TEMPERANCE - 節制', number: 'XIIII', gaze: 'left',
+                    upright: '調停、歩み寄り、緊張の緩和。対立するものを一つに。一見不可能なことを可能にする。ゆっくりとした精製と改良のプロセス。忍耐、粘り強さ。自己改善。',
+                    reversed: '前に進めず一進一退。長ったらしいプロセスに我慢できなくなる。自分のことだけに気を取られる。助けてくれるかもしれない人たちを払いのける。',
+                    message: '中庸を見出しなさい。' },
+                { id: 'a15', name: 'LE DIABLE - 悪魔', number: 'XV', gaze: null,
+                    upright: '溢れ出す創造性。パラドックスや矛盾。皮肉、一般的規範をばかにする。欲望・熱情・衝動からの行動。家族に関する過去のトラウマからの脱却。',
+                    reversed: '誘惑、闇や禁じられたものに惹かれる。搾取、利己主義、支配。やめられない自己満足。非常識な行動には代償が。不健全な関わりと手を切ることの困難。',
+                    message: '熱情や欲望を表現しなさい。' },
+                { id: 'a16', name: 'LA MAISON DIEV - 塔', number: 'XVI', gaze: null,
+                    upright: '堅固に組み上げられたものが崩れる。幽閉状態から解放される。長い準備期間ののち突然の急展開。性的対象との電撃的な出逢い。成功するには質素かつ謙虚であれ。',
+                    reversed: '衝撃、計画の破綻、信頼されて築き上げられたものの崩壊。確固として安全に見えていた地位からの転落。混沌、混乱、何が起こっているのかなかなか理解できない。虚栄心やプライドが失敗につながる。',
+                    message: 'しっかり現実に立ち返ること。' },
+                { id: 'a17', name: 'LETOILLE - 星', number: 'XVII', gaze: 'left',
+                    upright: '包み隠さず、飾らないこと。自然への回帰。純粋さ、誠実さ。「ありのまま」の自分を見せる、自分の身体や欲望を受け入れる。気前の良さ。天からの幸運。高次元からのエネルギーや導きを直感する。',
+                    reversed: '無邪気な楽天主義、希望的観測。我が身を危険にさらしたり他人に利用されたりする。適切な境界線をなかなか定められない。浪費、無駄遣い。',
+                    message: 'その流れは源から汚れなく清らかです。' },
+                { id: 'a18', name: 'LA LUNE - 月', number: 'XVIII', gaze: null,
+                    upright: '深い感情（母親や女性に関わるものかもしれない）。異質な現実体験。手の届かないものへの憧れ。自分の隠れた力を見出す。遠い過去に囚われている。隠された宝。',
+                    reversed: 'ぼんやりとした不安な気持ち。感情的な問題、気落ちする時期。表面下に潜む危険。後退、なかなか前に進む道が見出せない。',
+                    message: '深みに下りてゆくことを恐れてはいけません。' },
+                { id: 'a19', name: 'LE SOLEIL - 太陽', number: 'XVIIII', gaze: null,
+                    upright: '光と温かさ、豊かさ、恵み。心地よさ。気持ちや身体の癒し。連携、信頼、共有、友好関係。人間味。理想的な父親像。子供に関する事柄。ほどほどに厳し過ぎない形で限度を設ける。',
+                    reversed: '限定された空間内で生きる、「大っぴらに」現実と向き合えない。未熟。他者への依存。強烈かつエネルギッシュすぎて側にいると居心地悪くなるものや人。不在の父親。',
+                    message: '相応しいパートナーを見つけなさい。' },
+                { id: 'a20', name: 'LE JUGEMENT - 審判', number: 'XX', gaze: null,
+                    upright: '天啓、悟り、新たな理解。治療過程の節目。家族関係の修復。発覚、明かされる秘密、公表。赤ん坊や新しいものの誕生。',
+                    reversed: '隠されておくべきだったことの露見。プライバシーの欠如。不愉快な実現。親子関係の問題。過剰に騒々しく劇的な感じ。',
+                    message: '霊的現実に目覚めなさい。' },
+                { id: 'a21', name: 'LE MONDE - 世界', number: 'XXI', gaze: 'left',
+                    upright: '一つのプロセスの完成。いろんな分野における幅広い活動と達成。遠く離れた場所との接触。異次元間の調和と一致。妊娠、新しく何かが生まれようとしている。生命のダンス。',
+                    reversed: 'シャボン玉の中の人生、自分の世界を他者と共有できない。外的生活と内心との断絶。自分自身が最大の関心事、理想化された自己イメージ、前に進めない。',
+                    message: 'あらゆるものはそのままで完璧なのである。' },
+                { id: 'a22', name: 'LE MAT - 愚者', number: '無番号', gaze: 'right',
+                    upright: '因習や規範に囚われない。独特で例外的なものや人。選択の自由はまだ残っている。支配の放棄、自発性。不確実さ、現在に対する関心。旅に出る。',
+                    reversed: '安定を選択したり、そうしたものに身を入れることが出来ない。落ち着きのなさ。無目的。道に迷う。愚かな行動。風変わり、社会や周りから受け入れられない。先のことを考えられない。',
+                    message: '動き続けなさい。' }
+            ]
+        };
+
+        // 固定グリッド設定
+        const GRID_MIN_COL = -7;  // 最小列
+        const GRID_MAX_COL = 7;   // 最大列（合計15列）
+        
+        let deck = [];
+        let gridData = new Map(); // Map<"row-col", cardData>
+        let expansionLog = [];
+        let isExpanded = false;
+        let processingQueue = []; // 処理待ちタスクのキュー
+        let isProcessing = false; // 処理中フラグ
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function drawCard(forceUpright = false) {
+            if (deck.length === 0) return null;
+            const card = deck.pop();
+            return {
+                ...card,
+                isReversed: forceUpright ? false : Math.random() < 0.5
+            };
+        }
+
+        function getCardNumericValue(cardId) {
+            // カードIDから数値を取得 (a01 = 1, a02 = 2, ..., a21 = 21, a22 = 0)
+            const num = parseInt(cardId.substring(1)); // 'a01' -> 1
+            return num === 22 ? 0 : num; // 愚者(a22)は0として扱う
+        }
+
+        function insertLowerTaskInOrder(task) {
+            // 下段処理タスクを列番号の昇順で挿入
+            // これにより、左から右の順（列-2 → 列-1 → 列0 → 列1 → 列2）で処理される
+            
+            // 既存の下段タスクの位置を探す
+            let insertIndex = processingQueue.length;
+            
+            for (let i = 0; i < processingQueue.length; i++) {
+                const queueTask = processingQueue[i];
+                // 下段タスク（lower_reversed または lower_gaze）で、
+                // 今回のタスクより列番号が大きい場合、その前に挿入
+                if ((queueTask.type === 'lower_reversed' || queueTask.type === 'lower_gaze') 
+                    && queueTask.col > task.col) {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            
+            processingQueue.splice(insertIndex, 0, task);
+            console.log(`   🔄 下段タスクを位置${insertIndex}に挿入: 列${task.col} (左から右の順を保証)`);
+        }
+
+        function calculateAdviceCard() {
+            // 過去・現在・未来のカードを取得
+            const past = getCard(0, 0);
+            const present = getCard(0, 1);
+            const future = getCard(0, 2);
+
+            if (!past || !present || !future) {
+                console.error('初期3枚のカードが見つかりません');
+                return null;
+            }
+
+            // 数値を取得して合計
+            const pastNum = getCardNumericValue(past.card.id);
+            const presentNum = getCardNumericValue(present.card.id);
+            const futureNum = getCardNumericValue(future.card.id);
+            const sum = pastNum + presentNum + futureNum;
+
+            console.log('========================================');
+            console.log('🎯 アドバイスカード計算');
+            console.log(`過去: ${past.card.name} (${pastNum})`);
+            console.log(`現在: ${present.card.name} (${presentNum})`);
+            console.log(`未来: ${future.card.name} (${futureNum})`);
+            console.log(`合計: ${sum}`);
+
+            // 22で割った余り
+            let remainder = sum % 22;
+            console.log(`${sum} ÷ 22 = 余り ${remainder}`);
+
+            // 余りが0の場合は愚者(a22)、それ以外は該当番号のカード
+            const adviceCardId = remainder === 0 ? 'a22' : `a${String(remainder).padStart(2, '0')}`;
+            const adviceCard = tarotCards.major.find(c => c.id === adviceCardId);
+
+            console.log(`アドバイスカード: ${adviceCard.name}`);
+            console.log('========================================');
+
+            return {
+                card: adviceCard,
+                calculation: {
+                    past: pastNum,
+                    present: presentNum,
+                    future: futureNum,
+                    sum: sum,
+                    remainder: remainder
+                }
+            };
+        }
+
+        function getGazeDirection(card) {
+            if (!card.gaze) return null;
+            if (card.isReversed) {
+                return card.gaze === 'left' ? 'right' : 'left';
+            }
+            return card.gaze;
+        }
+
+        function calculateAdviceCard() {
+            // 過去(0,0)、現在(0,1)、未来(0,2)のカードを取得
+            const pastCard = getCard(0, 0);
+            const presentCard = getCard(0, 1);
+            const futureCard = getCard(0, 2);
+
+            if (!pastCard || !presentCard || !futureCard) {
+                console.log('⚠️ 初期3枚が揃っていません');
+                return null;
+            }
+
+            // カードIDから数字を抽出 (a01 -> 1, a22 -> 22)
+            const getCardNumber = (card) => {
+                const id = card.card.id;
+                return parseInt(id.substring(1)); // 'a01' -> '01' -> 1
+            };
+
+            const num1 = getCardNumber(pastCard);
+            const num2 = getCardNumber(presentCard);
+            const num3 = getCardNumber(futureCard);
+
+            const sum = num1 + num2 + num3;
+            let remainder = sum % 22;
+            
+            // 余りが0の場合は22（愚者）とする
+            if (remainder === 0) {
+                remainder = 22;
+            }
+
+            console.log('========================================');
+            console.log('💡 アドバイスカード計算');
+            console.log(`   過去: ${pastCard.card.name} (${num1})`);
+            console.log(`   現在: ${presentCard.card.name} (${num2})`);
+            console.log(`   未来: ${futureCard.card.name} (${num3})`);
+            console.log(`   合計: ${sum}`);
+            console.log(`   ${sum} ÷ 22 = ${Math.floor(sum / 22)} 余り ${remainder}`);
+            console.log(`   アドバイスカード: a${String(remainder).padStart(2, '0')}`);
+            console.log('========================================');
+
+            return remainder;
+        }
+
+        function displayAdviceCard() {
+            const adviceNumber = calculateAdviceCard();
+            if (!adviceNumber) return;
+
+            // アドバイスカードを取得
+            const adviceCardId = `a${String(adviceNumber).padStart(2, '0')}`;
+            const adviceCardData = tarotCards.major.find(c => c.id === adviceCardId);
+
+            if (!adviceCardData) {
+                console.error('❌ アドバイスカードが見つかりません:', adviceCardId);
+                return;
+            }
+
+            console.log(`✅ アドバイスカード: ${adviceCardData.name}`);
+
+            // 表示エリアを作成
+            const container = document.getElementById('adviceCardDisplay');
+            container.innerHTML = '';
+
+            const slot = document.createElement('div');
+            slot.className = 'card-slot';
+
+            const front = document.createElement('div');
+            front.className = 'card-front';
+
+            const img = document.createElement('img');
+            img.src = `images/${adviceCardData.id}.jpg`;
+            img.alt = adviceCardData.name;
+            img.loading = 'eager';
+
+            img.onerror = function() {
+                console.error(`❌ アドバイスカード画像読み込み失敗: ${adviceCardData.id}`);
+            };
+
+            img.onload = function() {
+                console.log(`✅ アドバイスカード画像OK: ${adviceCardData.id}`);
+            };
+
+            front.appendChild(img);
+            slot.appendChild(front);
+            container.appendChild(slot);
+
+            // ラベル
+            const label = document.createElement('div');
+            label.className = 'card-label';
+            label.textContent = adviceCardData.name;
+            container.appendChild(label);
+
+            // 解釈
+            const interpretation = document.createElement('div');
+            interpretation.style.cssText = 'margin-top: 15px; padding: 15px; background: white; border-radius: 8px; line-height: 1.6;';
+            interpretation.innerHTML = `
+                <p style="margin-bottom: 10px;"><strong>正位置の意味：</strong></p>
+                <p style="color: #555; margin-bottom: 15px;">${adviceCardData.upright}</p>
+                <p style="padding: 10px; background: #e8f5e9; border-left: 3px solid #27ae60; border-radius: 5px;">
+                    <strong style="color: #27ae60;">💫 メッセージ：</strong> ${adviceCardData.message}
+                </p>
+            `;
+            container.appendChild(interpretation);
+
+            // セクションを表示
+            document.getElementById('adviceCardSection').style.display = 'block';
+        }
+
+        function hasCard(row, col) {
+            return gridData.has(`${row}-${col}`);
+        }
+
+        function setCard(row, col, card, label) {
+            gridData.set(`${row}-${col}`, { card, label, row, col });
+        }
+
+        function getCard(row, col) {
+            return gridData.get(`${row}-${col}`);
+        }
+
+        function addLog(message) {
+            expansionLog.push(message);
+            updateExpansionLog();
+        }
+
+        function updateExpansionLog() {
+            const logEl = document.getElementById('expansionLog');
+            logEl.innerHTML = expansionLog.map(msg => `<p style="margin: 5px 0;">• ${msg}</p>`).join('');
+        }
+
+        function drawInitialCards() {
+            resetReading();
+            deck = shuffleArray([...tarotCards.major]);
+            expansionLog = [];
+            isExpanded = false;
+            processingQueue = [];
+
+            console.log('========================================');
+            console.log('🎬 新しいリーディング開始');
+            console.log('========================================');
+
+            // 3枚引く：過去(0,0)、現在(0,1)、未来(0,2)
+            const labels = ['過去', '現在', '未来'];
+            for (let col = 0; col < 3; col++) {
+                const card = drawCard();
+                setCard(0, col, card, labels[col]);
+                console.log(`初期配置: 列${col} - ${card.name} ${card.isReversed ? '逆' : '正'}`);
+            }
+
+            // グリッドを初期化してレンダリング
+            renderGrid();
+            
+            // アドバイスカードを計算・表示
+            displayAdviceCard();
+            
+            // 処理キューを構築（現在列から開始）
+            buildProcessingQueue();
+            
+            // ボタンを有効化
+            const nextBtn = document.getElementById('nextCardBtn');
+            nextBtn.disabled = false;
+            nextBtn.textContent = '✨ 次のカードを引く';
+            
+            document.getElementById('interpretationSection').classList.remove('active');
+            document.getElementById('expansionInfo').classList.add('active');
+            addLog('初期カード3枚を配置しました');
+            addLog(`現在列から展開を開始します`);
+        }
+
+        function buildProcessingQueue() {
+            // 処理順序: 現在(1) → 過去(0) → 未来(2)
+            const columns = [1, 0, 2];
+
+            for (const col of columns) {
+                const card = getCard(0, col);
+                if (!card) continue;
+
+                // 目線チェック
+                const gaze = getGazeDirection(card.card);
+                if (gaze) {
+                    const nextCol = gaze === 'right' ? col + 1 : col - 1;
+                    // ⚠️ 既にカードがある場合はキューに追加しない
+                    if (!hasCard(0, nextCol)) {
+                        processingQueue.push({
+                            type: 'upper_gaze',
+                            row: 0,
+                            col: nextCol,
+                            fromCol: col,
+                            label: gaze === 'right' ? '→' : '←',
+                            description: `列${col}の目線${gaze === 'right' ? '右' : '左'}`
+                        });
+                        console.log(`初期キュー追加: 列${col}の目線${gaze === 'right' ? '右' : '左'} → 列${nextCol}`);
+                    } else {
+                        console.log(`初期キュースキップ: 列${nextCol}には既にカードあり`);
+                    }
+                }
+
+                // 逆位置チェック
+                // ⚠️ 既に下段にカードがある場合はキューに追加しない
+                if (card.card.isReversed && !hasCard(1, col)) {
+                    const lowerTask = {
+                        type: 'lower_reversed',
+                        row: 1,
+                        col: col,
+                        label: '↓',
+                        description: `列${col}の下段`
+                    };
+                    insertLowerTaskInOrder(lowerTask);
+                    console.log(`初期キュー追加: 列${col}の下段（左から右の順）`);
+                } else if (card.card.isReversed && hasCard(1, col)) {
+                    console.log(`初期キュースキップ: 列${col}の下段には既にカードあり`);
+                }
+            }
+            
+            console.log(`初期キュー構築完了: ${processingQueue.length}タスク`);
+        }
+
+        function drawNextCard() {
+            if (isProcessing) {
+                console.log('⚠️ 処理中です');
+                return;
+            }
+            isProcessing = true;
+
+            // キューから次のタスクを取得
+            if (processingQueue.length === 0) {
+                // 全て完了
+                addLog('✅ 展開が完了しました！');
+                console.log('✅ 展開完了');
+                document.getElementById('nextCardBtn').disabled = true;
+                document.getElementById('nextCardBtn').textContent = '✨ 展開完了';
+                showInterpretation();
+                isProcessing = false;
+                return;
+            }
+
+            const task = processingQueue.shift();
+            console.log('========================================');
+            console.log(`📌 タスク実行: ${task.description}`);
+            console.log(`   行: ${task.row}, 列: ${task.col}`);
+            
+            // ⚠️ 重要：既にカードがある場合はスキップ（カードを引かない）
+            if (hasCard(task.row, task.col)) {
+                console.log(`   ⛔ スキップ: [${task.row},${task.col}]には既にカードがあります`);
+                addLog(`⛔ ${task.description}には既にカードがあるためスキップ（カードは引きません）`);
+                console.log(`   📋 キュー残数: ${processingQueue.length}`);
+                console.log('========================================');
+                isProcessing = false;
+                
+                // このフェーズは終了し、次のタスクへ
+                // 次のタスクがあれば自動実行
+                if (processingQueue.length > 0) {
+                    setTimeout(() => drawNextCard(), 50);
+                } else {
+                    // キューが空になったら完了
+                    document.getElementById('nextCardBtn').disabled = true;
+                    document.getElementById('nextCardBtn').textContent = '✨ 展開完了';
+                    showInterpretation();
+                }
+                return;
+            }
+            
+            addLog(`🎴 ${task.description}にカードを配置...`);
+
+            // ⚠️ ここでカードを引く（既存カードがない場合のみ到達）
+            let newCard;
+            if (task.type === 'lower_reversed' || task.type === 'lower_gaze') {
+                newCard = drawCard(true); // 下段は強制正位置
+            } else {
+                newCard = drawCard(); // 上段は正位置/逆位置ランダム
+            }
+
+            console.log(`   引いたカード: ${newCard.name} ${newCard.isReversed ? '(逆位置)' : '(正位置)'}`);
+
+            // カードを配置
+            setCard(task.row, task.col, newCard, task.label);
+            console.log(`   ✅ gridDataに登録: ${task.row}-${task.col}`);
+            console.log(`   現在のgridData件数: ${gridData.size}`);
+            
+            addLog(`   ${newCard.name} ${newCard.isReversed ? '(逆位置)' : '(正位置)'} を配置`);
+
+            // レンダリング
+            console.log('🎨 レンダリング開始');
+            renderGrid();
+            console.log('🎨 レンダリング完了');
+
+            // 配置したカードに基づいて追加のタスクをキューに追加
+            // ⚠️ 必ず既存カードをチェックしてからキューに追加
+            if (task.type === 'upper_gaze') {
+                // 上段の目線展開の続き
+                const gaze = getGazeDirection(newCard);
+                if (gaze) {
+                    const nextCol = gaze === 'right' ? task.col + 1 : task.col - 1;
+                    if (!hasCard(0, nextCol)) {
+                        // 先頭に追加（優先処理）
+                        processingQueue.unshift({
+                            type: 'upper_gaze',
+                            row: 0,
+                            col: nextCol,
+                            fromCol: task.col,
+                            label: gaze === 'right' ? '→' : '←',
+                            description: `列${task.col}の目線${gaze === 'right' ? '右' : '左'}`
+                        });
+                        addLog(`   → 目線${gaze === 'right' ? '右' : '左'}に続く`);
+                        console.log(`   🔄 キューに追加: 目線${gaze === 'right' ? '右' : '左'} (列${nextCol})`);
+                    } else {
+                        console.log(`   ⛔ 目線の先（列${nextCol}）には既にカードあり - この方向の展開終了`);
+                        addLog(`   → 目線の先には既にカードがあり、この方向の展開終了`);
+                    }
+                } else {
+                    console.log(`   👁️ 目線なし - この方向の展開終了`);
+                    addLog(`   → 目線なしのため、この方向の展開終了`);
+                }
+
+                // 逆位置なら下段処理を追加
+                if (newCard.isReversed) {
+                    if (!hasCard(1, task.col)) {
+                        const lowerTask = {
+                            type: 'lower_reversed',
+                            row: 1,
+                            col: task.col,
+                            label: '↓',
+                            description: `列${task.col}の下段`
+                        };
+                        insertLowerTaskInOrder(lowerTask);
+                        addLog(`   → 逆位置のため下段処理を予約（左から右の順）`);
+                    } else {
+                        console.log(`   ⛔ 下段（列${task.col}）には既にカードあり - 下段処理スキップ`);
+                        addLog(`   → 下段には既にカードがあり、下段処理スキップ`);
+                    }
+                }
+            } else if (task.type === 'lower_reversed') {
+                // 下段の目線展開
+                const gaze = getGazeDirection(newCard);
+                if (gaze) {
+                    const nextCol = gaze === 'right' ? task.col + 1 : task.col - 1;
+                    if (!hasCard(1, nextCol)) {
+                        processingQueue.unshift({
+                            type: 'lower_gaze',
+                            row: 1,
+                            col: nextCol,
+                            fromCol: task.col,
+                            label: gaze === 'right' ? '→' : '←',
+                            description: `列${task.col}の下段目線${gaze === 'right' ? '右' : '左'}`
+                        });
+                        addLog(`   → 下段の目線${gaze === 'right' ? '右' : '左'}に続く`);
+                        console.log(`   🔄 キューに追加: 下段目線${gaze === 'right' ? '右' : '左'} (列${nextCol})`);
+                    } else {
+                        console.log(`   ⛔ 下段目線の先（列${nextCol}）には既にカードあり - この方向の展開終了`);
+                        addLog(`   → 目線の先には既にカードがあり、この方向の展開終了`);
+                    }
+                } else {
+                    console.log(`   👁️ 目線なし - この方向の展開終了`);
+                    addLog(`   → 目線なしのため、この方向の展開終了`);
+                }
+            } else if (task.type === 'lower_gaze') {
+                // 下段の目線展開の続き
+                const gaze = getGazeDirection(newCard);
+                if (gaze) {
+                    const nextCol = gaze === 'right' ? task.col + 1 : task.col - 1;
+                    if (!hasCard(1, nextCol)) {
+                        processingQueue.unshift({
+                            type: 'lower_gaze',
+                            row: 1,
+                            col: nextCol,
+                            fromCol: task.col,
+                            label: gaze === 'right' ? '→' : '←',
+                            description: `列${task.col}の下段目線${gaze === 'right' ? '右' : '左'}`
+                        });
+                        addLog(`   → 目線${gaze === 'right' ? '右' : '左'}に続く`);
+                        console.log(`   🔄 キューに追加: 下段目線${gaze === 'right' ? '右' : '左'} (列${nextCol})`);
+                    } else {
+                        console.log(`   ⛔ 下段目線の先（列${nextCol}）には既にカードあり - この方向の展開終了`);
+                        addLog(`   → 目線の先には既にカードがあり、この方向の展開終了`);
+                    }
+                } else {
+                    console.log(`   👁️ 目線なし - この方向の展開終了`);
+                    addLog(`   → 目線なしのため、この方向の展開終了`);
+                }
+            }
+
+            console.log(`   📋 キュー残数: ${processingQueue.length}`);
+            console.log('========================================');
+
+            isProcessing = false;
+        }
+
+
+        function renderGrid() {
+            const container = document.getElementById('spreadRows');
+            
+            // 初回のみDOMを作成、以降は更新のみ
+            if (container.children.length === 0) {
+                console.log('========================================');
+                console.log('🏗️ 固定グリッドを初期化');
+                console.log(`列範囲: ${GRID_MIN_COL} ～ ${GRID_MAX_COL} (合計${GRID_MAX_COL - GRID_MIN_COL + 1}列)`);
+                console.log('========================================');
+                
+                // 上段を作成
+                const upperRow = createFixedRow(0, '上段');
+                container.appendChild(upperRow);
+                
+                // 下段を作成
+                const lowerRow = createFixedRow(1, '下段');
+                container.appendChild(lowerRow);
+            }
+            
+            // カードデータを更新
+            console.log('========================================');
+            console.log('🔄 カードデータを更新');
+            console.log(`gridData件数: ${gridData.size}`);
+            
+            updateRowCards(0, '上段');
+            updateRowCards(1, '下段');
+            
+            console.log('========================================');
+            console.log('✨ グリッド更新完了');
+            console.log('========================================');
+        }
+
+        function createFixedRow(row, labelText) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'spread-row';
+            rowDiv.setAttribute('data-row', row);
+            
+            // ラベル
+            const label = document.createElement('div');
+            label.className = 'row-label';
+            label.textContent = labelText;
+            rowDiv.appendChild(label);
+
+            // 固定範囲の列を作成
+            for (let col = GRID_MIN_COL; col <= GRID_MAX_COL; col++) {
+                const column = document.createElement('div');
+                column.className = 'card-column';
+                column.setAttribute('data-row', row);
+                column.setAttribute('data-col', col);
+                
+                const slot = document.createElement('div');
+                slot.className = 'card-slot empty';
+                column.appendChild(slot);
+                
+                rowDiv.appendChild(column);
+            }
+
+            return rowDiv;
+        }
+
+        function updateRowCards(row, labelText) {
+            const rowDiv = document.querySelector(`[data-row="${row}"]`);
+            if (!rowDiv) return;
+
+            let cardCount = 0;
+            let updatedCount = 0;
+
+            for (let col = GRID_MIN_COL; col <= GRID_MAX_COL; col++) {
+                const cardData = getCard(row, col);
+                const column = rowDiv.querySelector(`.card-column[data-row="${row}"][data-col="${col}"]`);
+                
+                if (!column) continue;
+
+                if (cardData) {
+                    cardCount++;
+                    // カードがある場合、スロットを更新
+                    const existingCard = column.querySelector('.card-front');
+                    if (!existingCard) {
+                        // 新しいカードを追加
+                        column.innerHTML = ''; // 空スロットをクリア
+                        
+                        const slot = document.createElement('div');
+                        slot.className = 'card-slot';
+                        
+                        const front = document.createElement('div');
+                        front.className = 'card-front' + (cardData.card.isReversed ? ' reversed' : '');
+                        
+                        const img = document.createElement('img');
+                        const imgPath = `images/${cardData.card.id}.jpg`;
+                        img.src = imgPath;
+                        img.alt = cardData.card.name;
+                        img.loading = 'eager';
+                        
+                        img.onerror = function() {
+                            console.error(`    ❌ 画像読み込み失敗: ${imgPath}`);
+                        };
+                        
+                        img.onload = function() {
+                            console.log(`    ✅ 画像OK: ${cardData.card.id}`);
+                        };
+                        
+                        front.appendChild(img);
+
+                        // 目線インジケーター
+                        const gaze = getGazeDirection(cardData.card);
+                        if (gaze) {
+                            const indicator = document.createElement('div');
+                            indicator.className = `gaze-indicator gaze-${gaze}`;
+                            indicator.textContent = gaze === 'left' ? '👈' : '👉';
+                            front.appendChild(indicator);
+                        }
+
+                        slot.appendChild(front);
+                        column.appendChild(slot);
+
+                        // ラベル
+                        const labelDiv = document.createElement('div');
+                        labelDiv.className = 'card-label';
+                        labelDiv.textContent = cardData.label;
+                        column.appendChild(labelDiv);
+                        
+                        updatedCount++;
+                        console.log(`  ${labelText} [${row},${col}]: ${cardData.card.name} ${cardData.card.isReversed ? '逆' : '正'} (新規追加)`);
+                    }
+                }
+            }
+
+            console.log(`  ${labelText} 集計: カード${cardCount}枚 / 新規${updatedCount}枚`);
+        }
+
+        function showInterpretation() {
+            // アドバイスカードを計算して表示
+            const adviceResult = calculateAdviceCard();
+            if (adviceResult) {
+                const adviceSection = document.getElementById('adviceCardSection');
+                const adviceDisplay = document.getElementById('adviceCardDisplay');
+                
+                const calc = adviceResult.calculation;
+                adviceDisplay.innerHTML = `
+                    <div class="advice-card-image">
+                        <img src="images/${adviceResult.card.id}.jpg" alt="${adviceResult.card.name}">
+                    </div>
+                    <div class="advice-card-info">
+                        <div class="advice-card-name">${adviceResult.card.name}</div>
+                        <div class="advice-calculation">
+                            <strong>計算式：</strong><br>
+                            過去 (${calc.past}) + 現在 (${calc.present}) + 未来 (${calc.future}) = ${calc.sum}<br>
+                            ${calc.sum} ÷ 22 = 余り <strong>${calc.remainder}</strong> → このカードがアドバイス
+                        </div>
+                        <div class="advice-meaning">
+                            <strong>アドバイス：</strong><br>
+                            ${adviceResult.card.message}
+                        </div>
+                    </div>
+                `;
+                adviceSection.style.display = 'block';
+            }
+            
+            const content = document.getElementById('interpretationContent');
+            let html = '';
+
+            // グリッドデータをソートして表示
+            const sorted = Array.from(gridData.values()).sort((a, b) => {
+                if (a.row !== b.row) return a.row - b.row;
+                return a.col - b.col;
+            });
+
+            sorted.forEach(data => {
+                const card = data.card;
+                const meaning = card.isReversed ? card.reversed : card.upright;
+                html += `
+                    <div class="interpretation-card">
+                        <h3>${data.label} (行${data.row + 1}, 列${data.col + 1})</h3>
+                        <div class="card-name">
+                            ${card.name}
+                            ${card.isReversed ? '<span class="reversed-label">逆位置</span>' : ''}
+                        </div>
+                        <div class="meaning">${meaning}</div>
+                        <div class="message">${card.message}</div>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = html;
+            document.getElementById('interpretationSection').classList.add('active');
+
+            setTimeout(() => {
+                document.getElementById('interpretationSection').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 300);
+        }
+
+        function resetReading() {
+            gridData.clear();
+            expansionLog = [];
+            isExpanded = false;
+            processingQueue = [];
+            isProcessing = false;
+            
+            // グリッドを完全にクリア（次回は再作成される）
+            const container = document.getElementById('spreadRows');
+            container.innerHTML = '';
+            
+            // アドバイスカードを非表示
+            document.getElementById('adviceCardSection').style.display = 'none';
+            document.getElementById('adviceCardDisplay').innerHTML = '';
+            
+            document.getElementById('interpretationSection').classList.remove('active');
+            document.getElementById('expansionInfo').classList.remove('active');
+            document.getElementById('nextCardBtn').disabled = true;
+            document.getElementById('nextCardBtn').textContent = '✨ 次のカードを引く';
+            document.getElementById('questionInput').value = '';
+            
+            console.log('🔄 リセット完了');
+        }
+    </script>
+
+    <!-- Service Worker登録 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
