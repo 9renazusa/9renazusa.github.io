@@ -522,6 +522,21 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 
+
+  /* サイト導線 */
+  .site-back {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.7);
+    text-decoration: none;
+    margin-bottom: 28px;
+  }
+  .site-back:hover { color: var(--light-gold); }
+  a.btn-divine { text-align: center; text-decoration: none; }
+  .site-footer { text-align: center; margin-top: 48px; }
+
   /* Responsive */
   @media (max-width: 500px) {
     .input-card { padding: 28px 20px 32px; }
@@ -533,6 +548,7 @@
 </head>
 <body>
 <div class="container">
+  <a class="site-back" href="../">← 9ren / azusa</a>
 
   <header>
     <div class="subtitle">Reincarnation Astrology</div>
@@ -568,6 +584,8 @@
 
     <button class="btn-reset" onclick="reset()">← 別の日付で診断</button>
   </div>
+
+  <div class="site-footer"><a class="site-back" href="../">← 9ren / azusa のトップへ</a></div>
 
 </div>
 
@@ -1008,6 +1026,10 @@ function divine() {
         <p>だから苦労にも、人間関係にも、恋愛や仕事の出来事にも成長の意味がある。</p>
       </div>
       <p>大切なのは出来事を避けることではなく、そこから何を学ぶか。「どんな運命か」だけでなく、<span class="highlight">何を学び、どの才能をどう使い、誰との関係が成長につながるのか</span>まで受け取ってください。</p>`)}
+    ${card('✉', '個別鑑定', 'あなた専用の診断と処方を', 
+      `<p>この結果は誕生日だけから読んだ「型」です。生まれた年・時刻やホロスコープ全体を合わせると、前世から持ち越した課題と、今世でそれをどう活かすかを、もっと具体的にお伝えできます。</p>
+      <p>「なぜそうなっているか」の診断と、「どうすればいいか」の処方を、両方お出しします。</p>
+      <div style="margin-top:24px"><a class="btn-divine" href="https://mond.how/9ren_azusa" target="_blank" rel="noopener">九蓮梓に鑑定を依頼する</a></div>`)}
     <p class="source-note">転生・カルマ・チャクラの考え方は、科学的に実証された事実として示すものではありません。</p>
   `;
 
