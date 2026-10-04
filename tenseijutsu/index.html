@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>転星術</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Cinzel:wght@400;700&display=swap');
+
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --gold: #c9a84c;
+    --deep-purple: #0d0820;
+    --mid-purple: #1a1135;
+    --accent-purple: #4a2d7a;
+    --light-gold: #e8d5a3;
+    --pale: #f5f0e8;
+    --active-blue: #6D9EEB;
+    --root-pale: #C9DAF8;
+    --glow: rgba(201,168,76,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--deep-purple);
+    color: var(--pale);
+    font-family: 'Noto Serif JP', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 8%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 80% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 50%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 55%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 1s ease both;
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    opacity: 0.9;
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--light-gold);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    text-shadow: 0 0 40px var(--glow);
+  }
+
+  .star-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 20px auto;
+  }
+
+  .star-divider::before, .star-divider::after {
+    content: '';
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+  .star-divider::after {
+    background: linear-gradient(to left, transparent, var(--gold));
+  }
+
+  .star-symbol { color: var(--gold); font-size: 16px; }
+
+  .lead {
+    font-size: 13px;
+    line-height: 2;
+    color: rgba(245,240,232,0.65);
+    max-width: 500px;
+    margin: 0 auto;
+    letter-spacing: 0.08em;
+  }
+
+  /* Input card */
+  .input-card {
+    background: linear-gradient(135deg, rgba(26,17,53,0.9), rgba(13,8,32,0.95));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 4px;
+    padding: 40px 40px 44px;
+    margin-bottom: 40px;
+    box-shadow: 0 0 60px rgba(74,45,122,0.3), inset 0 1px 0 rgba(201,168,76,0.1);
+    animation: fadeUp 1s 0.3s ease both;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .date-selects {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .select-wrap {
+    position: relative;
+  }
+
+  .select-wrap label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.7);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  select {
+    appearance: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 2px;
+    color: var(--light-gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    padding: 10px 36px 10px 16px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    min-width: 80px;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 12px;
+    bottom: 11px;
+    color: var(--gold);
+    pointer-events: none;
+    font-size: 12px;
+  }
+
+  .btn-divine {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.08));
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    color: var(--light-gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-divine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-divine:hover { 
+    box-shadow: 0 0 30px var(--glow);
+    letter-spacing: 0.4em;
+  }
+  .btn-divine:hover::before { opacity: 1; }
+
+  /* Result */
+  .result {
+    display: none;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .result.visible { display: block; }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .result-date {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .result-zodiac {
+    font-size: 18px;
+    color: var(--light-gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+
+  /* Chakra diagram */
+  .chakra-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 40px auto;
+    max-width: 320px;
+  }
+
+  .chakra-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 2px;
+    background: rgba(255,255,255,0.02);
+    transition: all 0.4s;
+    position: relative;
+  }
+
+  .chakra-item.active-chakra {
+    border-color: var(--active-blue);
+    background: rgba(109,158,235,0.08);
+    box-shadow: 0 0 20px rgba(109,158,235,0.15);
+  }
+
+  .chakra-item.main-chakra {
+    border-color: rgba(201,201,248,0.5);
+    background: rgba(201,218,248,0.06);
+    box-shadow: 0 0 20px rgba(201,218,248,0.1);
+  }
+
+  .chakra-orb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .chakra-orb.active { background: radial-gradient(circle, rgba(109,158,235,0.6), rgba(109,158,235,0.2)); border: 1px solid var(--active-blue); }
+  .chakra-orb.main { background: radial-gradient(circle, rgba(201,218,248,0.5), rgba(201,218,248,0.15)); border: 1px solid rgba(201,218,248,0.6); }
+  .chakra-orb.none { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+
+  .chakra-info { flex: 1; }
+
+  .chakra-planet-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--light-gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+
+  .chakra-type-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(245,240,232,0.5);
+  }
+
+  .chakra-tag {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .tag-active { background: rgba(109,158,235,0.2); color: var(--active-blue); border: 1px solid rgba(109,158,235,0.4); }
+  .tag-main { background: rgba(201,218,248,0.15); color: #c9daf8; border: 1px solid rgba(201,218,248,0.4); }
+
+  /* Section cards */
+  .section-card {
+    background: linear-gradient(135deg, rgba(26,17,53,0.8), rgba(13,8,32,0.9));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    padding: 36px 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 40px rgba(74,45,122,0.2);
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-label-icon { font-size: 18px; }
+
+  .section-label-text {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--light-gold);
+    letter-spacing: 0.12em;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .section-body {
+    font-size: 14px;
+    line-height: 2.2;
+    color: rgba(245,240,232,0.8);
+    letter-spacing: 0.06em;
+  }
+
+  .section-body p { margin-bottom: 14px; }
+  .section-body p:last-child { margin-bottom: 0; }
+
+  .highlight {
+    color: var(--light-gold);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+
+  /* Virtue chips */
+  .virtue-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .virtue-chip {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 2px;
+    padding: 6px 14px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--light-gold);
+  }
+
+  /* Reset button */
+  .btn-reset {
+    display: block;
+    width: 180px;
+    margin: 40px auto 0;
+    padding: 12px 20px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 2px;
+    color: rgba(245,240,232,0.5);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+  }
+  .btn-reset:hover { border-color: var(--gold); color: var(--light-gold); }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  /* ── 鑑定タブ ── */
+  .reading-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 48px 0 24px;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    padding: 10px 0;
+    background: linear-gradient(to bottom, var(--deep-purple) 75%, transparent);
+  }
+  .reading-tab {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    color: rgba(245,240,232,0.55);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    padding: 12px 4px;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s, background 0.3s;
+  }
+  .reading-tab:hover { color: var(--light-gold); }
+  .reading-tab.on {
+    color: var(--light-gold);
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+  .reading-tab:focus-visible, .btn-divine:focus-visible, .btn-reset:focus-visible {
+    outline: 2px solid var(--light-gold);
+    outline-offset: 2px;
+  }
+  .reading-tab small {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.on { display: block; animation: fadeUp 0.5s ease both; }
+
+  .sub-head {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin: 22px 0 6px;
+  }
+  .sub-head:first-child { margin-top: 0; }
+  .section-body .sub-head + p { margin-bottom: 8px; }
+
+  .love-list { list-style: none; margin-top: 4px; }
+  .love-list li {
+    position: relative;
+    padding-left: 1.4em;
+    margin-bottom: 8px;
+  }
+  .love-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+    top: 0.45em;
+  }
+
+  .core-flow {
+    border-left: 1px solid rgba(201,168,76,0.4);
+    padding-left: 18px;
+    margin: 8px 0 16px;
+  }
+  .core-flow p { margin-bottom: 6px !important; }
+
+  .source-note {
+    font-size: 11px;
+    line-height: 1.9;
+    color: rgba(245,240,232,0.4);
+    text-align: center;
+    margin-top: 32px;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 500px) {
+    .reading-tab { font-size: 12px; letter-spacing: 0.05em; }
+    .reading-tab small { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .input-card { padding: 28px 20px 32px; }
+    .section-card { padding: 24px 20px; }
+    .date-selects { gap: 10px; }
+    select { font-size: 15px; padding: 9px 32px 9px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="subtitle">Reincarnation Astrology</div>
+    <h1>転星術</h1>
+    <div class="star-divider"><span class="star-symbol">✦</span></div>
+    <p class="lead">誕生日から、あなたの魂が前世より受け継いだ<br>天体チャクラの構造を解読し、<br>前世・使命と才能・運命・人間関係を読み解きます</p>
+  </header>
+
+  <div class="input-card" id="inputSection">
+    <span class="input-label">✦ 誕生日を選択してください ✦</span>
+    <div class="date-selects">
+      <div class="select-wrap">
+        <label>月</label>
+        <select id="monthSelect"></select>
+      </div>
+      <div class="select-wrap">
+        <label>日</label>
+        <select id="daySelect"></select>
+      </div>
+    </div>
+    <button class="btn-divine" onclick="divine()">天体チャクラを解読する</button>
+  </div>
+
+  <div class="result" id="resultSection">
+    <div class="result-header">
+      <div class="result-date" id="resultDate"></div>
+      <div class="result-zodiac" id="resultZodiac"></div>
+    </div>
+
+    <div class="chakra-diagram" id="chakraDiagram"></div>
+
+    <div id="resultCards"></div>
+
+    <button class="btn-reset" onclick="reset()">← 別の日付で診断</button>
+  </div>
+
+</div>
+
+<script>
+// ── データ ──────────────────────────────────────────────────────
+const DATA = {"01/01":{"active":"太陽","root":"土星","zodiac":"山羊座"},"01/02":{"active":"月","root":"土星","zodiac":"山羊座"},"01/03":{"active":"木星","root":"土星","zodiac":"山羊座"},"01/04":{"active":"木星","root":"土星","zodiac":"山羊座"},"01/05":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/06":{"active":"金星","root":"土星","zodiac":"山羊座"},"01/07":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/08":{"active":"土星","root":"火星","zodiac":"山羊座"},"01/09":{"active":"金星","root":"土星","zodiac":"山羊座"},"01/10":{"active":"太陽","root":"土星","zodiac":"山羊座"},"01/11":{"active":"月","root":"土星","zodiac":"山羊座"},"01/12":{"active":"木星","root":"土星","zodiac":"山羊座"},"01/13":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/14":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/15":{"active":"金星","root":"土星","zodiac":"山羊座"},"01/16":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/17":{"active":"土星","root":"火星","zodiac":"山羊座"},"01/18":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/19":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/20":{"active":"水星","root":"土星","zodiac":"山羊座"},"01/21":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/22":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/23":{"active":"金星","root":"土星","zodiac":"水瓶座"},"01/24":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/25":{"active":"金星","root":"土星","zodiac":"水瓶座"},"01/26":{"active":"水星","root":"火星","zodiac":"水瓶座"},"01/27":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/28":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/29":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/30":{"active":"水星","root":"土星","zodiac":"水瓶座"},"01/31":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/01":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/02":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/03":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/04":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/05":{"active":"木星","root":"金星","zodiac":"水瓶座"},"02/06":{"active":"水星","root":"金星","zodiac":"水瓶座"},"02/07":{"active":"金星","root":"土星","zodiac":"水瓶座"},"02/08":{"active":"水星","root":"火星","zodiac":"水瓶座"},"02/09":{"active":"月","root":"金星","zodiac":"水瓶座"},"02/10":{"active":"水星","root":"太陽","zodiac":"水瓶座"},"02/11":{"active":"月","root":"金星","zodiac":"水瓶座"},"02/12":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/13":{"active":"水星","root":"土星","zodiac":"水瓶座"},"02/14":{"active":"木星","root":"金星","zodiac":"水瓶座"},"02/15":{"active":"水星","root":"金星","zodiac":"水瓶座"},"02/16":{"active":"金星","root":"土星","zodiac":"水瓶座"},"02/17":{"active":"水星","root":"火星","zodiac":"水瓶座"},"02/18":{"active":"水星","root":"太陽","zodiac":"水瓶座"},"02/19":{"active":"金星","root":"太陽","zodiac":"水瓶座"},"02/20":{"active":"金星","root":"太陽","zodiac":"水瓶座"},"02/21":{"active":"金星","root":"土星","zodiac":"魚座"},"02/22":{"active":"金星","root":"土星","zodiac":"魚座"},"02/23":{"active":"水星","root":"金星","zodiac":"魚座"},"02/24":{"active":"月","root":"金星","zodiac":"魚座"},"02/25":{"active":"水星","root":"金星","zodiac":"魚座"},"02/26":{"active":"金星","root":"火星","zodiac":"魚座"},"02/27":{"active":"水星","root":"太陽","zodiac":"魚座"},"02/28":{"active":"金星","root":"太陽","zodiac":"魚座"},"02/29":{"active":"金星","root":"太陽","zodiac":"魚座"},"03/01":{"active":"金星","root":"太陽","zodiac":"魚座"},"03/02":{"active":"金星","root":"太陽","zodiac":"魚座"},"03/03":{"active":"月","root":"金星","zodiac":"魚座"},"03/04":{"active":"金星","root":"土星","zodiac":"魚座"},"03/05":{"active":"月","root":"金星","zodiac":"魚座"},"03/06":{"active":"月","root":"金星","zodiac":"魚座"},"03/07":{"active":"金星","root":"火星","zodiac":"魚座"},"03/08":{"active":"金星","root":"火星","zodiac":"魚座"},"03/09":{"active":"太陽","root":"火星","zodiac":"魚座"},"03/10":{"active":"金星","root":"火星","zodiac":"魚座"},"03/11":{"active":"太陽","root":"火星","zodiac":"魚座"},"03/12":{"active":"金星","root":"火星","zodiac":"魚座"},"03/13":{"active":"金星","root":"火星","zodiac":"魚座"},"03/14":{"active":"金星","root":"火星","zodiac":"魚座"},"03/15":{"active":"月","root":"火星","zodiac":"魚座"},"03/16":{"active":"金星","root":"火星","zodiac":"魚座"},"03/17":{"active":"金星","root":"火星","zodiac":"魚座"},"03/18":{"active":"太陽","root":"火星","zodiac":"魚座"},"03/19":{"active":"金星","root":"火星","zodiac":"魚座"},"03/20":{"active":"太陽","root":"火星","zodiac":"魚座"},"03/21":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/22":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/23":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/24":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/25":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/26":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/27":{"active":"金星","root":"火星","zodiac":"牡羊座"},"03/28":{"active":"太陽","root":"火星","zodiac":"牡羊座"},"03/29":{"active":"月","root":"火星","zodiac":"牡羊座"},"03/30":{"active":"木星","root":"火星","zodiac":"牡羊座"},"03/31":{"active":"土星","root":"火星","zodiac":"牡羊座"},"04/01":{"active":"太陽","root":"火星","zodiac":"牡羊座"},"04/02":{"active":"月","root":"火星","zodiac":"牡羊座"},"04/03":{"active":"木星","root":"火星","zodiac":"牡羊座"},"04/04":{"active":"土星","root":"火星","zodiac":"牡羊座"},"04/05":{"active":"水星","root":"火星","zodiac":"牡羊座"},"04/06":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/07":{"active":"水星","root":"火星","zodiac":"牡羊座"},"04/08":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/09":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/10":{"active":"太陽","root":"火星","zodiac":"牡羊座"},"04/11":{"active":"月","root":"火星","zodiac":"牡羊座"},"04/12":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/13":{"active":"土星","root":"火星","zodiac":"牡羊座"},"04/14":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/15":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/16":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/17":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/18":{"active":"水星","root":"火星","zodiac":"牡羊座"},"04/19":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/20":{"active":"金星","root":"火星","zodiac":"牡羊座"},"04/21":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/22":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/23":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/24":{"active":"水星","root":"火星","zodiac":"牡牛座"},"04/25":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/26":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/27":{"active":"水星","root":"火星","zodiac":"牡牛座"},"04/28":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/29":{"active":"金星","root":"火星","zodiac":"牡牛座"},"04/30":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/01":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/02":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/03":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/04":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/05":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/06":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/07":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/08":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/09":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/10":{"active":"金星","root":"太陽","zodiac":"牡牛座"},"05/11":{"active":"月","root":"金星","zodiac":"牡牛座"},"05/12":{"active":"木星","root":"金星","zodiac":"牡牛座"},"05/13":{"active":"金星","root":"土星","zodiac":"牡牛座"},"05/14":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/15":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/16":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/17":{"active":"金星","root":"火星","zodiac":"牡牛座"},"05/18":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/19":{"active":"金星","root":"太陽","zodiac":"牡牛座"},"05/20":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/21":{"active":"水星","root":"金星","zodiac":"牡牛座"},"05/22":{"active":"金星","root":"土星","zodiac":"双子座"},"05/23":{"active":"水星","root":"金星","zodiac":"双子座"},"05/24":{"active":"水星","root":"金星","zodiac":"双子座"},"05/25":{"active":"水星","root":"金星","zodiac":"双子座"},"05/26":{"active":"水星","root":"火星","zodiac":"双子座"},"05/27":{"active":"水星","root":"金星","zodiac":"双子座"},"05/28":{"active":"水星","root":"太陽","zodiac":"双子座"},"05/29":{"active":"水星","root":"金星","zodiac":"双子座"},"05/30":{"active":"水星","root":"金星","zodiac":"双子座"},"05/31":{"active":"水星","root":"土星","zodiac":"双子座"},"06/01":{"active":"水星","root":"太陽","zodiac":"双子座"},"06/02":{"active":"水星","root":"金星","zodiac":"双子座"},"06/03":{"active":"水星","root":"金星","zodiac":"双子座"},"06/04":{"active":"水星","root":"土星","zodiac":"双子座"},"06/05":{"active":"水星","root":"金星","zodiac":"双子座"},"06/06":{"active":"水星","root":"金星","zodiac":"双子座"},"06/07":{"active":"水星","root":"金星","zodiac":"双子座"},"06/08":{"active":"水星","root":"火星","zodiac":"双子座"},"06/09":{"active":"水星","root":"金星","zodiac":"双子座"},"06/10":{"active":"水星","root":"太陽","zodiac":"双子座"},"06/11":{"active":"水星","root":"月","zodiac":"双子座"},"06/12":{"active":"水星","root":"月","zodiac":"双子座"},"06/13":{"active":"水星","root":"土星","zodiac":"双子座"},"06/14":{"active":"月","root":"金星","zodiac":"双子座"},"06/15":{"active":"水星","root":"金星","zodiac":"双子座"},"06/16":{"active":"月","root":"金星","zodiac":"双子座"},"06/17":{"active":"水星","root":"火星","zodiac":"双子座"},"06/18":{"active":"月","root":"金星","zodiac":"双子座"},"06/19":{"active":"月","root":"太陽","zodiac":"双子座"},"06/20":{"active":"水星","root":"太陽","zodiac":"双子座"},"06/21":{"active":"水星","root":"月","zodiac":"双子座"},"06/22":{"active":"月","root":"土星","zodiac":"蟹座"},"06/23":{"active":"月","root":"金星","zodiac":"蟹座"},"06/24":{"active":"月","root":"金星","zodiac":"蟹座"},"06/25":{"active":"水星","root":"月","zodiac":"蟹座"},"06/26":{"active":"月","root":"火星","zodiac":"蟹座"},"06/27":{"active":"水星","root":"太陽","zodiac":"蟹座"},"06/28":{"active":"月","root":"太陽","zodiac":"蟹座"},"06/29":{"active":"月","root":"太陽","zodiac":"蟹座"},"06/30":{"active":"水星","root":"月","zodiac":"蟹座"},"07/01":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/02":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/03":{"active":"木星","root":"月","zodiac":"蟹座"},"07/04":{"active":"月","root":"土星","zodiac":"蟹座"},"07/05":{"active":"水星","root":"月","zodiac":"蟹座"},"07/06":{"active":"月","root":"金星","zodiac":"蟹座"},"07/07":{"active":"水星","root":"月","zodiac":"蟹座"},"07/08":{"active":"月","root":"火星","zodiac":"蟹座"},"07/09":{"active":"金星","root":"太陽","zodiac":"蟹座"},"07/10":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/11":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/12":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/13":{"active":"月","root":"土星","zodiac":"蟹座"},"07/14":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/15":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/16":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/17":{"active":"月","root":"火星","zodiac":"蟹座"},"07/18":{"active":"金星","root":"太陽","zodiac":"蟹座"},"07/19":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/20":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/21":{"active":"月","root":"太陽","zodiac":"蟹座"},"07/22":{"active":"太陽","root":"土星","zodiac":"蟹座"},"07/23":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/24":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/25":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/26":{"active":"太陽","root":"火星","zodiac":"獅子座"},"07/27":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/28":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/29":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/30":{"active":"月","root":"太陽","zodiac":"獅子座"},"07/31":{"active":"太陽","root":"土星","zodiac":"獅子座"},"08/01":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/02":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/03":{"active":"木星","root":"太陽","zodiac":"獅子座"},"08/04":{"active":"太陽","root":"土星","zodiac":"獅子座"},"08/05":{"active":"水星","root":"太陽","zodiac":"獅子座"},"08/06":{"active":"金星","root":"太陽","zodiac":"獅子座"},"08/07":{"active":"水星","root":"太陽","zodiac":"獅子座"},"08/08":{"active":"太陽","root":"火星","zodiac":"獅子座"},"08/09":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/10":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/11":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/12":{"active":"木星","root":"太陽","zodiac":"獅子座"},"08/13":{"active":"太陽","root":"土星","zodiac":"獅子座"},"08/14":{"active":"水星","root":"太陽","zodiac":"獅子座"},"08/15":{"active":"金星","root":"太陽","zodiac":"獅子座"},"08/16":{"active":"水星","root":"太陽","zodiac":"獅子座"},"08/17":{"active":"太陽","root":"火星","zodiac":"獅子座"},"08/18":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/19":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/20":{"active":"水星","root":"太陽","zodiac":"獅子座"},"08/21":{"active":"月","root":"太陽","zodiac":"獅子座"},"08/22":{"active":"太陽","root":"土星","zodiac":"獅子座"},"08/23":{"active":"金星","root":"太陽","zodiac":"乙女座"},"08/24":{"active":"月","root":"太陽","zodiac":"乙女座"},"08/25":{"active":"金星","root":"太陽","zodiac":"乙女座"},"08/26":{"active":"月","root":"火星","zodiac":"乙女座"},"08/27":{"active":"水星","root":"太陽","zodiac":"乙女座"},"08/28":{"active":"月","root":"太陽","zodiac":"乙女座"},"08/29":{"active":"水星","root":"太陽","zodiac":"乙女座"},"08/30":{"active":"月","root":"太陽","zodiac":"乙女座"},"08/31":{"active":"月","root":"土星","zodiac":"乙女座"},"09/01":{"active":"月","root":"太陽","zodiac":"乙女座"},"09/02":{"active":"水星","root":"太陽","zodiac":"乙女座"},"09/03":{"active":"月","root":"太陽","zodiac":"乙女座"},"09/04":{"active":"月","root":"土星","zodiac":"乙女座"},"09/05":{"active":"金星","root":"太陽","zodiac":"乙女座"},"09/06":{"active":"月","root":"太陽","zodiac":"乙女座"},"09/07":{"active":"月","root":"金星","zodiac":"乙女座"},"09/08":{"active":"月","root":"火星","zodiac":"乙女座"},"09/09":{"active":"水星","root":"太陽","zodiac":"乙女座"},"09/10":{"active":"月","root":"太陽","zodiac":"乙女座"},"09/11":{"active":"水星","root":"太陽","zodiac":"乙女座"},"09/12":{"active":"月","root":"金星","zodiac":"乙女座"},"09/13":{"active":"月","root":"土星","zodiac":"乙女座"},"09/14":{"active":"月","root":"金星","zodiac":"乙女座"},"09/15":{"active":"月","root":"金星","zodiac":"乙女座"},"09/16":{"active":"月","root":"金星","zodiac":"乙女座"},"09/17":{"active":"月","root":"火星","zodiac":"乙女座"},"09/18":{"active":"金星","root":"太陽","zodiac":"乙女座"},"09/19":{"active":"月","root":"太陽","zodiac":"乙女座"},"09/20":{"active":"金星","root":"太陽","zodiac":"乙女座"},"09/21":{"active":"月","root":"金星","zodiac":"乙女座"},"09/22":{"active":"金星","root":"土星","zodiac":"乙女座"},"09/23":{"active":"月","root":"金星","zodiac":"天秤座"},"09/24":{"active":"月","root":"金星","zodiac":"天秤座"},"09/25":{"active":"月","root":"金星","zodiac":"天秤座"},"09/26":{"active":"金星","root":"火星","zodiac":"天秤座"},"09/27":{"active":"月","root":"金星","zodiac":"天秤座"},"09/28":{"active":"金星","root":"太陽","zodiac":"天秤座"},"09/29":{"active":"月","root":"金星","zodiac":"天秤座"},"09/30":{"active":"水星","root":"金星","zodiac":"天秤座"},"10/01":{"active":"金星","root":"太陽","zodiac":"天秤座"},"10/02":{"active":"月","root":"金星","zodiac":"天秤座"},"10/03":{"active":"水星","root":"金星","zodiac":"天秤座"},"10/04":{"active":"金星","root":"土星","zodiac":"天秤座"},"10/05":{"active":"水星","root":"金星","zodiac":"天秤座"},"10/06":{"active":"水星","root":"金星","zodiac":"天秤座"},"10/07":{"active":"水星","root":"金星","zodiac":"天秤座"},"10/08":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/09":{"active":"水星","root":"火星","zodiac":"天秤座"},"10/10":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/11":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/12":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/13":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/14":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/15":{"active":"水星","root":"火星","zodiac":"天秤座"},"10/16":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/17":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/18":{"active":"月","root":"火星","zodiac":"天秤座"},"10/19":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/20":{"active":"月","root":"火星","zodiac":"天秤座"},"10/21":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/22":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/23":{"active":"金星","root":"火星","zodiac":"天秤座"},"10/24":{"active":"月","root":"火星","zodiac":"蠍座"},"10/25":{"active":"金星","root":"火星","zodiac":"蠍座"},"10/26":{"active":"金星","root":"火星","zodiac":"蠍座"},"10/27":{"active":"金星","root":"火星","zodiac":"蠍座"},"10/28":{"active":"月","root":"火星","zodiac":"蠍座"},"10/29":{"active":"太陽","root":"火星","zodiac":"蠍座"},"10/30":{"active":"月","root":"火星","zodiac":"蠍座"},"10/31":{"active":"月","root":"火星","zodiac":"蠍座"},"11/01":{"active":"月","root":"火星","zodiac":"蠍座"},"11/02":{"active":"太陽","root":"火星","zodiac":"蠍座"},"11/03":{"active":"月","root":"火星","zodiac":"蠍座"},"11/04":{"active":"月","root":"火星","zodiac":"蠍座"},"11/05":{"active":"月","root":"火星","zodiac":"蠍座"},"11/06":{"active":"月","root":"火星","zodiac":"蠍座"},"11/07":{"active":"月","root":"火星","zodiac":"蠍座"},"11/08":{"active":"月","root":"火星","zodiac":"蠍座"},"11/09":{"active":"太陽","root":"火星","zodiac":"蠍座"},"11/10":{"active":"月","root":"火星","zodiac":"蠍座"},"11/11":{"active":"太陽","root":"火星","zodiac":"蠍座"},"11/12":{"active":"月","root":"火星","zodiac":"蠍座"},"11/13":{"active":"月","root":"火星","zodiac":"蠍座"},"11/14":{"active":"月","root":"火星","zodiac":"蠍座"},"11/15":{"active":"月","root":"火星","zodiac":"蠍座"},"11/16":{"active":"木星","root":"火星","zodiac":"蠍座"},"11/17":{"active":"月","root":"火星","zodiac":"蠍座"},"11/18":{"active":"太陽","root":"火星","zodiac":"蠍座"},"11/19":{"active":"月","root":"火星","zodiac":"蠍座"},"11/20":{"active":"太陽","root":"火星","zodiac":"蠍座"},"11/21":{"active":"土星","root":"火星","zodiac":"蠍座"},"11/22":{"active":"月","root":"火星","zodiac":"蠍座"},"11/23":{"active":"月","root":"火星","zodiac":"蠍座"},"11/24":{"active":"月","root":"火星","zodiac":"射手座"},"11/25":{"active":"土星","root":"火星","zodiac":"射手座"},"11/26":{"active":"木星","root":"火星","zodiac":"射手座"},"11/27":{"active":"月","root":"火星","zodiac":"射手座"},"11/28":{"active":"木星","root":"火星","zodiac":"射手座"},"11/29":{"active":"月","root":"火星","zodiac":"射手座"},"11/30":{"active":"土星","root":"火星","zodiac":"射手座"},"12/01":{"active":"木星","root":"火星","zodiac":"射手座"},"12/02":{"active":"月","root":"火星","zodiac":"射手座"},"12/03":{"active":"土星","root":"火星","zodiac":"射手座"},"12/04":{"active":"木星","root":"火星","zodiac":"射手座"},"12/05":{"active":"木星","root":"火星","zodiac":"射手座"},"12/06":{"active":"木星","root":"火星","zodiac":"射手座"},"12/07":{"active":"土星","root":"火星","zodiac":"射手座"},"12/08":{"active":"木星","root":"火星","zodiac":"射手座"},"12/09":{"active":"木星","root":"土星","zodiac":"射手座"},"12/10":{"active":"木星","root":"土星","zodiac":"射手座"},"12/11":{"active":"木星","root":"土星","zodiac":"射手座"},"12/12":{"active":"木星","root":"土星","zodiac":"射手座"},"12/13":{"active":"木星","root":"土星","zodiac":"射手座"},"12/14":{"active":"木星","root":"土星","zodiac":"射手座"},"12/15":{"active":"木星","root":"土星","zodiac":"射手座"},"12/16":{"active":"水星","root":"土星","zodiac":"射手座"},"12/17":{"active":"木星","root":"火星","zodiac":"射手座"},"12/18":{"active":"木星","root":"土星","zodiac":"射手座"},"12/19":{"active":"木星","root":"土星","zodiac":"射手座"},"12/20":{"active":"木星","root":"土星","zodiac":"射手座"},"12/21":{"active":"木星","root":"土星","zodiac":"射手座"},"12/22":{"active":"木星","root":"土星","zodiac":"射手座"},"12/23":{"active":"木星","root":"土星","zodiac":"山羊座"},"12/24":{"active":"木星","root":"土星","zodiac":"山羊座"},"12/25":{"active":"木星","root":"土星","zodiac":"山羊座"},"12/26":{"active":"土星","root":"火星","zodiac":"山羊座"},"12/27":{"active":"木星","root":"土星","zodiac":"山羊座"},"12/28":{"active":"太陽","root":"土星","zodiac":"山羊座"},"12/29":{"active":"月","root":"土星","zodiac":"山羊座"},"12/30":{"active":"木星","root":"土星","zodiac":"山羊座"},"12/31":{"active":"木星","root":"土星","zodiac":"山羊座"}};
+
+// ── 天体情報 ──────────────────────────────────────────────────
+const PLANET_INFO = {
+  '火星': { symbol:'♂', emoji:'🔴', virtue:'情熱', desc:'行動と情熱のエネルギー。強い生命力と積極性を宿します。' },
+  '土星': { symbol:'♄', emoji:'🪐', virtue:'忍耐', desc:'試練と成長のエネルギー。規律と持続力を養います。' },
+  '太陽': { symbol:'☀', emoji:'☀️', virtue:'意志', desc:'意志と創造のエネルギー。開拓精神と信念の源泉。' },
+  '金星': { symbol:'♀', emoji:'✨', virtue:'調和', desc:'調和と愛情のエネルギー。美的センスと平和的な資質。' },
+  '月':   { symbol:'☽', emoji:'🌙', virtue:'共感', desc:'感受性と共感のエネルギー。直観と思いやりを司ります。' },
+  '水星': { symbol:'☿', emoji:'💫', virtue:'分析', desc:'分析と知性のエネルギー。多面的な思考と表現力。' },
+  '木星': { symbol:'♃', emoji:'🌟', virtue:'統合', desc:'統合と拡張のエネルギー。楽観的で広い視野を授けます。' },
+};
+
+// ── 前世解説テキスト ──────────────────────────────────────────
+const ROOT_TEXT = {
+  '火星': '前世において非常に情熱的な生き方をしていたようです。緊張と波乱に満ちた環境で、あなたは競争や闘争の中でたくましく生きていました。政治家、軍人、宗教家、芸能関係など、社会的に目立つ存在であった可能性があります。あるいは激しい信念や情熱を内に秘めた生き方をしていたかもしれません。',
+  '土星': '霊的な進化を強く志す魂、あるいは前世で苦労や挫折を多く経験した場合に、このメインチャクラを土星にもって生まれる傾向があります。孤独の中で黙々と努力し、法律・学問・農業・宗教的修行など、忍耐を要する仕事に従事していたと思われます。',
+  '太陽': '前世では比較的恵まれ、幸福な環境に身を置いていたと思われます。社会的地位の高い家柄か、ダイナミックに活動して多くの人々から注目される存在であった可能性が高いです。政治家・実業家・芸能関係・探検家などが予想されます。',
+  '金星': '前世は豊かな田園や閑静な環境で、経済的に恵まれた生活を送っていたと思われます。芸術・農業・会社経営など、競争よりも忍耐が求められるような仕事に従事し、比較的成功していたでしょう。',
+  '月': '月のエネルギーがメインチャクラとなる場合、非常に混沌とした複雑な性格が生まれます。がいして精神的な色彩の強い前世を送っており、文芸・芸術・教育・福祉など、人の心に関わる仕事をしていた傾向があります。',
+};
+
+const ACTIVE_TEXT = {
+  '火星_土星': '知的で勤勉な活動歴から、現世でも非常に努力家で粘り強い集中力をもっています。哲学・科学などの思想的研究・啓蒙が使命である可能性が高く、研究開発の分野でその実力が最も発揮されます。',
+  '火星_太陽': '前世における競争的・激烈な生き方から、現世でも積極的で開拓的な性格が際立ちます。どのような分野であれ、新しい価値を創造するリーダーとしての使命があります。政治・経営・スポーツ・芸能など幅広い分野での活躍が期待されます。',
+  '火星_金星': '前世の感情的な強さから、現世でも豊かな感情が発揮されます。平和・美・芸術に関わる使命を持ちます。芸術関係や宗教関係の仕事に適性があり、人々の感情を高揚させる才能があります。',
+  '火星_月': '文芸・芸術・宗教・心理学など精神世界に縁が深く、世の中から注目を浴びる可能性があります。ただし精神的なトラブルにも注意が必要です。独創的な創造力をもち、芸術や文芸の分野で才能を開花させます。',
+  '火星_水星': '知的活動・啓蒙活動において注目を浴びる可能性があります。多彩な運命を歩む傾向があり、同時に複数の仕事に関わることもあるでしょう。新しい知的・精神的価値を創造する使命があります。',
+  '火星_木星': '多彩な前世の経験から、現世でも活発で冒険的な性格が現れます。自由と独立に貢献すること、神秘を解き明かすことなどが使命と思われます。あらゆる分野で才能を発揮できる潜在力を持っています。',
+  '土星_太陽': '困難を多く経験した前世から、現世では強い意志と野心が内に秘められています。外面は温厚ですが、負けず嫌いで強い信念の持ち主です。科学・芸術・自由業などでリーダーとしての才能を発揮します。',
+  '土星_金星': '豊かな状況でも陰性的な側面があった前世の影響から、現世では感情的な複雑さがみられます。未知のもの・神秘・哲学などを明らかにする使命を持ちます。文芸・芸術・金融・経理など幅広い分野に適性があります。',
+  '土星_月': '精神的変動の多い前世から、現世でも優秀だが不安定な傾向が現れます。人類に役立つ発明・発見が使命と思われます。文芸・芸術・宗教・神秘学の分野で天才的ひらめきを発揮します。',
+  '土星_水星': '多彩で変動のある前世から、現世でも活発で冒険的な性格が表れます。自由と独立、神秘の解明などが使命です。科学・芸術・文芸・神秘学など多彩な方面に才能があります。',
+  '土星_木星': '多彩な前世の経験から現世でも活発な性格が特徴です。博愛と独自の知性を持ち、文化的価値を世に広める使命があります。',
+  '太陽_金星': '恵まれた前世の影響から、現世でも温厚で平和的な性格が基調です。指導者として世界の流れを変える使命があり、芸術関係での活躍も期待されます。',
+  '太陽_月': '穏やかな前世から、現世の性格も柔和な傾向を示します。人類の意識を高揚させることや、自然にひそむ法則を明らかにするという使命をもっています。文芸・芸術・教育・福祉関係での才能が輝きます。',
+  '太陽_水星': '知的な前世から、現世でも純粋で無邪気、潔癖な性格が際立ちます。知的世界で画期的な業績を残す使命があります。科学・技術・コンピューター・批評・語学など論理的な方面で活躍します。',
+  '太陽_木星': '多彩な前世から、現世でも快活で楽観的な理想主義者として生きます。文化面で開拓的な業績を残すこと、自由と独立への貢献が使命です。思想家・作家・教育者・政治家など幅広い分野での活躍が期待されます。',
+  '金星_月': '多彩・ときに波乱のある前世から、現世でも感情的に激しい傾向があります。平和とヒューマニズムへの貢献が使命です。多才なため特定の職業を絞るのは難しいですが、法律・音楽・文学・政治・科学・発明と幅広く能力を発揮します。',
+  '金星_水星': '波乱を含んだ前世から、現世でも精神的に激しい傾向があります。勤勉で誠実、旅を愛し知的な探求心が旺盛です。精神的な指導者、または文化への貢献が使命です。科学・芸術・医師・政治家など多彩な分野で活躍できます。',
+  '金星_木星': '比較的恵まれた教養ある前世から、現世でも気品ある穏やかな性格が特徴です。精神的な指導者としての使命をもち、平和や福祉に関わる仕事に高い志をもって取り組むとき、その才能が最大に発揮されます。',
+  '月_水星': '精神的な色彩の強い前世から、現世でもデリケートな精神が大きな特徴です。精神世界における優れた業績を残す使命があります。作家・詩人・心理学者・神秘学者として実力を発揮します。',
+  '月_木星': '恵まれた前世の体験から、現世でも内面性に豊かな特徴が現れます。精神世界・文化面を発展させる使命をもちます。学者・宗教家・カウンセラー・作家・芸術家として活躍が期待されます。',
+};
+
+
+// ══════════════════════════════════════════════════════════════
+// 追加データ：鑑定結果データ
+// ══════════════════════════════════════════════════════════════
+
+// ── 天体ごとの基本テーマ ─────────────────────────────────────
+const PLANET_PROFILE = {
+  '火星': { keywords:['情熱','行動力','勇気','闘争','冒険','決断'],
+    strength:'強い生命力と実行力。困難を突破する勇敢さ、努力を惜しまない競争心、危機に強い対応力。',
+    weak:'短気や攻撃性、支配欲。衝動に任せた感情の爆発や、勝ち負けへのこだわりすぎ。',
+    lesson:'情熱を消すのではなく、感情を制御して他者との調和へ向けること。' },
+  '土星': { keywords:['忍耐','規律','責任','努力','孤独','蓄積'],
+    strength:'粘り強さと勤勉さ。高い集中力、責任感、慎重さ、長期にわたって積み上げる力。',
+    weak:'悲観や孤立、頑固さ。自分を抑えすぎたり、他人に厳しくなりすぎたりする不器用さ。',
+    lesson:'忍耐をただの我慢で終わらせず、共感や柔軟さと結びつけること。' },
+  '太陽': { keywords:['意志','自己表現','指導力','創造','名誉','目的意識'],
+    strength:'人を率いる力と決断力。自分を確立し、創造性と社会的な存在感を発揮できる。',
+    weak:'プライドの高さや独善。人を支配しようとしたり、評価にこだわりすぎたりしやすい。',
+    lesson:'強い意志はそのままに、客観性・分析力・他者への共感を育てること。' },
+  '金星': { keywords:['調和','愛情','美','感覚','芸術','協調'],
+    strength:'美意識と愛情の深さ。平和を好み、人と協調し、芸術的な感性で献身できる。',
+    weak:'所有欲や嫉妬、執着。浪費や感覚的な快楽への依存、怠けぐせ。',
+    lesson:'愛や豊かさを「持つ」ものではなく、人と分かち合い調和させるものへ広げること。' },
+  '月':   { keywords:['共感','感受性','想像力','母性','記憶','霊感'],
+    strength:'共感力と優しさ。豊かな想像力と芸術性、鋭い直感、人の気持ちへの敏感さ。',
+    weak:'気分の波や依存、不安。感情的に反応しやすく、決めきれない迷いや心の不安定さ。',
+    lesson:'感情を否定せず、意志と忍耐によって安定させること。' },
+  '水星': { keywords:['分析','知性','言葉','学習','研究','好奇心'],
+    strength:'理解力と分析力。頭の回転が速く、情報処理・研究・文章や言語の能力に優れる。',
+    weak:'考えすぎや神経過敏。理屈に偏る、関心が散る、現実から浮いてしまう。',
+    lesson:'知性を意志と調和につなげ、考えるだけでなく現実に実行すること。' },
+  '木星': { keywords:['統合','拡大','理想','精神性','哲学','教育'],
+    strength:'包容力と理想。教育力と精神的な視野の広さ、異なるものを一つにまとめる力。',
+    weak:'理想の肥大化や独善、過信。現実から離れたり、広げすぎたりする。',
+    lesson:'大きな理想を現実に落とし込み、分析・実行力・他者との調和と結びつけること。' },
+};
+
+// ── 第2章 前世（メインチャクラで読む） ─────────────────────────
+const PAST_LIFE = {
+  '火星': {
+    image:'情熱的で緊張と波乱に満ちた人生。都会や混乱した土地など、刺激の強い環境と縁があり、高い社会的地位にいた可能性も示されます。',
+    work:'政治、社会運動、軍事、法律、警察、医学、学問、芸能、宗教、競技など。競争や危険をともなう世界に身を置いていたと考えられます。',
+    gained:'行動力、勇気、積極性、勝負強さ、危機への対応力。',
+    issue:'強すぎる情熱を制御しきれなかった可能性。怒りや敵意、権力欲、競争心が人間関係を難しくしたこともあったようです。' },
+  '土星': {
+    image:'規律と責任、長い努力を必要とする人生。華やかさよりも、積み上げること・義務を果たすことを重んじて生きていた姿が浮かびます。',
+    work:'研究、管理、法律、教育、宗教、組織的な活動など。',
+    gained:'忍耐力、勤勉さ、自己規律、集中力、責任感。',
+    issue:'孤独や自分を抑えすぎること、悲観、他人への厳しさ。今世では規律に加えて、温かい共感を学ぶことが大切になります。' },
+  '太陽': {
+    image:'人の前に立ち、責任を担う人生。成功と挫折、名誉と対立の両方を経験しやすい立場にいたようです。',
+    work:'指導者、政治家、軍人、企業家、改革者、芸能人など。',
+    gained:'意志、自己の確立、統率力、創造性、社会的な責任感。',
+    issue:'支配欲や自己中心性、名誉への執着。「自分が正しい」という感覚が強すぎると敵を増やしてしまいます。',
+    alt:'別の系統として、既存の価値観を塗り替える思想家・科学者・芸術家・発明家など、新しい価値を切りひらいた人物像も示されます。' },
+  '金星': {
+    image:'比較的穏やかで、文化的に恵まれた暮らし。芸術や美、自然、人との交流に縁の深い人生です。',
+    work:'芸術家、文化人、教育者、慈善家など。',
+    gained:'調和、美意識、愛情、協調性、献身。',
+    issue:'快楽への耽溺、所有欲、嫉妬、浪費、依存。豊かさを持つほど、それをどう扱うかが問われます。' },
+  '月': {
+    image:'変化が多く、感情や精神の体験が濃い人生。高い社会的立場を経験した場合もあれば、文学・芸術・宗教など精神の世界に深く入っていった場合もあります。',
+    work:'文学、芸術、宗教、教育、福祉など、人の心に関わる領域。',
+    gained:'感受性、共感、創作力、霊的・精神的な深み。',
+    issue:'感情の揺れや依存、心の葛藤。前世の経験が、今世の繊細さや精神性として表れます。' },
+};
+
+// メイン×アクティブの組み合わせで加わる前世の色合い
+const PAST_VARIANT = {
+  '火星_知性': '知性や規律の要素が加わると、研究・法律・官僚的な仕事・軍や警察など、規律を重んじる世界との縁が強まります。勤勉で優秀だった一方、他人の感情への配慮が足りず摩擦を生んだ可能性も。ただし少数の理解者からは深く信頼されていた人物像です。',
+  '火星_太陽': '太陽の要素が強いと、政治家・軍人・改革者・企業家・宗教指導者・探検家・芸能人など、人を率いる立場で波乱の人生を送った姿が浮かびます。成功や名声の陰で、支配欲や傲慢さから敵も多かったかもしれません。学問や芸術の開拓者として新しい価値を生んだ可能性もあります。',
+  '火星_金星': '金星の要素が強いと、感情が激しく、友情や芸術、美しいものへの愛着が深い人生。芸術家や音楽・美術の関係者、宗教や哲学の探求者、あるいは実業で財を築いた人物も考えられます。一方で飲食・異性・浪費など感覚的な快楽に流された面もあり、「豊かな感情」と「感情に流される弱さ」の両方を抱えていたようです。',
+  '火星_月': '月の要素が強いと、政治・実業・軍事など力のある立場と縁がある一方、文学・芸術・学問・宗教といった精神的な人生を送った可能性もあります。浮き沈みが大きく、権力や財を乱用した例と、慈善や精神活動に尽くした例の両極が示されます。その経験は今世の感受性や創作力、精神的な深みとして残っています。',
+  '土星_知性': '知性や精神性の要素が加わると、科学・文学・心理・宗教・神秘学など、深く掘り下げる知的活動との縁が強まります。社会から理解されにくい専門領域に、孤独に没頭していた人物像です。その経験が今世の知性・精神性・研究能力として表れます。',
+  '土星_太陽': '太陽の要素が強いと、文化・思想・教育・政治・組織運営などで指導的な立場に立った可能性があります。責任感と統率力を備える一方、プライドや厳格さが人間関係に影を落としたかもしれません。',
+  '土星_金星': '金星の要素が強いと、芸術・文化・教育・宗教・精神世界など、比較的穏やかな領域との縁が示されます。教養と美意識を身につけた人物像ですが、安定への執着や、形式・価値観へのこだわりが課題になることがあります。',
+};
+
+function getPastVariant(root, active) {
+  if (root === '火星') {
+    if (active === '水星' || active === '土星') return PAST_VARIANT['火星_知性'];
+    return PAST_VARIANT[`火星_${active}`] || '';
+  }
+  if (root === '土星') {
+    if (['水星','月','木星'].includes(active)) return PAST_VARIANT['土星_知性'];
+    return PAST_VARIANT[`土星_${active}`] || '';
+  }
+  return '';
+}
+
+// ── 第3章 使命と才能（アクティブチャクラで読む） ─────────────────
+const MISSION = {
+  '火星': { nature:'行動力・努力・集中力が非常に強く、明確な目標があると猛烈な力を発揮します。目標を見失うと、焦りや不満から衝動的・攻撃的になりやすい面も。',
+    learn:'他者への思いやり、広い視野、異なる価値観への理解、楽観と余裕。情熱を「勝つため」だけでなく、価値を生み出すために使うこと。',
+    fields:'研究、科学、技術、指導、改革、政治、スポーツ、警察・防衛、ジャーナリズム、芸能、探検など。とくに「新しい価値をつくる」「人を率いる」仕事。' },
+  '土星': { nature:'勤勉で理知的、禁欲的で集中力が高いタイプ。孤独を好み、悲観的・固定的な考えに陥りやすい面があります。',
+    learn:'思いやり、柔軟性、多様な価値観、楽観性。自分だけの正しさに閉じこもらず、人との交流を意識すること。',
+    fields:'哲学、科学、研究開発、大学・教育、思想、文化、専門職など。深い専門性を長い時間をかけて積み上げる仕事。' },
+  '太陽': { nature:'積極的で開拓的、人を導く気質。目的がはっきりすると大きな業績につながります。プライドが高く、短気・独善的になる場面も。',
+    learn:'冷静さ、客観性、謙虚さ、繊細な感受性。',
+    fields:'指導者、経営、政治、スポーツ、社会運動、改革、ジャーナリズム、探検、芸術、組織運営など。「新しい価値を創り、周囲を動かす」役割。' },
+  '金星': { nature:'穏やかで愛情深く、美意識が高いタイプ。芸術や自然、五感で味わうものに強い一方、所有欲や嫉妬、快楽への依存には注意が必要です。',
+    learn:'所有ではなく共有すること。愛情を執着に変えないこと。感覚的な欲望をコントロールすること。',
+    fields:'芸術、文化、音楽、美術、福祉、教育、調和をつくる仕事。人を癒す、美しいものを生む、場を整える役割。' },
+  '月': { nature:'感受性が高く、直感的で想像力が豊か。人の気持ちを理解しやすい反面、自分も感情に左右されやすく、心が乱れると現実逃避や依存に傾くことがあります。',
+    learn:'理性による自己コントロール、感情の安定、忍耐、意志。',
+    fields:'心理、カウンセリング、宗教、精神世界、文学、詩、芸術、創作、奉仕。人の心に寄り添う仕事、精神・文化的な領域での活動。' },
+  '水星': { nature:'頭の回転が速く、分析・研究・言語の能力が高いタイプ。直感と知性をあわせ持つ一方、神経過敏・考えすぎ・散漫になり、最後までやり抜けないことが課題に。',
+    learn:'理性による心の統合、意志の強化、感情のバランス。',
+    fields:'作家、評論家、思想家、哲学者、心理学者、研究者、教育者、発明家、神秘学・精神世界の仕事、カウンセリング、奉仕職など。' },
+  '木星': { nature:'精神的・文化的な視野が広く、理想を持つタイプ。人に寛容で、教育や統合、社会貢献に向きます。ただし理想が大きすぎると現実とのズレが生じます。',
+    learn:'理想と現実を統合し、知識や思想を実際の行動へ移すこと。',
+    fields:'教育、思想、宗教、政治、文化、福祉、社会活動など。個人の成功よりも、より大きな価値や社会貢献と結びついたときに力を発揮します。' },
+};
+
+// ── 第4章 運命（アクティブチャクラで読む） ───────────────────────
+const FATE = {
+  '火星': { text:'変化、競争、勝負、危機的な状況が人生に入りやすい運命。仕事や社会活動で大きく動く一方、対立や感情的な衝突も起こりがちです。高い目標を掲げたとき、困難を突破して大きな成果につながります。',
+    theme:'情熱を調和へ向けること', virtues:['調和','統合'] },
+  '土星': { text:'努力・責任・忍耐、そして長い試練がテーマの運命。若いころの苦労を積み重ねることで、後半に安定していく傾向があります。孤独や人間関係の難しさを経験することも。',
+    theme:'忍耐を共感と統合へつなげること', virtues:['共感','統合'] },
+  '太陽': { text:'社会的責任、成功、指導的な立場、自己実現がテーマの運命。大きな目標に向かうことで道が開けます。反面、プライドや権力欲が問題になることがあります。',
+    theme:'強い意志を持ちながら他者を尊重すること', virtues:['分析','共感'] },
+  '金星': { text:'比較的安定し、努力によって生活や経済が豊かになっていく運命。芸術・自然・美・愛情・人間関係が人生の大切なテーマです。恋愛や結婚での障害、財産への執着を手放す経験が課題になることも。',
+    theme:'執着を手放し、分析と統合を身につけること', virtues:['統合','分析'] },
+  '月': { text:'転居・転職・旅など変化の多い運命。若いころに苦労し、年齢とともに安定していく傾向があります。経済は一攫千金型ではなく積み重ね型。恋愛や家庭で心の悩みを経験することもあり、宗教・神秘・精神世界との縁も強く示されます。',
+    theme:'感情を安定させ、忍耐と意志を養うこと', virtues:['忍耐','意志'] },
+  '水星': { text:'多彩な経験、知的活動、旅、転職、学びが入りやすい運命。一つに固定されず、複数の分野を渡り歩く人生になりがちです。ただし心配性や考えすぎから、最後の一歩でつまずくことも。',
+    theme:'知識と経験を統合し、一つの方向へ集中すること', virtues:['意志','調和'] },
+  '木星': { text:'精神的・社会的な広がり、教育、文化、理想、福祉に関わる経験が入りやすい運命。人からの援助や社会的な引き立てもテーマです。高い理想を持ったとき、大きな成功につながります。',
+    theme:'理想を現実の行動へ落とし込むこと', virtues:['分析','共感'] },
+};
+
+// ── 第5章 人間関係（アクティブチャクラで読む） ───────────────────
+const RELATION = {
+  '火星': { meet:'強い個性の人、競争相手、理性的で冷静な人、意見をはっきり言う人。',
+    feature:'味方も敵も多くなりやすい関係性。自分に従う人より、反対意見を言ってくれる人のほうが成長の助けになります。支配せず、対等な関係を築くことが鍵です。',
+    learn:'調和、統合、相手への理解、謙虚さ。',
+    love:'情熱は強いものの、慎重すぎたり批判的になったりすると機会を逃しがち。積極性と明るさが大切です。年齢を重ねてから関係が安定する傾向も。相手は堅実で誠実なタイプになりやすく、結婚生活を通じて自分を制御することを学びます。' },
+  '土星': { meet:'自分を理解してくれる少数の協力者、忍耐強い人、温かく寛容な人。',
+    feature:'若いころは孤立や人間関係の薄さを経験することがありますが、少しずつ理解者や協力者が現れます。自分から心を開くことが大切です。',
+    learn:'共感、統合、他人の気持ちへの配慮。',
+    love:'慎重で消極的になりやすいタイプ。恋心を内にため込まず、明るく自然に表現することが大切です。晩婚的な傾向や、年齢とともに安定する傾向が示されます。' },
+  '太陽': { meet:'強い個性と明るさ、情熱を持つ活動的な人。同時に、競い合う相手や反対意見を持つ人とも縁ができます。',
+    feature:'人を率いる立場になりやすい一方、相手を支配しようとすると対立が生まれます。価値観を押しつけず、相手の意見を受け止めることが大切です。',
+    learn:'共感、分析、相手を一人の人間として尊重すること。',
+    love:'異性を惹きつける魅力はあるものの、関係を続ける段階で短気や不和が問題になりがち。相手は情熱的で明るいタイプが示されます。情熱だけでなく、二人で共通の目的を持つことが関係を安定させます。' },
+  '金星': { meet:'芸術家、文化人、社会的に恵まれた人、精神性の高い人。友人から大きな援助を受けることも。',
+    feature:'人との調和をつくる力が強い一方、快楽や誘惑へ誘う人物との縁が試練になることがあります。',
+    learn:'忍耐、自己制御、所有欲を手放すこと。',
+    love:'恋愛・結婚には比較的恵まれる傾向。ただし短気や性急さ、感覚的な欲望への弱さが関係を壊す要因になり得ます。相手は知的・精神的でありながら、柔らかく快活な人物が示されることがあります。' },
+  '月': { meet:'教養の高い人、芸術家、神秘や精神世界に関わる人、自分に強い影響を与える人物。',
+    feature:'敵対関係も含めて、人との関わりが心の成長の大きな材料になります。若いころは人間関係で苦労することも。感情的に反応せず、平和的な解決を学ぶことが大切です。',
+    learn:'忍耐、意志、感情の安定。',
+    love:'感情の起伏が激しいと関係が不安定になりがち。誤解されやすいと感じたら、自分の気持ちを言葉にすることが大切です。相手は知的で優しく、情緒豊かな人物として示されることがあります。' },
+  '水星': { meet:'科学・文学・芸術・宗教など多方面で活動する知的な人。精神世界に関わる人との縁も。',
+    feature:'知的な刺激を与えてくれる人が多い一方、周囲の影響を受けすぎることがあります。良くない関係から距離を置き、自分の信念を保つことが試練になります。',
+    learn:'意志、調和、信念の一貫性。',
+    love:'受け身になりすぎると出会いが減ります。趣味や知的な活動を通じて、自然に交流を広げるのがおすすめです。相手は知的・精神的で、価値観の近い人物が合うとされます。' },
+  '木星': { meet:'社会的地位の高い人、知識人、芸術家、精神性の高い人、福祉活動などで関わる人。',
+    feature:'社会的な縁から良い機会が生まれる一方、他人の影響を受けすぎないことが大切です。慈善や福祉を通じて、無私の奉仕を学ぶ関係も。誘惑的な人物との出会いは、自制心を試すものとして現れます。',
+    learn:'共感、意志、忍耐、奉仕、理想の実践。',
+    love:'比較的チャンスに恵まれるタイプ。相手を理想化しすぎたり、自分が何を求めているのか分からなくなったりしたときは、まず友人として関係を育てるのがよいとされます。知的で優しい相手との縁が示されます。' },
+};
+
+// ── 恋愛・結婚の横断テーマ ────────────────────────────────
+const LOVE_COMMON = [
+  '恋愛の障害は「縁がない」ことより、本人の性格傾向にある場合が多いとされます。',
+  '出会う相手は、自分に足りない徳を持つ人物として現れやすい。',
+  '「相性が悪いから避ける」のではなく、摩擦のある相手ほど理解することで成長につながる場合があります。',
+  '人との接点を積極的につくる／友人関係から信頼を育てる／感情を安定させる／理想を現実的に整理する——この四つが繰り返し勧められます。',
+];
+
+// ── 人間関係で学ぶ徳（第7節） ───────────────────────────────
+const VIRTUE_LEARN = {
+  '火星': ['調和','統合','謙虚さ','相手を対等に扱うこと'],
+  '土星': ['共感','温かさ','寛容','孤立しないこと'],
+  '太陽': ['客観性','分析','共感','支配ではなく導くこと'],
+  '金星': ['統合','分析','節度','所有欲を手放すこと'],
+  '月':   ['忍耐','意志','感情の安定','依存から自立すること'],
+  '水星': ['意志','調和','集中','知識を行動に移すこと'],
+  '木星': ['共感','分析','忍耐','理想を現実に落とすこと'],
+};
+
+function getActiveKey(root, active) {
+  const key = `${root}_${active}`;
+  if (ACTIVE_TEXT[key]) return ACTIVE_TEXT[key];
+  // 逆引き
+  const rkey = `${active}_${root}`;
+  if (ACTIVE_TEXT[rkey]) return ACTIVE_TEXT[rkey];
+  return `${root}チャクラを基盤とし、${active}チャクラが活性化されています。${PLANET_INFO[root]?.virtue}と${PLANET_INFO[active]?.virtue}の徳が、あなたの魂の核心を形成しています。`;
+}
+
+// ── セレクトボックス初期化 ─────────────────────────────────────
+const months = Array.from({length:12},(_,i)=>i+1);
+const monthSelect = document.getElementById('monthSelect');
+const daySelect = document.getElementById('daySelect');
+
+months.forEach(m => {
+  const opt = document.createElement('option');
+  opt.value = String(m).padStart(2,'0');
+  opt.textContent = m + '月';
+  monthSelect.appendChild(opt);
+});
+
+function updateDays() {
+  const m = parseInt(monthSelect.value);
+  const maxDay = [31,29,31,30,31,30,31,31,30,31,30,31][m-1];
+  const prev = daySelect.value;
+  daySelect.innerHTML = '';
+  for(let d=1;d<=maxDay;d++){
+    const opt = document.createElement('option');
+    opt.value = String(d).padStart(2,'0');
+    opt.textContent = d + '日';
+    daySelect.appendChild(opt);
+  }
+  if(prev && parseInt(prev) <= maxDay) daySelect.value = prev;
+}
+
+monthSelect.addEventListener('change', updateDays);
+updateDays();
+
+// 今日の日付をデフォルトに
+const today = new Date();
+monthSelect.value = String(today.getMonth()+1).padStart(2,'0');
+updateDays();
+daySelect.value = String(today.getDate()).padStart(2,'0');
+
+// ── 診断 ─────────────────────────────────────────────────────
+const TABS = [
+  { id:'past',     name:'前世',       hint:'メインチャクラ' },
+  { id:'mission',  name:'使命と才能', hint:'アクティブ' },
+  { id:'fate',     name:'運命',       hint:'アクティブ' },
+  { id:'relation', name:'人間関係',   hint:'アクティブ' },
+];
+
+function card(icon, label, title, body, chips) {
+  return `
+    <div class="section-card">
+      <div class="section-label">
+        <span class="section-label-icon">${icon}</span>
+        <span class="section-label-text">${label}</span>
+      </div>
+      <div class="section-title">${title}</div>
+      <div class="section-body">${body}</div>
+      ${chips && chips.length ? `<div class="virtue-grid">${chips.map(v=>`<span class="virtue-chip">${v}</span>`).join('')}</div>` : ''}
+    </div>`;
+}
+
+function sub(head, text) {
+  return `<div class="sub-head">${head}</div><p>${text}</p>`;
+}
+
+function profileBlock(planet) {
+  const pp = PLANET_PROFILE[planet];
+  if (!pp) return '';
+  return sub('長所', pp.strength) + sub('陥りやすい点', pp.weak) + sub('学び', pp.lesson);
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.reading-tab').forEach(b => {
+    const on = b.dataset.tab === id;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('on', p.id === `panel-${id}`));
+}
+
+function divine() {
+  const m = monthSelect.value;
+  const d = daySelect.value;
+  const key = `${m}/${d}`;
+  const info = DATA[key];
+
+  if(!info) {
+    alert('この日付のデータが見つかりません');
+    return;
+  }
+
+  document.getElementById('inputSection').style.display = 'none';
+
+  const mNum = parseInt(m), dNum = parseInt(d);
+  document.getElementById('resultDate').textContent = `${mNum}月${dNum}日生まれ`;
+  document.getElementById('resultZodiac').textContent = info.zodiac;
+
+  // チャクラ図
+  const diagram = document.getElementById('chakraDiagram');
+  diagram.innerHTML = '';
+  const planets = ['木星','水星','月','金星','太陽','土星','火星'];
+  planets.forEach(p => {
+    const isActive = p === info.active;
+    const isRoot = p === info.root;
+    const pInfo = PLANET_INFO[p];
+    const div = document.createElement('div');
+    div.className = 'chakra-item' + (isActive ? ' active-chakra' : isRoot ? ' main-chakra' : '');
+    div.innerHTML = `
+      <div class="chakra-orb ${isActive?'active':isRoot?'main':'none'}">${pInfo.symbol}</div>
+      <div class="chakra-info">
+        <div class="chakra-planet-name">${p}</div>
+        <div class="chakra-type-label">${pInfo.virtue}のチャクラ</div>
+      </div>
+      ${isActive ? '<span class="chakra-tag tag-active">アクティブチャクラ</span>' : isRoot ? '<span class="chakra-tag tag-main">メインチャクラ</span>' : ''}
+    `;
+    diagram.appendChild(div);
+  });
+
+  const root = info.root;
+  const active = info.active;
+  const rootInfo = PLANET_INFO[root] || {};
+  const activeInfo = PLANET_INFO[active] || {};
+
+  // ── 前世タブ ──
+  let past = '';
+  if (root && PAST_LIFE[root]) {
+    const pl = PAST_LIFE[root];
+    past += card('🌌', 'メインチャクラ', `${root} ── ${rootInfo.virtue}の魂`,
+      `<p>あなたのメインチャクラは<span class="highlight">「${root}」</span>です。${rootInfo.desc || ''}</p><p>${ROOT_TEXT[root] || ''}</p>`,
+      PLANET_PROFILE[root].keywords);
+    const variant = getPastVariant(root, active);
+    past += card('📜', '前世の姿', '魂が歩んできた道',
+      sub('前世の基本像', pl.image) +
+      sub('想定される活動', pl.work) +
+      (variant ? sub(`${active}チャクラが加える色合い`, variant) : '') +
+      (pl.alt ? sub('もう一つの可能性', pl.alt) : '') +
+      sub('前世で身につけたもの', pl.gained) +
+      sub('前世から持ち越した課題', pl.issue),
+      ['前世の徳：' + rootInfo.virtue]);
+    past += card(rootInfo.symbol, `${root}の基本テーマ`, '魂の土台となる性質', profileBlock(root));
+  } else {
+    past += card('🌌', 'メインチャクラ', 'メインチャクラは未確定です',
+      `<p>この日付はメインチャクラのデータが登録されていません。アクティブチャクラ（${active}）の鑑定のみ表示しています。</p>`);
+  }
+
+  // ── 使命と才能タブ ──
+  const ms = MISSION[active] || {};
+  let mission = '';
+  mission += card('⚡', 'アクティブチャクラ', `${active} ── ${activeInfo.virtue}の力が目覚める`,
+    `<p>メインチャクラのエネルギーを受けて目覚めるアクティブチャクラは<span class="highlight">「${active}」</span>です。${activeInfo.desc || ''}</p>` +
+    (root ? `<p>${getActiveKey(root, active)}</p>` : ''),
+    PLANET_PROFILE[active].keywords);
+  mission += card('🜂', '使命と才能', '今世で伸ばす力',
+    sub('現世の性格', ms.nature) +
+    sub('使命・才能を活かせる分野', ms.fields) +
+    sub('現世で学ぶこと', ms.learn),
+    ['現世の使命', '磨くべき才能']);
+  mission += card(activeInfo.symbol, `${active}の基本テーマ`, '才能の光と影', profileBlock(active));
+
+  // ── 運命タブ ──
+  const ft = FATE[active] || {};
+  let fate = '';
+  fate += card('☄', '運命', `${active}型の運命`,
+    `<p>この鑑定では、人生の出来事を「罰」ではなく、魂が成長するために用意した経験として読みます。苦労が多いことは、それだけで悪い運命を意味しません。</p>` +
+    sub('人生の傾向', ft.text) +
+    sub('運命の課題', ft.theme),
+    (ft.virtues || []).map(v => `学ぶ徳：${v}`));
+  fate += card('✦', '魂が学ぶべき徳', '今世のテーマ',
+    `<p>${root ? `${root}の徳「${rootInfo.virtue}」を土台に、` : ''}${active}の徳「${activeInfo.virtue}」を発揮しながら、あなたはこの現世で魂を成長させていきます。</p>` +
+    `<p>${active}が補うべき徳は<span class="highlight">「${(ft.virtues||[]).join('」「')}」</span>。この徳を意識して経験を重ねることが、運命の意味を受け取ることにつながります。</p>` +
+    (root && FATE[root] && root !== active ? `<p>また、メインチャクラの${root}からは「${FATE[root].theme}」という課題も引き継いでいます。</p>` : ''),
+    [`発揮する徳：${activeInfo.virtue}`, ...(root ? [`土台の徳：${rootInfo.virtue}`] : [])]);
+
+  // ── 人間関係タブ ──
+  const rl = RELATION[active] || {};
+  let relation = '';
+  relation += card('🤝', '人間関係', '出会いが運ぶ学び',
+    `<p>この鑑定では、人間関係を相性の良し悪しだけで判断しません。合わない相手との関係からも、自分に足りない徳を学ぶ意味があると考えます。</p>` +
+    sub('出会いやすい人物', rl.meet) +
+    sub('関係の特徴', rl.feature) +
+    sub('相手から学ぶこと', rl.learn),
+    VIRTUE_LEARN[active] || []);
+  relation += card('♡', '恋愛・結婚', `${active}チャクラの恋愛傾向`,
+    `<p>${rl.love}</p>` +
+    `<div class="sub-head">すべての人に共通するテーマ</div><ul class="love-list">${LOVE_COMMON.map(t=>`<li>${t}</li>`).join('')}</ul>`);
+
+  // ── タブ組み立て ──
+  const panels = { past, mission, fate, relation };
+  const cards = document.getElementById('resultCards');
+  cards.innerHTML = `
+    <div class="reading-tabs" role="tablist">
+      ${TABS.map((t,i)=>`<button class="reading-tab${i===0?' on':''}" role="tab" aria-selected="${i===0}" data-tab="${t.id}" onclick="switchTab('${t.id}')">${t.name}<small>${t.hint}</small></button>`).join('')}
+    </div>
+    ${TABS.map((t,i)=>`<div class="tab-panel${i===0?' on':''}" id="panel-${t.id}" role="tabpanel">${panels[t.id]}</div>`).join('')}
+    ${card('☯', '鑑定の読み方', '前世を「当てる」ためではなく',
+      `<div class="core-flow">
+        <p>いまの性格や才能には、過去から持ち越したものがある。</p>
+        <p>けれど魂は、まったく同じ状態で生まれ変わるわけではない。</p>
+        <p>今世には、まだ身についていない徳を学ぶための経験が用意されている。</p>
+        <p>だから苦労にも、人間関係にも、恋愛や仕事の出来事にも成長の意味がある。</p>
+      </div>
+      <p>大切なのは出来事を避けることではなく、そこから何を学ぶか。「どんな運命か」だけでなく、<span class="highlight">何を学び、どの才能をどう使い、誰との関係が成長につながるのか</span>まで受け取ってください。</p>`)}
+    <p class="source-note">転生・カルマ・チャクラの考え方は、科学的に実証された事実として示すものではありません。</p>
+  `;
+
+  const resultSection = document.getElementById('resultSection');
+  resultSection.classList.add('visible');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function reset() {
+  document.getElementById('resultSection').classList.remove('visible');
+  document.getElementById('inputSection').style.display = '';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
