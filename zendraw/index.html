@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZenDraw ― 今日の一枚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#15162e; --night-2:#1f2140; --night-3:#0d0e20;
+    --ivory:#efe4c8; --ivory-2:#f7efd9;
+    --ink:#2a2218;
+    --vermilion:#b5362a; --azure:#2f6a97; --ochre:#cfa23c; --ochre-soft:#e4c477;
+    --star:#f3e6b8;
+    --text:#e8e2d1; --text-dim:#a3a0bb;
+    --serif-jp:"Shippori Mincho", serif;
+    --serif-la:"Cormorant", "Shippori Mincho", serif;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{
+    margin:0;
+    background:
+      radial-gradient(130% 90% at 50% -10%, #272a56 0%, var(--night) 42%, var(--night-3) 100%);
+    color:var(--text);
+    font-family:var(--serif-jp);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
+
+  /* starfield */
+  #sky{position:fixed; inset:0; pointer-events:none; z-index:0}
+  .star{position:absolute; width:2px; height:2px; border-radius:50%;
+    background:var(--star); opacity:.0; box-shadow:0 0 4px var(--star)}
+  @media (prefers-reduced-motion:no-preference){
+    .star{animation:tw 6s ease-in-out infinite}
+  }
+  @keyframes tw{0%,100%{opacity:.12}50%{opacity:.7}}
+
+  /* stage */
+  #app{position:relative; z-index:1; min-height:100%; display:flex;
+    flex-direction:column; align-items:center; justify-content:flex-start;
+    padding:24px 22px; text-align:center; max-width:460px; margin:0 auto}
+  .screen{display:none; width:100%; margin:auto 0; flex-direction:column; align-items:center;
+    gap:22px; animation:rise .7s ease both}
+  .screen.on{display:flex}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none}}
+  @keyframes rise{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
+
+  .date{font-family:var(--serif-la); font-weight:500; letter-spacing:.06em;
+    color:var(--ochre-soft); font-size:.98rem}
+  .date .jp{font-family:var(--serif-jp); margin-left:.4em; color:var(--text-dim); font-size:.86rem}
+  .lead{font-size:1.55rem; font-weight:600; letter-spacing:.14em; margin:0}
+  .whisper{color:var(--text-dim); font-size:.95rem; line-height:1.9; margin:0; max-width:30ch}
+
+  /* buttons */
+  .act{appearance:none; cursor:pointer; font-family:var(--serif-jp);
+    font-size:1.02rem; font-weight:500; letter-spacing:.12em;
+    color:var(--night); background:linear-gradient(180deg,var(--ochre-soft),var(--ochre));
+    border:none; border-radius:40px; padding:14px 34px;
+    box-shadow:0 6px 24px rgba(207,162,60,.28), inset 0 1px 0 rgba(255,255,255,.4);
+    transition:transform .15s ease, box-shadow .2s ease}
+  .act:hover{transform:translateY(-1px); box-shadow:0 10px 30px rgba(207,162,60,.4)}
+  .act:active{transform:translateY(0)}
+  .ghost{background:none; border:1px solid rgba(207,162,60,.4); color:var(--ochre-soft);
+    box-shadow:none; font-size:.92rem; padding:10px 22px}
+  .ghost:hover{box-shadow:none; background:rgba(207,162,60,.08)}
+  .textlink{background:none;border:none;color:var(--text-dim);cursor:pointer;
+    font-family:var(--serif-jp); font-size:.9rem; letter-spacing:.06em;
+    padding:6px; text-decoration:underline; text-underline-offset:4px;
+    text-decoration-color:rgba(163,160,187,.4)}
+  .textlink:hover{color:var(--ochre-soft)}
+  :focus-visible{outline:2px solid var(--ochre-soft); outline-offset:3px; border-radius:6px}
+
+  /* ---- CARD ---- */
+  .card-stage{perspective:1400px; width:216px; height:360px}
+  .card{position:relative; width:100%; height:100%; transform-style:preserve-3d;
+    transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+  .card.flipped{transform:rotateY(180deg)}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}}
+  .face{position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:12px; overflow:hidden}
+
+  /* back */
+  .back{background:
+      repeating-linear-gradient(45deg, rgba(207,162,60,.16) 0 2px, transparent 2px 15px),
+      repeating-linear-gradient(-45deg, rgba(207,162,60,.16) 0 2px, transparent 2px 15px),
+      radial-gradient(70% 70% at 50% 42%, #2a2d5e 0%, var(--night-2) 70%, var(--night-3) 100%);
+    border:1px solid rgba(207,162,60,.5);
+    box-shadow:0 20px 50px rgba(0,0,0,.5), 0 0 0 4px var(--night-3), 0 0 0 5px rgba(207,162,60,.3);
+    display:flex; align-items:center; justify-content:center}
+  .back .seal{font-size:3.4rem; color:var(--ochre-soft); text-shadow:0 0 18px rgba(228,196,119,.7)}
+  @media (prefers-reduced-motion:no-preference){
+    .back .seal{animation:pulse 3.6s ease-in-out infinite}
+  }
+  @keyframes pulse{0%,100%{opacity:.75}50%{opacity:1; text-shadow:0 0 26px rgba(228,196,119,.95)}}
+
+  /* front */
+  .front{transform:rotateY(180deg);
+    background:linear-gradient(170deg, var(--ivory-2), var(--ivory));
+    color:var(--ink);
+    border:1px solid rgba(42,34,24,.25);
+    box-shadow:0 22px 55px rgba(0,0,0,.55), 0 0 32px rgba(228,196,119,.22);
+    display:flex; flex-direction:column; padding:14px 12px}
+  .front .frame{flex:1; border:1.5px solid var(--vermilion); border-radius:5px;
+    position:relative; display:flex; flex-direction:column; align-items:center;
+    justify-content:space-between; padding:16px 10px}
+  .front .frame::before{content:""; position:absolute; inset:5px; border:1px solid rgba(47,106,151,.6); border-radius:3px; pointer-events:none}
+  .num{font-family:var(--serif-la); font-weight:500; font-size:1.5rem;
+    letter-spacing:.08em; color:var(--vermilion); min-height:1.6rem}
+  .emblem{font-size:4.6rem; line-height:1; color:var(--ink);
+    text-shadow:0 1px 0 rgba(255,255,255,.5)}
+  .emblem.rev{transform:rotate(180deg)}
+  .namebox{display:flex; flex-direction:column; gap:1px}
+  .fr{font-family:var(--serif-la); font-style:italic; font-size:1.18rem; color:var(--ink)}
+  .jp-name{font-family:var(--serif-jp); font-weight:600; font-size:1.02rem; letter-spacing:.14em}
+
+  /* reading */
+  .reading{width:100%; max-width:34ch; display:flex; flex-direction:column; gap:12px; align-items:center}
+  .orient{font-size:.82rem; letter-spacing:.14em; color:var(--ochre-soft)}
+  .orient .rev{color:var(--vermilion)}
+  .astro{font-family:var(--serif-la); color:var(--text-dim); font-size:.92rem; letter-spacing:.05em}
+  .keys{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+  .key{font-size:.82rem; letter-spacing:.12em; color:var(--ivory);
+    border:1px solid rgba(207,162,60,.35); border-radius:30px; padding:4px 13px}
+  .msg{font-size:1.01rem; line-height:2.0; color:var(--text); margin:0}
+
+  /* journal */
+  .journal{width:100%; max-width:34ch; display:flex; flex-direction:column; gap:10px; align-items:center}
+  textarea{width:100%; min-height:72px; resize:vertical; font-family:var(--serif-jp);
+    font-size:.98rem; line-height:1.9; color:var(--text);
+    background:rgba(255,255,255,.04); border:1px solid rgba(207,162,60,.28);
+    border-radius:10px; padding:12px 14px}
+  textarea::placeholder{color:rgba(163,160,187,.6)}
+  textarea:focus{outline:none; border-color:var(--ochre-soft); background:rgba(255,255,255,.06)}
+  .saved-note{font-size:.84rem; color:var(--ochre-soft); min-height:1.1em; letter-spacing:.08em}
+
+  /* breath */
+  .breath-wrap{height:240px; display:flex; align-items:center; justify-content:center}
+  .breath{width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle at 42% 38%, var(--ochre-soft), var(--ochre) 55%, transparent 72%);
+    box-shadow:0 0 50px rgba(228,196,119,.35)}
+  @media (prefers-reduced-motion:no-preference){
+    .breath.run{animation:breathe 14s ease-in-out infinite}
+  }
+  @keyframes breathe{
+    0%{transform:scale(.62); opacity:.7}
+    28%{transform:scale(1.18); opacity:1}      /* inhale 4s */
+    42%{transform:scale(1.18); opacity:1}      /* hold 2s */
+    85%{transform:scale(.62); opacity:.7}      /* exhale 6s */
+    100%{transform:scale(.62); opacity:.7}
+  }
+  .breath-cue{height:1.4em; font-size:1.05rem; letter-spacing:.3em; color:var(--ochre-soft)}
+
+  /* history */
+  .hist-head{display:flex; align-items:center; justify-content:space-between; width:100%}
+  .hist-title{font-size:1.1rem; font-weight:600; letter-spacing:.12em; margin:0}
+  .hist-list{list-style:none; margin:0; padding:0; width:100%;
+    max-height:52vh; overflow-y:auto; text-align:left;
+    display:flex; flex-direction:column; gap:2px}
+  .hist-item{display:flex; gap:14px; align-items:flex-start;
+    padding:13px 6px; border-bottom:1px solid rgba(207,162,60,.14)}
+  .hist-glyph{font-size:1.5rem; color:var(--ochre-soft); min-width:1.4em; text-align:center; line-height:1.4}
+  .hist-glyph.rev{transform:rotate(180deg)}
+  .hist-body{flex:1; min-width:0}
+  .hist-top{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+  .hist-date{font-family:var(--serif-la); color:var(--text-dim); font-size:.86rem}
+  .hist-name{font-weight:600; font-size:.96rem; letter-spacing:.08em}
+  .hist-r{font-size:.74rem; color:var(--vermilion); letter-spacing:.1em}
+  .hist-memo{color:var(--text-dim); font-size:.9rem; line-height:1.8; margin:5px 0 0; white-space:pre-wrap; word-break:break-word}
+  .empty{color:var(--text-dim); line-height:2; font-size:.95rem; padding:24px 0}
+
+  .footer-links{display:flex; gap:18px; align-items:center; margin-top:4px; flex-wrap:wrap; justify-content:center}
+  .tiny{font-size:.78rem; color:rgba(163,160,187,.5); letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div id="sky" aria-hidden="true"></div>
+
+<main id="app">
+
+  <!-- INTRO -->
+  <section class="screen" id="s-intro">
+    <div class="date" id="intro-date"></div>
+    <h1 class="lead">今日の一枚</h1>
+    <div class="card-stage" aria-hidden="true">
+      <div class="card"><div class="face back"><span class="seal">✶</span></div></div>
+    </div>
+    <p class="whisper">一日に一枚。<br>息を整えてから、札を引きます。</p>
+    <button class="act" id="btn-begin">息を整える</button>
+    <div class="footer-links">
+      <button class="textlink" data-go="history">これまでの記録</button>
+    </div>
+  </section>
+
+  <!-- BREATH -->
+  <section class="screen" id="s-breath">
+    <p class="whisper" style="letter-spacing:.1em">心を静かに。<br>円に合わせて呼吸します。</p>
+    <div class="breath-wrap"><div class="breath" id="breath-orb"></div></div>
+    <div class="breath-cue" id="breath-cue">吸う</div>
+    <button class="act" id="btn-draw" style="opacity:0; pointer-events:none; transition:opacity 1s ease">札を引く</button>
+  </section>
+
+  <!-- CARD -->
+  <section class="screen" id="s-card">
+    <div class="date" id="card-date"></div>
+    <div class="card-stage">
+      <div class="card" id="the-card">
+        <div class="face back"><span class="seal">✶</span></div>
+        <div class="face front">
+          <div class="frame">
+            <div class="num" id="c-num"></div>
+            <div class="emblem" id="c-emblem"></div>
+            <div class="namebox">
+              <div class="fr" id="c-fr"></div>
+              <div class="jp-name" id="c-jp"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reading" id="reading" style="opacity:0; transition:opacity .8s ease">
+      <div class="orient" id="c-orient"></div>
+      <div class="astro" id="c-astro"></div>
+      <div class="keys" id="c-keys"></div>
+      <p class="msg" id="c-msg"></p>
+
+      <div class="journal">
+        <textarea id="journal-input" placeholder="心に残ったことを、一言。"></textarea>
+        <button class="ghost" id="btn-save">書きとめる</button>
+        <div class="saved-note" id="saved-note" aria-live="polite"></div>
+      </div>
+
+      <div class="footer-links">
+        <button class="textlink" data-go="history">これまでの記録</button>
+        <button class="textlink" id="btn-reset" title="お試し用">お試し用に引き直す</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="screen" id="s-history">
+    <div class="hist-head">
+      <button class="ghost" data-go="back">戻る</button>
+      <h2 class="hist-title">これまでの記録</h2>
+      <span style="width:72px"></span>
+    </div>
+    <ul class="hist-list" id="hist-list"></ul>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Deck: Marseille Major Arcana (22) ----------
+  var DECK = [
+    {num:"",      fr:"Le Mat",          jp:"愚者",     g:"✺", astro:"風 / 天王星",
+      keys:["出発","自由","無垢"],
+      up:"計画の外へ一歩を踏み出す日。身軽さがそのまま武器になる。失うものを数えるより、まだ名前のない道を歩け。",
+      rev:"無鉄砲になりやすい。足元だけ一度、確かめてから。"},
+    {num:"I",     fr:"Le Bateleur",     jp:"手品師",   g:"☿", astro:"水星",
+      keys:["才覚","着手","可能性"],
+      up:"必要な道具はもう手の中にある。あとは始めるかどうかだけ。小さく一手を動かせば、そこから流れが生まれる。",
+      rev:"器用貧乏の気配。あれこれ広げず、一つに絞れ。"},
+    {num:"II",    fr:"La Papesse",      jp:"女教皇",   g:"☾", astro:"月",
+      keys:["直観","沈黙","内なる知"],
+      up:"答えは外ではなく内側にある。今日は語るより聴く日。静けさの中で、輪郭がはっきりしてくる。",
+      rev:"考えすぎて空回り。頭を一度、休ませて。"},
+    {num:"III",   fr:"L'Impératrice",   jp:"女帝",     g:"♀", astro:"金星",
+      keys:["豊穣","創造","慈しみ"],
+      up:"育てているものに実りの兆し。感性を信じて手をかけるほど返ってくる。自分にも与えることを忘れずに。",
+      rev:"抱え込みと停滞。手放す勇気が流れを戻す。"},
+    {num:"IIII",  fr:"L'Empereur",      jp:"皇帝",     g:"♈", astro:"牡羊座",
+      keys:["秩序","決断","責任"],
+      up:"曖昧を断ち、枠組みをつくる日。あなたが決めれば周りは動く。遠慮せず主導権を握れ。",
+      rev:"頑なさが壁になる。一度だけ、力を緩めて。"},
+    {num:"V",     fr:"Le Pape",         jp:"教皇",     g:"♉", astro:"牡牛座",
+      keys:["導き","伝統","学び"],
+      up:"信頼できる人や先例に学ぶとき。型を侮らず、まず作法を踏め。師となる存在が、案外近くにいる。",
+      rev:"建前に流されそう。自分の良心に従って。"},
+    {num:"VI",    fr:"L'Amoureux",      jp:"恋人",     g:"♊", astro:"双子座",
+      keys:["選択","関係","心の声"],
+      up:"二つの道の前で問われるのは「何を愛するか」。頭ではなく、心が選ぶ答えを信じていい日。",
+      rev:"優柔不断が長引く。自分で期限を切れ。"},
+    {num:"VII",   fr:"Le Chariot",      jp:"戦車",     g:"♋", astro:"蟹座",
+      keys:["前進","意志","制御"],
+      up:"相反する力を御して進む日。迷いを束ねて一方向へ。勢いがあるうちに、距離を稼いでおけ。",
+      rev:"暴走か空回り。まず手綱を確かめて。"},
+    {num:"VIII",  fr:"La Justice",      jp:"正義",     g:"♎", astro:"天秤座",
+      keys:["均衡","公正","因果"],
+      up:"過去の行いが秤にかかる日。感情を脇に置き、事実で判断を。誠実さが、最後にいちばん効く。",
+      rev:"偏りが出やすい。自分の非も見てから。"},
+    {num:"VIIII", fr:"L'Hermite",       jp:"隠者",     g:"♍", astro:"乙女座",
+      keys:["内省","探求","静けさの力"],
+      up:"一人になって灯りを掲げる日。急がず、問いを深く掘れ。静かな一歩が、遠くまで照らす。",
+      rev:"閉じこもりすぎ。外の声を一つだけ入れて。"},
+    {num:"X",     fr:"La Roue de Fortune", jp:"運命の輪", g:"♃", astro:"木星",
+      keys:["転機","循環","好機"],
+      up:"流れが回り始める。良い波も悪い波も一時のもの。来た波には、ためらわず乗れ。受け身をやめた者に運は向く。",
+      rev:"悪循環の只中。回し方そのものを変えて。"},
+    {num:"XI",    fr:"La Force",        jp:"力",       g:"♌", astro:"獅子座",
+      keys:["胆力","制御","優しい強さ"],
+      up:"力づくではなく、穏やかに手なずける日。内なる獣を抑え込まず、なだめて味方につけよ。",
+      rev:"短気が顔を出す。深呼吸を、まず一つ。"},
+    {num:"XII",   fr:"Le Pendu",        jp:"吊るされた男", g:"♆", astro:"海王星 / 水",
+      keys:["転換","受容","保留"],
+      up:"動けない時間にこそ、視点が反転する。あえて逆さに世界を見れば、見えなかった答えが現れる。今日は耐える日。",
+      rev:"犠牲を抱え込みすぎ。もう、降りていい。"},
+    {num:"XIII",  fr:"—",               jp:"名もなき札", g:"♏", astro:"蠍座",
+      keys:["終わりと再生","刷新","脱皮"],
+      up:"終わらせることで、次が始まる。しがみつかず、古い皮を脱げ。これは破壊ではなく、更新の合図。",
+      rev:"脱げずにいる。手放せない物は何かを問え。"},
+    {num:"XIIII", fr:"Tempérance",      jp:"節制",     g:"♐", astro:"射手座",
+      keys:["調和","中庸","循環"],
+      up:"異なるものを混ぜ合わせ、ちょうど良い配分を探す日。焦らず注ぎ続ければ、やがて澄んでいく。極端を避けよ。",
+      rev:"過不足が出ている。配分を見直して。"},
+    {num:"XV",    fr:"Le Diable",       jp:"悪魔",     g:"♑", astro:"山羊座",
+      keys:["執着","欲望","束縛"],
+      up:"自分を縛る鎖は、実は自分で握っている。欲や依存を、今日は正直に見つめる。認めれば、自由は近い。",
+      rev:"解放の兆し。鎖を、少しずつ緩められる。"},
+    {num:"XVI",   fr:"La Maison Dieu",  jp:"神の家",   g:"♂", astro:"火星",
+      keys:["崩壊","衝撃","解放"],
+      up:"崩れるべきものが崩れる日。抗うより、瓦礫の中の本物だけを拾え。壊れた先に、新しい風が通る。",
+      rev:"崩壊を先延ばしている。長引くだけかもしれない。"},
+    {num:"XVII",  fr:"L'Étoile",        jp:"星",       g:"♒", astro:"水瓶座",
+      keys:["希望","導き","癒し"],
+      up:"嵐のあとの静かな光。傷に水を注ぎ、遠くの星を目印に進め。素直な願いが、そのまま導きになる。",
+      rev:"自信を失いかけ。小さな光を、一つだけ見つけて。"},
+    {num:"XVIII", fr:"La Lune",         jp:"月",       g:"♓", astro:"魚座",
+      keys:["不安","幻","深層"],
+      up:"輪郭が曖昧になる夜。見えるものを鵜呑みにせず、恐れの正体を確かめよ。直感と妄想を、丁寧に分けて。",
+      rev:"霧が晴れ始める。隠れていた真実が見えてくる。"},
+    {num:"XVIIII",fr:"Le Soleil",       jp:"太陽",     g:"☉", astro:"太陽",
+      keys:["歓び","成功","明晰"],
+      up:"隠れていたものが光の下に出る日。素直に喜び、人と分かち合え。物事が、はっきりと良い方へ転ぶ。",
+      rev:"一時の曇り。歓びは、少し遅れて来る。"},
+    {num:"XX",    fr:"Le Jugement",     jp:"審判",     g:"♇", astro:"冥王星 / 火",
+      keys:["覚醒","再起","召命"],
+      up:"過去が呼び戻され、やり直しの合図が鳴る。眠っていた志を起こせ。今日は、決着と再出発の日。",
+      rev:"聞こえないふりをしている。呼び声から逃げないで。"},
+    {num:"XXI",   fr:"Le Monde",        jp:"世界",     g:"♄", astro:"土星",
+      keys:["完成","達成","統合"],
+      up:"一つの輪が閉じる日。やり切ったものを祝い、次の円へ。あなたはもう、中心に立っている。",
+      rev:"あと一歩。詰めを急がず、丁寧に。"}
+  ];
+
+  // ---------- Storage ----------
+  var KEY="zendraw_v1";
+  function load(){
+    try{var r=localStorage.getItem(KEY); return r?JSON.parse(r):{today:null,journal:[]};}
+    catch(e){return {today:null,journal:[]};}
+  }
+  function save(st){ try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){} }
+  var state=load();
+  if(!state.journal) state.journal=[];
+
+  // ---------- Dates ----------
+  function todayKey(){
+    var d=new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  var WD=["日","月","火","水","木","金","土"];
+  function prettyDate(key){
+    var p=key.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]);
+    return {la:(+p[0])+". "+(+p[1])+". "+(+p[2]), jp:"（"+WD[d.getDay()]+"）"};
+  }
+
+  // ---------- Screens ----------
+  var screens={intro:"s-intro",breath:"s-breath",card:"s-card",history:"s-history"};
+  var last="intro";
+  function show(name){
+    Object.keys(screens).forEach(function(k){
+      document.getElementById(screens[k]).classList.toggle("on", k===name);
+    });
+    if(name!=="history") last=name;
+  }
+
+  // ---------- Render card ----------
+  var theCard=document.getElementById("the-card");
+  var reading=document.getElementById("reading");
+  function renderCard(idx,rev){
+    var c=DECK[idx];
+    document.getElementById("c-num").textContent=c.num;
+    var em=document.getElementById("c-emblem");
+    em.textContent=c.g; em.classList.toggle("rev",rev);
+    document.getElementById("c-fr").textContent=c.fr;
+    document.getElementById("c-jp").textContent=c.jp;
+    var o=document.getElementById("c-orient");
+    o.innerHTML= rev ? '<span class="rev">逆位置</span>' : '正位置';
+    document.getElementById("c-astro").textContent="照応 ― "+c.astro;
+    var kb=document.getElementById("c-keys"); kb.innerHTML="";
+    c.keys.forEach(function(k){var s=document.createElement("span");s.className="key";s.textContent=k;kb.appendChild(s);});
+    document.getElementById("c-msg").textContent= rev ? c.rev : c.up;
+
+    var dd=prettyDate(state.today.date);
+    document.getElementById("card-date").innerHTML=dd.la+'<span class="jp">'+dd.jp+'</span>';
+
+    // existing journal note for today?
+    var entry=findEntry(state.today.date);
+    document.getElementById("journal-input").value= entry&&entry.note ? entry.note : "";
+    document.getElementById("saved-note").textContent="";
+  }
+
+  function revealFlow(animate){
+    show("card");
+    theCard.classList.remove("flipped");
+    reading.style.opacity="0";
+    renderCard(state.today.card,state.today.rev);
+    if(animate){
+      setTimeout(function(){theCard.classList.add("flipped");},120);
+      setTimeout(function(){reading.style.opacity="1";},1050);
+    } else {
+      theCard.classList.add("flipped");
+      reading.style.opacity="1";
+    }
+  }
+
+  // ---------- Journal ----------
+  function findEntry(dateKey){
+    for(var i=0;i<state.journal.length;i++) if(state.journal[i].date===dateKey) return state.journal[i];
+    return null;
+  }
+  function upsertEntry(){
+    var d=state.today;
+    var e=findEntry(d.date);
+    if(!e){ e={date:d.date}; state.journal.unshift(e); }
+    e.card=d.card; e.rev=d.rev;
+    e.note=document.getElementById("journal-input").value.trim();
+    save(state);
+  }
+
+  // ---------- History ----------
+  function renderHistory(){
+    var ul=document.getElementById("hist-list"); ul.innerHTML="";
+    var list=state.journal.slice().sort(function(a,b){return a.date<b.date?1:-1;});
+    if(list.length===0){
+      var li=document.createElement("li");
+      li.className="empty";
+      li.textContent="まだ記録はありません。今日の一枚から始めましょう。";
+      ul.appendChild(li); return;
+    }
+    list.forEach(function(e){
+      var c=DECK[e.card];
+      var dd=prettyDate(e.date);
+      var li=document.createElement("li"); li.className="hist-item";
+      li.innerHTML=
+        '<div class="hist-glyph'+(e.rev?' rev':'')+'">'+c.g+'</div>'+
+        '<div class="hist-body">'+
+          '<div class="hist-top">'+
+            '<span class="hist-date">'+dd.la+'</span>'+
+            '<span class="hist-name">'+c.jp+'</span>'+
+            (e.rev?'<span class="hist-r">逆</span>':'')+
+          '</div>'+
+          (e.note?'<p class="hist-memo"></p>':'')+
+        '</div>';
+      if(e.note) li.querySelector(".hist-memo").textContent=e.note;
+      ul.appendChild(li);
+    });
+  }
+
+  // ---------- Breath ----------
+  var orb=document.getElementById("breath-orb");
+  var cue=document.getElementById("breath-cue");
+  var drawBtn=document.getElementById("btn-draw");
+  var breathTimers=[];
+  function clearBreath(){breathTimers.forEach(clearTimeout);breathTimers=[];}
+  function startBreath(){
+    show("breath");
+    drawBtn.style.opacity="0"; drawBtn.style.pointerEvents="none";
+    clearBreath();
+    orb.classList.remove("run"); void orb.offsetWidth; orb.classList.add("run");
+    // cue text follows the 14s cycle: inhale 4 / hold 2 / exhale 6 (+2 settle)
+    var cycle=[[0,"吸う"],[4000,"止める"],[6000,"吐く"],[12000,"…"]];
+    function runCues(){ cycle.forEach(function(c){breathTimers.push(setTimeout(function(){cue.textContent=c[1];},c[0]));}); }
+    runCues();
+    breathTimers.push(setInterval(runCues,14000));
+    // let the draw button appear after one full breath
+    breathTimers.push(setTimeout(function(){
+      drawBtn.style.opacity="1"; drawBtn.style.pointerEvents="auto";
+    },14000));
+  }
+
+  function doDraw(){
+    clearBreath();
+    var idx=Math.floor(Math.random()*DECK.length);
+    var rev=Math.random()<0.35;
+    state.today={date:todayKey(),card:idx,rev:rev};
+    // record a stub entry so it shows in history even without a note
+    var e=findEntry(state.today.date);
+    if(!e){ state.journal.unshift({date:state.today.date,card:idx,rev:rev,note:""}); }
+    else { e.card=idx; e.rev=rev; }
+    save(state);
+    revealFlow(true);
+  }
+
+  // ---------- Wiring ----------
+  document.getElementById("btn-begin").addEventListener("click",startBreath);
+  drawBtn.addEventListener("click",doDraw);
+  document.getElementById("btn-save").addEventListener("click",function(){
+    upsertEntry();
+    document.getElementById("saved-note").textContent="書きとめました。";
+  });
+  document.getElementById("btn-reset").addEventListener("click",function(){
+    state.today=null; save(state); initEntry();
+  });
+  document.querySelectorAll("[data-go]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var g=b.getAttribute("data-go");
+      if(g==="history"){ renderHistory(); show("history"); }
+      else if(g==="back"){ show(last); }
+    });
+  });
+
+  // ---------- Starfield ----------
+  (function(){
+    var sky=document.getElementById("sky");
+    var n=window.innerWidth<420?42:70;
+    for(var i=0;i<n;i++){
+      var s=document.createElement("div"); s.className="star";
+      s.style.left=(Math.random()*100)+"%";
+      s.style.top=(Math.random()*100)+"%";
+      var sz=Math.random()<0.2?2.6:1.6; s.style.width=sz+"px"; s.style.height=sz+"px";
+      s.style.animationDelay=(Math.random()*6)+"s";
+      s.style.animationDuration=(4+Math.random()*5)+"s";
+      sky.appendChild(s);
+    }
+  })();
+
+  // ---------- Init ----------
+  function initEntry(){
+    document.getElementById("intro-date").innerHTML=(function(){var d=prettyDate(todayKey());return d.la+'<span class="jp">'+d.jp+'</span>';})();
+    if(state.today && state.today.date===todayKey()){
+      revealFlow(false);           // already drawn today → show the card
+    } else {
+      state.today=null;
+      show("intro");
+    }
+  }
+  initEntry();
+
+})();
+</script>
+</body>
+</html>
