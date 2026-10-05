@@ -433,7 +433,7 @@
   /* ── 鑑定タブ ── */
   .reading-tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
     margin: 48px 0 24px;
     position: sticky;
@@ -515,13 +515,79 @@
   }
 
   @media (max-width: 500px) {
-    .reading-tab { font-size: 12px; letter-spacing: 0.05em; }
+    .reading-tab { font-size: 11px; letter-spacing: 0; padding: 12px 2px; white-space: nowrap; }
     .reading-tab small { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 
+
+  /* ── ツインレイ ── */
+  .date-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .date-chip {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.35);
+    color: var(--light-gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .date-chip:hover { background: rgba(201,168,76,0.2); }
+  .date-chip.self { border-style: dashed; opacity: 0.7; }
+  .date-more { font-size: 12px; color: rgba(245,240,232,0.5); align-self: center; }
+  .twin-type { border-left: 2px solid var(--tc); }
+
+  .twin-cal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .cal-m { font-size: 12px; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-d {
+    aspect-ratio: 1;
+    font-size: 9px;
+    border: none;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(13,8,32,0.85);
+    cursor: pointer;
+    padding: 0;
+    font-family: 'Noto Serif JP', serif;
+  }
+  .cal-d:not([style]) { color: rgba(245,240,232,0.35); }
+  .cal-d.self { outline: 1px solid #fff; outline-offset: 1px; }
+  .cal-d:focus-visible { outline: 2px solid var(--light-gold); }
+  .cal-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 16px; font-size: 12px; }
+  .cal-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .cal-hint { font-size: 12px !important; color: rgba(245,240,232,0.5); margin-top: 10px; }
+
+  .pair-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .pair-btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--light-gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    padding: 10px 20px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .pair-btn:hover { background: rgba(201,168,76,0.12); }
+  .pair-result { margin-top: 18px; }
+  .pair-head {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    font-size: 13px; color: var(--light-gold); margin-bottom: 10px;
+  }
+  .pair-x { color: var(--gold); }
+  .pair-type { border-left: 2px solid; padding: 4px 0 4px 14px; margin: 14px 0; }
+  .pair-type-name { font-size: 15px; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .pair-type-name small { font-size: 11px; margin-left: 8px; opacity: 0.8; }
 
   /* サイト導線 */
   .site-back {
@@ -536,6 +602,8 @@
   .site-back:hover { color: var(--light-gold); }
   a.btn-divine { text-align: center; text-decoration: none; }
   .site-footer { text-align: center; margin-top: 48px; }
+  .pair-cta { margin-top: 16px; }
+  .pair-cta a { display: inline-block; text-decoration: none; }
 
   /* Responsive */
   @media (max-width: 500px) {
@@ -548,6 +616,7 @@
 </head>
 <body>
 <div class="container">
+
   <a class="site-back" href="../">← 9ren / azusa</a>
 
   <header>
@@ -864,12 +933,209 @@ monthSelect.value = String(today.getMonth()+1).padStart(2,'0');
 updateDays();
 daySelect.value = String(today.getDate()).padStart(2,'0');
 
+
+// ══════════════════════════════════════════════════════════════
+// ツインレイ診断（転星術オリジナルロジック）
+// チャクラ番号：尾骨から頭頂へ 火星1・土星2・太陽3・金星4・月5・水星6・木星7
+// ══════════════════════════════════════════════════════════════
+const CHAKRA_NO = { '火星':1, '土星':2, '太陽':3, '金星':4, '月':5, '水星':6, '木星':7 };
+const NO_PLANET = ['', '火星','土星','太陽','金星','月','水星','木星'];
+const mirrorOf = p => NO_PLANET[8 - CHAKRA_NO[p]];   // 金星（胸）を軸にした上下対称
+
+const TWIN_TYPES = [
+  { id:'polar', name:'対極のツインレイ', sub:'魂の片割れ', weight:5, color:'#e8c55a',
+    desc:'胸の金星チャクラを軸にして、あなたと相手のチャクラが上下対称に並ぶ関係です。あなたのメインと相手のアクティブ、あなたのアクティブと相手のメインが、それぞれ鏡写しの位置にあります。根と頂、身体と精神のように向かい合い、二人がそろってはじめて一本の軸が完成します。転星術で最も稀な型です。',
+    bond:'強く惹かれ合う一方で、正反対ゆえの衝突も起こりやすい関係。違いを否定せず、相手を「自分にない半分」として受け入れたとき、関係が真価を発揮します。' },
+  { id:'mirror', name:'鏡のツインレイ', sub:'同じ魂の型', weight:4, color:'#8fb4ff',
+    desc:'メインチャクラもアクティブチャクラも同じ関係です。同じ前世の土台を持ち、同じ使命に向かって生まれてきた、いわば同じ型の魂です。',
+    bond:'言葉にしなくても分かり合える安心感があります。ただし弱点も同じなので、相手の欠点に自分の課題が映ります。その鏡から目をそらさないことが、二人の成長になります。' },
+  { id:'cross', name:'交差のツインレイ', sub:'魂の受け渡し', weight:3, color:'#c49bff',
+    desc:'一方のアクティブチャクラが、もう一方のメインチャクラと同じ天体である関係です。片方が前世で生き切ったテーマを、もう片方が今世で目覚めさせようとしています。',
+    bond:'導く側と導かれる側がはっきりしやすい、師弟や先達のような関係です。導く側は答えを与えすぎず、導かれる側は依存しすぎないことが鍵になります。' },
+  { id:'comp', name:'補完のツインレイ', sub:'欠けを満たす', weight:2, color:'#7fd6b4',
+    desc:'あなたが今世で学ぶべき徳を相手が生まれ持ち、相手が学ぶべき徳をあなたが生まれ持っている関係です。お互いの足りない部分を、存在そのもので補い合います。',
+    bond:'一緒にいるだけで、自然と足りない徳が育っていきます。相手のやり方に違和感を覚えたときこそ、自分が学ぶべき徳がそこにあると考えてください。' },
+  { id:'reson', name:'共鳴のツインレイ', sub:'同じ振動数', weight:2, color:'#f0a0c0',
+    desc:'2つのチャクラの番号を足した「チャクラ数」が同じ関係です。持っている天体は違っても、魂が響き合う高さが同じだと読みます。',
+    bond:'タイプは違うのに、なぜか話のテンポや人生の節目が重なる関係です。違いを面白がれると、刺激と安心を両方くれる相手になります。' },
+];
+const TWIN_BY_ID = Object.fromEntries(TWIN_TYPES.map(t => [t.id, t]));
+
+function chakraSum(info) { return CHAKRA_NO[info.root] + CHAKRA_NO[info.active]; }
+
+// a=自分, b=相手。成立した型を {id, note} の配列で返す
+function twinMatch(a, b) {
+  const res = [];
+  if (!a.root || !b.root) return res;
+  if (mirrorOf(a.root) === b.active && mirrorOf(a.active) === b.root)
+    res.push({ id:'polar', note:`あなたの${a.root}と相手の${b.active}、あなたの${a.active}と相手の${b.root}が対称の位置にあります。` });
+  if (a.root === b.root && a.active === b.active)
+    res.push({ id:'mirror', note:`二人とも${a.root}メイン×${a.active}アクティブです。` });
+  const aLeads = a.root === b.active, bLeads = a.active === b.root;
+  if (aLeads !== bLeads) {
+    res.push({ id:'cross', note: bLeads
+      ? `相手の前世の土台（${b.root}）が、あなたの今世の力です。相手はあなたの使命の先達にあたります。`
+      : `あなたの前世の土台（${a.root}）が、相手の今世の力です。あなたが相手の使命の先達にあたります。` });
+  }
+  const va = [PLANET_INFO[a.root].virtue, PLANET_INFO[a.active].virtue];
+  const vb = [PLANET_INFO[b.root].virtue, PLANET_INFO[b.active].virtue];
+  const aNeed = (FATE[a.active].virtues || []).filter(v => vb.includes(v));
+  const bNeed = (FATE[b.active].virtues || []).filter(v => va.includes(v));
+  const same = a.root === b.root && a.active === b.active;
+  if (!same && aNeed.length && bNeed.length)
+    res.push({ id:'comp', note:`あなたは相手から「${aNeed.join('」「')}」を、相手はあなたから「${bNeed.join('」「')}」を学びます。` });
+  if (chakraSum(a) === chakraSum(b) && !(a.root === b.root && a.active === b.active))
+    res.push({ id:'reson', note:`二人ともチャクラ数は${chakraSum(a)}です。` });
+  return res;
+}
+
+function twinScore(matches) { return matches.reduce((s, m) => s + TWIN_BY_ID[m.id].weight, 0); }
+
+function fmtKey(k) { const [m, d] = k.split('/'); return `${parseInt(m)}月${parseInt(d)}日`; }
+
+// 自分の誕生日 key に対して、全日付を走査
+function findTwins(key) {
+  const me = DATA[key];
+  const byType = Object.fromEntries(TWIN_TYPES.map(t => [t.id, []]));
+  const all = [];
+  Object.keys(DATA).sort().forEach(k => {
+    const other = DATA[k];
+    const ms = twinMatch(me, other);
+    if (!ms.length) return;
+    ms.forEach(m => byType[m.id].push(k));
+    all.push({ key:k, matches:ms, score:twinScore(ms) });
+  });
+  all.sort((x, y) => y.score - x.score || x.key.localeCompare(y.key));
+  return { byType, all };
+}
+
+function dateChips(keys, selfKey, limit) {
+  const shown = keys.slice(0, limit);
+  const rest = keys.length - shown.length;
+  return `<div class="date-chips">${shown.map(k =>
+    `<button class="date-chip${k===selfKey?' self':''}" onclick="twinPick('${k}')">${fmtKey(k)}</button>`).join('')}
+    ${rest > 0 ? `<span class="date-more">ほか${rest}日（カレンダー参照）</span>` : ''}</div>`;
+}
+
+function twinCalendar(result, selfKey) {
+  const best = {};
+  result.all.forEach(r => {
+    const top = r.matches.slice().sort((a, b) => TWIN_BY_ID[b.id].weight - TWIN_BY_ID[a.id].weight)[0];
+    best[r.key] = TWIN_BY_ID[top.id];
+  });
+  const days = [31,29,31,30,31,30,31,31,30,31,30,31];
+  let html = '<div class="twin-cal">';
+  for (let m = 1; m <= 12; m++) {
+    html += `<div class="cal-month"><div class="cal-m">${m}月</div><div class="cal-grid">`;
+    for (let d = 1; d <= days[m-1]; d++) {
+      const k = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
+      const t = best[k];
+      html += `<button class="cal-d${k===selfKey?' self':''}" ${t ? `style="background:${t.color}" title="${fmtKey(k)}：${t.name}"` : `title="${fmtKey(k)}"`} onclick="twinPick('${k}')" aria-label="${fmtKey(k)}${t ? ' ' + t.name : ''}">${d}</button>`;
+    }
+    html += '</div></div>';
+  }
+  html += '</div><div class="cal-legend">' +
+    TWIN_TYPES.map(t => `<span><i style="background:${t.color}"></i>${t.name}</span>`).join('') +
+    '</div><p class="cal-hint">色は、その日に成立する型のうち最も稀なものです。日付をタップすると二人の関係を表示します。</p>';
+  return html;
+}
+
+function pairDetailHTML(meKey, otherKey) {
+  const me = DATA[meKey], other = DATA[otherKey];
+  if (!other || !other.root) return `<p>${fmtKey(otherKey)}はデータが不足しているため診断できません。</p>`;
+  const ms = twinMatch(me, other);
+  const head = `<div class="pair-head"><span>あなた：${me.root}×${me.active}</span><span class="pair-x">⟷</span><span>${fmtKey(otherKey)}：${other.root}×${other.active}</span></div>`;
+  if (!ms.length)
+    return head + `<p>この二人の間には、ツインレイの5つの型はいずれも成立しません。ただしそれは「縁がない」という意味ではありません。人間関係タブにあるとおり、合わない相手との関係からも学べる徳があります。</p>`;
+  const score = twinScore(ms);
+  const level = score >= 7 ? '極めて深い' : score >= 5 ? '深い' : score >= 3 ? '確かな' : 'ゆるやかな';
+  return head +
+    `<p>ツインレイ度は<span class="highlight">${score}</span>（${level}縁）です。</p>` +
+    ms.map(m => { const t = TWIN_BY_ID[m.id];
+      return `<div class="pair-type" style="border-color:${t.color}"><div class="pair-type-name" style="color:${t.color}">${t.name}<small>${t.sub}</small></div><p>${m.note}</p><p>${t.bond}</p></div>`; }).join('') +
+    `<div class="pair-cta"><a class="pair-btn" href="https://mond.how/9ren_azusa" target="_blank" rel="noopener">二人の関係を九蓮梓に詳しく読んでもらう</a></div>`;
+}
+
+function twinPick(otherKey) {
+  const box = document.getElementById('pairResult');
+  if (!box) return;
+  box.innerHTML = pairDetailHTML(window.CUR_KEY, otherKey);
+  const [m, d] = otherKey.split('/');
+  const pm = document.getElementById('pairMonth'), pd = document.getElementById('pairDay');
+  if (pm && pd) { pm.value = m; fillPairDays(); pd.value = d; }
+  box.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function fillPairDays() {
+  const pm = document.getElementById('pairMonth'), pd = document.getElementById('pairDay');
+  const max = [31,29,31,30,31,30,31,31,30,31,30,31][parseInt(pm.value) - 1];
+  const prev = pd.value;
+  pd.innerHTML = Array.from({ length:max }, (_, i) => { const v = String(i+1).padStart(2,'0'); return `<option value="${v}">${i+1}日</option>`; }).join('');
+  if (prev && parseInt(prev) <= max) pd.value = prev;
+}
+
+function pairCheck() {
+  const k = `${document.getElementById('pairMonth').value}/${document.getElementById('pairDay').value}`;
+  twinPick(k);
+}
+
+function renderTwin(key) {
+  const me = DATA[key];
+  if (!me.root) return card('∞', 'ツインレイ', '診断できません', '<p>この日付はメインチャクラのデータが不足しています。</p>');
+  const result = findTwins(key);
+  let html = '';
+
+  html += card('∞', 'ツインレイ診断', 'あなたの魂の片割れを探す',
+    `<p>ツインレイは「もとは一つだった魂が二つに分かれたもの」とされる存在です。転星術では、あなたの<span class="highlight">${me.root}（メイン）×${me.active}（アクティブ）</span>と、相手の2つのチャクラの関係から、5つの型でツインレイを読み解きます。</p>` +
+    `<p>あなたのチャクラ数は${chakraSum(me)}（${me.root}${CHAKRA_NO[me.root]}＋${me.active}${CHAKRA_NO[me.active]}）です。</p>`);
+
+  // 最上位の縁
+  const others = result.all.filter(r => r.key !== key);
+  const topScore = others.length ? others[0].score : 0;
+  const tops = others.filter(r => r.score === topScore).map(r => r.key);
+  html += card('✧', '最も深い縁', 'ツインレイ度が最も高い誕生日',
+    topScore ? `<p>複数の型が重なるほど縁が深いと読みます。あなたにとってツインレイ度が最も高い（${topScore}）のは、次の${tops.length}日に生まれた人です。</p>` + dateChips(tops, key, 40)
+             : '<p>該当する誕生日が見つかりませんでした。</p>');
+
+  // 型ごと
+  TWIN_TYPES.forEach(t => {
+    const keys = result.byType[t.id];
+    let body = `<p>${t.desc}</p>`;
+    if (t.id === 'polar') body += `<p>あなたの対極は「${mirrorOf(me.active)}メイン×${mirrorOf(me.root)}アクティブ」の人です。</p>`;
+    if (t.id === 'reson') body += `<p>あなたのチャクラ数${chakraSum(me)}と同じ数を持つ人が該当します。</p>`;
+    body += keys.length
+      ? `<div class="sub-head">該当する誕生日（${keys.length}日）</div>` + dateChips(keys, key, 24)
+      : `<div class="sub-head">該当する誕生日</div><p>あなたの組み合わせでは、この型が成立する誕生日は暦の上に存在しません。だからこそ、他の型の縁があなたにとって大きな意味を持ちます。</p>`;
+    body += `<div class="sub-head">関係の特徴</div><p>${t.bond}</p>`;
+    html += `<div class="section-card twin-type" style="--tc:${t.color}">
+      <div class="section-label"><span class="section-label-icon" style="color:${t.color}">◆</span><span class="section-label-text">${t.sub}</span></div>
+      <div class="section-title">${t.name}</div><div class="section-body">${body}</div></div>`;
+  });
+
+  // カレンダー
+  html += card('📅', 'ツインレイ・カレンダー', '366日の縁を一覧する', twinCalendar(result, key));
+
+  // 相性チェック
+  const monthOpts = Array.from({ length:12 }, (_, i) => { const v = String(i+1).padStart(2,'0'); return `<option value="${v}">${i+1}月</option>`; }).join('');
+  html += card('⚭', '二人の相性チェック', '気になる人の誕生日を入れる',
+    `<div class="pair-form"><div class="select-wrapper"><select id="pairMonth" onchange="fillPairDays()" aria-label="相手の生まれ月">${monthOpts}</select></div>
+      <div class="select-wrapper"><select id="pairDay" aria-label="相手の生まれ日"></select></div>
+      <button class="pair-btn" onclick="pairCheck()">診断する</button></div>
+     <div id="pairResult" class="pair-result"></div>`);
+
+  html += card('☯', 'ツインレイの読み方', '出会いを「運命の証明」にしないために',
+    `<p>この診断は、相手を探すための答えではなく、関係の意味を読むための地図です。型が成立しない相手とも深い縁は結べますし、型が成立する相手でも関係を育てる努力は欠かせません。</p>
+     <p>また、「ツインレイだから苦しくても離れてはいけない」という考え方には注意してください。<span class="highlight">苦しさに耐えることは、ツインレイの証ではありません。</span>心や身体が傷つく関係からは、距離を置くことが魂の成長につながる場合もあります。</p>`);
+  return html;
+}
+
 // ── 診断 ─────────────────────────────────────────────────────
 const TABS = [
   { id:'past',     name:'前世',       hint:'メインチャクラ' },
   { id:'mission',  name:'使命と才能', hint:'アクティブ' },
   { id:'fate',     name:'運命',       hint:'アクティブ' },
   { id:'relation', name:'人間関係',   hint:'アクティブ' },
+  { id:'twin',     name:'ツインレイ', hint:'相性' },
 ];
 
 function card(icon, label, title, body, chips) {
@@ -1011,7 +1277,8 @@ function divine() {
     `<div class="sub-head">すべての人に共通するテーマ</div><ul class="love-list">${LOVE_COMMON.map(t=>`<li>${t}</li>`).join('')}</ul>`);
 
   // ── タブ組み立て ──
-  const panels = { past, mission, fate, relation };
+  window.CUR_KEY = key;
+  const panels = { past, mission, fate, relation, twin: renderTwin(key) };
   const cards = document.getElementById('resultCards');
   cards.innerHTML = `
     <div class="reading-tabs" role="tablist">
@@ -1033,6 +1300,7 @@ function divine() {
     <p class="source-note">転生・カルマ・チャクラの考え方は、科学的に実証された事実として示すものではありません。</p>
   `;
 
+  if (document.getElementById('pairMonth')) fillPairDays();
   const resultSection = document.getElementById('resultSection');
   resultSection.classList.add('visible');
   window.scrollTo({top:0, behavior:'smooth'});
