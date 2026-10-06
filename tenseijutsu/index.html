@@ -605,6 +605,36 @@
   .pair-cta { margin-top: 16px; }
   .pair-cta a { display: inline-block; text-decoration: none; }
 
+  /* ── Xシェア ── */
+  .share-bar { text-align: center; margin: 8px 0 32px; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #f5f0e8; color: #0d0820;
+    border: none; border-radius: 999px;
+    font-family: 'Noto Serif JP', serif; font-size: 14px; letter-spacing: 0.1em;
+    padding: 11px 24px; cursor: pointer;
+  }
+  .share-btn:hover { background: #fff; }
+  .share-btn:focus-visible { outline: 2px solid var(--light-gold); outline-offset: 3px; }
+  .share-x { font-size: 16px; font-weight: 700; }
+  .share-note { font-size: 11px; color: rgba(245,240,232,0.45); margin-top: 8px; letter-spacing: 0.05em; }
+  .pair-cta p { font-size: 13px; color: rgba(245,240,232,0.7); margin-bottom: 10px; }
+
+  /* ── ツインレイ鍵 ── */
+  .lock-form { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .lock-input {
+    flex: 1 1 180px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 2px;
+    color: var(--cream, #f5f0e8);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  .lock-input:focus { outline: 2px solid var(--light-gold); outline-offset: 1px; }
+  .lock-msg { min-height: 1.6em; font-size: 13px !important; color: var(--light-gold); margin-top: 8px; }
+
   /* Responsive */
   @media (max-width: 500px) {
     .input-card { padding: 28px 20px 32px; }
@@ -935,198 +965,121 @@ daySelect.value = String(today.getDate()).padStart(2,'0');
 
 
 // ══════════════════════════════════════════════════════════════
-// ツインレイ診断（転星術オリジナルロジック）
-// チャクラ番号：尾骨から頭頂へ 火星1・土星2・太陽3・金星4・月5・水星6・木星7
+// ツインレイ診断（パスワード保護）
+// 本体ロジックは暗号化済み。正しいパスワードでブラウザ内で復号して読み込む
 // ══════════════════════════════════════════════════════════════
-const CHAKRA_NO = { '火星':1, '土星':2, '太陽':3, '金星':4, '月':5, '水星':6, '木星':7 };
-const NO_PLANET = ['', '火星','土星','太陽','金星','月','水星','木星'];
-const mirrorOf = p => NO_PLANET[8 - CHAKRA_NO[p]];   // 金星（胸）を軸にした上下対称
+const TWIN_LOCK = {"salt": "tLkXQvfegaOCT1C2WsFA9A==", "iv": "wGJAdgKn8jDkhJgh", "iter": 250000, "data": "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"};
+const TWIN_PW_KEY = 'tenseijutsu-twin-pass';
 
-const TWIN_TYPES = [
-  { id:'polar', name:'対極のツインレイ', sub:'魂の片割れ', weight:5, color:'#e8c55a',
-    desc:'胸の金星チャクラを軸にして、あなたと相手のチャクラが上下対称に並ぶ関係です。あなたのメインと相手のアクティブ、あなたのアクティブと相手のメインが、それぞれ鏡写しの位置にあります。根と頂、身体と精神のように向かい合い、二人がそろってはじめて一本の軸が完成します。転星術で最も稀な型です。',
-    bond:'強く惹かれ合う一方で、正反対ゆえの衝突も起こりやすい関係。違いを否定せず、相手を「自分にない半分」として受け入れたとき、関係が真価を発揮します。' },
-  { id:'mirror', name:'鏡のツインレイ', sub:'同じ魂の型', weight:4, color:'#8fb4ff',
-    desc:'メインチャクラもアクティブチャクラも同じ関係です。同じ前世の土台を持ち、同じ使命に向かって生まれてきた、いわば同じ型の魂です。',
-    bond:'言葉にしなくても分かり合える安心感があります。ただし弱点も同じなので、相手の欠点に自分の課題が映ります。その鏡から目をそらさないことが、二人の成長になります。' },
-  { id:'cross', name:'交差のツインレイ', sub:'魂の受け渡し', weight:3, color:'#c49bff',
-    desc:'一方のアクティブチャクラが、もう一方のメインチャクラと同じ天体である関係です。片方が前世で生き切ったテーマを、もう片方が今世で目覚めさせようとしています。',
-    bond:'導く側と導かれる側がはっきりしやすい、師弟や先達のような関係です。導く側は答えを与えすぎず、導かれる側は依存しすぎないことが鍵になります。' },
-  { id:'comp', name:'補完のツインレイ', sub:'欠けを満たす', weight:2, color:'#7fd6b4',
-    desc:'あなたが今世で学ぶべき徳を相手が生まれ持ち、相手が学ぶべき徳をあなたが生まれ持っている関係です。お互いの足りない部分を、存在そのもので補い合います。',
-    bond:'一緒にいるだけで、自然と足りない徳が育っていきます。相手のやり方に違和感を覚えたときこそ、自分が学ぶべき徳がそこにあると考えてください。' },
-  { id:'reson', name:'共鳴のツインレイ', sub:'同じ振動数', weight:2, color:'#f0a0c0',
-    desc:'2つのチャクラの番号を足した「チャクラ数」が同じ関係です。持っている天体は違っても、魂が響き合う高さが同じだと読みます。',
-    bond:'タイプは違うのに、なぜか話のテンポや人生の節目が重なる関係です。違いを面白がれると、刺激と安心を両方くれる相手になります。' },
-];
-const TWIN_BY_ID = Object.fromEntries(TWIN_TYPES.map(t => [t.id, t]));
+function b64bytes(s) { return Uint8Array.from(atob(s), c => c.charCodeAt(0)); }
 
-function chakraSum(info) { return CHAKRA_NO[info.root] + CHAKRA_NO[info.active]; }
+async function decryptTwin(pw) {
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt:b64bytes(TWIN_LOCK.salt), iterations:TWIN_LOCK.iter, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['decrypt']);
+  const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv:b64bytes(TWIN_LOCK.iv) }, key, b64bytes(TWIN_LOCK.data));
+  return new TextDecoder().decode(plain);
+}
 
-// a=自分, b=相手。成立した型を {id, note} の配列で返す
-function twinMatch(a, b) {
-  const res = [];
-  if (!a.root || !b.root) return res;
-  if (mirrorOf(a.root) === b.active && mirrorOf(a.active) === b.root)
-    res.push({ id:'polar', note:`あなたの${a.root}と相手の${b.active}、あなたの${a.active}と相手の${b.root}が対称の位置にあります。` });
-  if (a.root === b.root && a.active === b.active)
-    res.push({ id:'mirror', note:`二人とも${a.root}メイン×${a.active}アクティブです。` });
-  const aLeads = a.root === b.active, bLeads = a.active === b.root;
-  if (aLeads !== bLeads) {
-    res.push({ id:'cross', note: bLeads
-      ? `相手の前世の土台（${b.root}）が、あなたの今世の力です。相手はあなたの使命の先達にあたります。`
-      : `あなたの前世の土台（${a.root}）が、相手の今世の力です。あなたが相手の使命の先達にあたります。` });
+function twinUnlocked() { return typeof renderTwin === 'function'; }
+
+async function unlockTwin(pw, silent) {
+  const msg = document.getElementById('twinLockMsg');
+  if (!pw) { if (msg && !silent) msg.textContent = 'パスワードを入力してください'; return false; }
+  if (msg && !silent) msg.textContent = '解錠しています…';
+  let code;
+  try { code = await decryptTwin(pw); }
+  catch (e) {
+    if (!silent) { if (msg) msg.textContent = 'パスワードが違います'; }
+    else { try { localStorage.removeItem(TWIN_PW_KEY); } catch (_) {} }
+    return false;
   }
-  const va = [PLANET_INFO[a.root].virtue, PLANET_INFO[a.active].virtue];
-  const vb = [PLANET_INFO[b.root].virtue, PLANET_INFO[b.active].virtue];
-  const aNeed = (FATE[a.active].virtues || []).filter(v => vb.includes(v));
-  const bNeed = (FATE[b.active].virtues || []).filter(v => va.includes(v));
-  const same = a.root === b.root && a.active === b.active;
-  if (!same && aNeed.length && bNeed.length)
-    res.push({ id:'comp', note:`あなたは相手から「${aNeed.join('」「')}」を、相手はあなたから「${bNeed.join('」「')}」を学びます。` });
-  if (chakraSum(a) === chakraSum(b) && !(a.root === b.root && a.active === b.active))
-    res.push({ id:'reson', note:`二人ともチャクラ数は${chakraSum(a)}です。` });
-  return res;
-}
-
-function twinScore(matches) { return matches.reduce((s, m) => s + TWIN_BY_ID[m.id].weight, 0); }
-
-function fmtKey(k) { const [m, d] = k.split('/'); return `${parseInt(m)}月${parseInt(d)}日`; }
-
-// 自分の誕生日 key に対して、全日付を走査
-function findTwins(key) {
-  const me = DATA[key];
-  const byType = Object.fromEntries(TWIN_TYPES.map(t => [t.id, []]));
-  const all = [];
-  Object.keys(DATA).sort().forEach(k => {
-    const other = DATA[k];
-    const ms = twinMatch(me, other);
-    if (!ms.length) return;
-    ms.forEach(m => byType[m.id].push(k));
-    all.push({ key:k, matches:ms, score:twinScore(ms) });
-  });
-  all.sort((x, y) => y.score - x.score || x.key.localeCompare(y.key));
-  return { byType, all };
-}
-
-function dateChips(keys, selfKey, limit) {
-  const shown = keys.slice(0, limit);
-  const rest = keys.length - shown.length;
-  return `<div class="date-chips">${shown.map(k =>
-    `<button class="date-chip${k===selfKey?' self':''}" onclick="twinPick('${k}')">${fmtKey(k)}</button>`).join('')}
-    ${rest > 0 ? `<span class="date-more">ほか${rest}日（カレンダー参照）</span>` : ''}</div>`;
-}
-
-function twinCalendar(result, selfKey) {
-  const best = {};
-  result.all.forEach(r => {
-    const top = r.matches.slice().sort((a, b) => TWIN_BY_ID[b.id].weight - TWIN_BY_ID[a.id].weight)[0];
-    best[r.key] = TWIN_BY_ID[top.id];
-  });
-  const days = [31,29,31,30,31,30,31,31,30,31,30,31];
-  let html = '<div class="twin-cal">';
-  for (let m = 1; m <= 12; m++) {
-    html += `<div class="cal-month"><div class="cal-m">${m}月</div><div class="cal-grid">`;
-    for (let d = 1; d <= days[m-1]; d++) {
-      const k = `${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
-      const t = best[k];
-      html += `<button class="cal-d${k===selfKey?' self':''}" ${t ? `style="background:${t.color}" title="${fmtKey(k)}：${t.name}"` : `title="${fmtKey(k)}"`} onclick="twinPick('${k}')" aria-label="${fmtKey(k)}${t ? ' ' + t.name : ''}">${d}</button>`;
-    }
-    html += '</div></div>';
+  if (!twinUnlocked()) {
+    const el = document.createElement('script');
+    el.textContent = code;
+    document.body.appendChild(el);
   }
-  html += '</div><div class="cal-legend">' +
-    TWIN_TYPES.map(t => `<span><i style="background:${t.color}"></i>${t.name}</span>`).join('') +
-    '</div><p class="cal-hint">色は、その日に成立する型のうち最も稀なものです。日付をタップすると二人の関係を表示します。</p>';
-  return html;
+  try { localStorage.setItem(TWIN_PW_KEY, pw); } catch (_) {}
+  const panel = document.getElementById('panel-twin');
+  if (panel && window.CUR_KEY) {
+    panel.innerHTML = renderTwin(window.CUR_KEY);
+    if (document.getElementById('pairMonth')) fillPairDays();
+  }
+  return true;
 }
 
-function pairDetailHTML(meKey, otherKey) {
-  const me = DATA[meKey], other = DATA[otherKey];
-  if (!other || !other.root) return `<p>${fmtKey(otherKey)}はデータが不足しているため診断できません。</p>`;
-  const ms = twinMatch(me, other);
-  const head = `<div class="pair-head"><span>あなた：${me.root}×${me.active}</span><span class="pair-x">⟷</span><span>${fmtKey(otherKey)}：${other.root}×${other.active}</span></div>`;
-  if (!ms.length)
-    return head + `<p>この二人の間には、ツインレイの5つの型はいずれも成立しません。ただしそれは「縁がない」という意味ではありません。人間関係タブにあるとおり、合わない相手との関係からも学べる徳があります。</p>`;
+function submitTwinLock() {
+  const input = document.getElementById('twinLockInput');
+  unlockTwin(input ? input.value.trim() : '', false);
+}
+
+function renderTwinLocked() {
+  return card('🔒', 'ツインレイ診断', '限定公開の機能です',
+    `<p>ツインレイ診断は、パスワードをお持ちの方だけが使える限定機能です。あなたと響き合う魂の誕生日を、5つの型と366日のカレンダーで読み解きます。</p>
+     <div class="lock-form">
+       <input id="twinLockInput" class="lock-input" type="password" autocomplete="current-password" placeholder="パスワード" aria-label="パスワード"
+         onkeydown="if(event.key==='Enter'){submitTwinLock()}">
+       <button class="pair-btn" onclick="submitTwinLock()">解錠する</button>
+     </div>
+     <p id="twinLockMsg" class="lock-msg" role="status"></p>
+     <div class="sub-head">パスワードをお持ちでない方へ</div>
+     <p>二人の生年月日と出生時刻から、転星術の型とホロスコープの相性を合わせて読み解く「ツインレイ総合鑑定」も受け付けています。</p>
+     <div style="margin-top:14px"><a class="pair-btn" href="https://mond.how/9ren_azusa" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">ツインレイ総合鑑定を依頼する（8,000円）</a></div>`);
+}
+
+// 保存済みパスワードがあれば自動で解錠
+try { const saved = localStorage.getItem(TWIN_PW_KEY); if (saved) unlockTwin(saved, true); } catch (_) {}
+
+// ══════════════════════════════════════════════════════════════
+// Xシェア
+// ══════════════════════════════════════════════════════════════
+const SHARE_URL = 'https://9renazusa.github.io/tenseijutsu/';
+const SHARE_TAGS = '#転星術';
+
+function openShare(text) {
+  const u = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text + '\n' + SHARE_TAGS) +
+            '&url=' + encodeURIComponent(SHARE_URL);
+  window.open(u, '_blank', 'noopener');
+}
+
+function shareMain() {
+  const me = DATA[window.CUR_KEY];
+  const rv = PLANET_INFO[me.root] ? PLANET_INFO[me.root].virtue : '';
+  const av = PLANET_INFO[me.active].virtue;
+  openShare(me.root
+    ? `私の転星術は「${me.root}×${me.active}」。前世は${rv}の魂、今世は${av}の力が目覚める型でした。\nあなたの前世のチャクラは？`
+    : `私の転星術のアクティブチャクラは「${me.active}」。今世は${av}の力が目覚める型でした。\nあなたの前世のチャクラは？`);
+}
+
+function shareTwin() {
+  const tops = window.TWIN_TOPS || [];
+  const head = tops.slice(0, 2).map(fmtKey).join('・');
+  const me = DATA[window.CUR_KEY];
+  openShare(tops.length
+    ? `私のツインレイの誕生日は、${head}${tops.length > 2 ? `など${tops.length}日` : ''}。対極のツインレイは「${mirrorOf(me.active)}×${mirrorOf(me.root)}」の人でした。\nあなたのツインレイの誕生日は？ #ツインレイ`
+    : `転星術でツインレイ診断をしてみました。\nあなたのツインレイの誕生日は？ #ツインレイ`);
+}
+
+function sharePair(otherKey) {
+  const ms = twinMatch(DATA[window.CUR_KEY], DATA[otherKey]);
   const score = twinScore(ms);
-  const level = score >= 7 ? '極めて深い' : score >= 5 ? '深い' : score >= 3 ? '確かな' : 'ゆるやかな';
-  return head +
-    `<p>ツインレイ度は<span class="highlight">${score}</span>（${level}縁）です。</p>` +
-    ms.map(m => { const t = TWIN_BY_ID[m.id];
-      return `<div class="pair-type" style="border-color:${t.color}"><div class="pair-type-name" style="color:${t.color}">${t.name}<small>${t.sub}</small></div><p>${m.note}</p><p>${t.bond}</p></div>`; }).join('') +
-    `<div class="pair-cta"><a class="pair-btn" href="https://mond.how/9ren_azusa" target="_blank" rel="noopener">二人の関係を九蓮梓に詳しく読んでもらう</a></div>`;
+  const names = ms.map(m => TWIN_BY_ID[m.id].name).join('・');
+  openShare(`${fmtKey(otherKey)}生まれの人とのツインレイ度は${score}（${twinLevel(score)}縁）。${names}でした。\nあなたとあの人の相性は？ #ツインレイ`);
 }
 
-function twinPick(otherKey) {
-  const box = document.getElementById('pairResult');
-  if (!box) return;
-  box.innerHTML = pairDetailHTML(window.CUR_KEY, otherKey);
-  const [m, d] = otherKey.split('/');
-  const pm = document.getElementById('pairMonth'), pd = document.getElementById('pairDay');
-  if (pm && pd) { pm.value = m; fillPairDays(); pd.value = d; }
-  box.scrollIntoView({ behavior:'smooth', block:'center' });
+function twinLevel(score) {
+  return score >= 7 ? '極めて深い' : score >= 5 ? '深い' : score >= 3 ? '確かな' : 'ゆるやかな';
 }
 
-function fillPairDays() {
-  const pm = document.getElementById('pairMonth'), pd = document.getElementById('pairDay');
-  const max = [31,29,31,30,31,30,31,31,30,31,30,31][parseInt(pm.value) - 1];
-  const prev = pd.value;
-  pd.innerHTML = Array.from({ length:max }, (_, i) => { const v = String(i+1).padStart(2,'0'); return `<option value="${v}">${i+1}日</option>`; }).join('');
-  if (prev && parseInt(prev) <= max) pd.value = prev;
+function shareCurrent() {
+  const tw = document.getElementById('panel-twin');
+  if (tw && tw.classList.contains('on') && twinUnlocked()) shareTwin(); else shareMain();
 }
 
-function pairCheck() {
-  const k = `${document.getElementById('pairMonth').value}/${document.getElementById('pairDay').value}`;
-  twinPick(k);
-}
-
-function renderTwin(key) {
-  const me = DATA[key];
-  if (!me.root) return card('∞', 'ツインレイ', '診断できません', '<p>この日付はメインチャクラのデータが不足しています。</p>');
-  const result = findTwins(key);
-  let html = '';
-
-  html += card('∞', 'ツインレイ診断', 'あなたの魂の片割れを探す',
-    `<p>ツインレイは「もとは一つだった魂が二つに分かれたもの」とされる存在です。転星術では、あなたの<span class="highlight">${me.root}（メイン）×${me.active}（アクティブ）</span>と、相手の2つのチャクラの関係から、5つの型でツインレイを読み解きます。</p>` +
-    `<p>あなたのチャクラ数は${chakraSum(me)}（${me.root}${CHAKRA_NO[me.root]}＋${me.active}${CHAKRA_NO[me.active]}）です。</p>`);
-
-  // 最上位の縁
-  const others = result.all.filter(r => r.key !== key);
-  const topScore = others.length ? others[0].score : 0;
-  const tops = others.filter(r => r.score === topScore).map(r => r.key);
-  html += card('✧', '最も深い縁', 'ツインレイ度が最も高い誕生日',
-    topScore ? `<p>複数の型が重なるほど縁が深いと読みます。あなたにとってツインレイ度が最も高い（${topScore}）のは、次の${tops.length}日に生まれた人です。</p>` + dateChips(tops, key, 40)
-             : '<p>該当する誕生日が見つかりませんでした。</p>');
-
-  // 型ごと
-  TWIN_TYPES.forEach(t => {
-    const keys = result.byType[t.id];
-    let body = `<p>${t.desc}</p>`;
-    if (t.id === 'polar') body += `<p>あなたの対極は「${mirrorOf(me.active)}メイン×${mirrorOf(me.root)}アクティブ」の人です。</p>`;
-    if (t.id === 'reson') body += `<p>あなたのチャクラ数${chakraSum(me)}と同じ数を持つ人が該当します。</p>`;
-    body += keys.length
-      ? `<div class="sub-head">該当する誕生日（${keys.length}日）</div>` + dateChips(keys, key, 24)
-      : `<div class="sub-head">該当する誕生日</div><p>あなたの組み合わせでは、この型が成立する誕生日は暦の上に存在しません。だからこそ、他の型の縁があなたにとって大きな意味を持ちます。</p>`;
-    body += `<div class="sub-head">関係の特徴</div><p>${t.bond}</p>`;
-    html += `<div class="section-card twin-type" style="--tc:${t.color}">
-      <div class="section-label"><span class="section-label-icon" style="color:${t.color}">◆</span><span class="section-label-text">${t.sub}</span></div>
-      <div class="section-title">${t.name}</div><div class="section-body">${body}</div></div>`;
-  });
-
-  // カレンダー
-  html += card('📅', 'ツインレイ・カレンダー', '366日の縁を一覧する', twinCalendar(result, key));
-
-  // 相性チェック
-  const monthOpts = Array.from({ length:12 }, (_, i) => { const v = String(i+1).padStart(2,'0'); return `<option value="${v}">${i+1}月</option>`; }).join('');
-  html += card('⚭', '二人の相性チェック', '気になる人の誕生日を入れる',
-    `<div class="pair-form"><div class="select-wrapper"><select id="pairMonth" onchange="fillPairDays()" aria-label="相手の生まれ月">${monthOpts}</select></div>
-      <div class="select-wrapper"><select id="pairDay" aria-label="相手の生まれ日"></select></div>
-      <button class="pair-btn" onclick="pairCheck()">診断する</button></div>
-     <div id="pairResult" class="pair-result"></div>`);
-
-  html += card('☯', 'ツインレイの読み方', '出会いを「運命の証明」にしないために',
-    `<p>この診断は、相手を探すための答えではなく、関係の意味を読むための地図です。型が成立しない相手とも深い縁は結べますし、型が成立する相手でも関係を育てる努力は欠かせません。</p>
-     <p>また、「ツインレイだから苦しくても離れてはいけない」という考え方には注意してください。<span class="highlight">苦しさに耐えることは、ツインレイの証ではありません。</span>心や身体が傷つく関係からは、距離を置くことが魂の成長につながる場合もあります。</p>`);
-  return html;
+function shareButton(onclick, label) {
+  return `<button class="share-btn" onclick="${onclick}"><span class="share-x" aria-hidden="true">𝕏</span>${label}</button>`;
 }
 
 // ── 診断 ─────────────────────────────────────────────────────
@@ -1278,13 +1231,14 @@ function divine() {
 
   // ── タブ組み立て ──
   window.CUR_KEY = key;
-  const panels = { past, mission, fate, relation, twin: renderTwin(key) };
+  const panels = { past, mission, fate, relation, twin: twinUnlocked() ? renderTwin(key) : renderTwinLocked() };
   const cards = document.getElementById('resultCards');
   cards.innerHTML = `
     <div class="reading-tabs" role="tablist">
       ${TABS.map((t,i)=>`<button class="reading-tab${i===0?' on':''}" role="tab" aria-selected="${i===0}" data-tab="${t.id}" onclick="switchTab('${t.id}')">${t.name}<small>${t.hint}</small></button>`).join('')}
     </div>
     ${TABS.map((t,i)=>`<div class="tab-panel${i===0?' on':''}" id="panel-${t.id}" role="tabpanel">${panels[t.id]}</div>`).join('')}
+    <div class="share-bar">${shareButton('shareCurrent()', '結果をXでシェア')}<p class="share-note">いま開いているタブの結果をシェアします</p></div>
     ${card('☯', '鑑定の読み方', '前世を「当てる」ためではなく',
       `<div class="core-flow">
         <p>いまの性格や才能には、過去から持ち越したものがある。</p>
