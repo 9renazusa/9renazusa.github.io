@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桃花盤 ── 色事方位術</title>
+<meta name="description" content="咸池・紅鸞・天喜と九星の盤を重ね、情の巡る方位を割り出す色事方位術。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--sumi:#0b0709;--sumi2:#150e12;--shu:#a6293f;--shu-b:#cc4560;--momo:#d4849b;
+        --kin:#c9a84c;--kin-d:#8a7233;--shiro:#e8ded8;--shiro-d:#9a8a8e;--line:#2a1f25;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--sumi);color:var(--shiro);font-family:'Noto Serif JP',serif;min-height:100vh;overflow-x:hidden;}
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+    radial-gradient(1px 1px at 14% 20%,rgba(212,132,155,.25),transparent),
+    radial-gradient(1.5px 1.5px at 72% 12%,rgba(212,132,155,.18),transparent),
+    radial-gradient(1px 1px at 40% 62%,rgba(232,222,216,.15),transparent),
+    radial-gradient(1px 1px at 88% 48%,rgba(212,132,155,.15),transparent),
+    radial-gradient(ellipse 130% 45% at 50% 104%,rgba(166,41,63,.13),transparent 70%);}
+  main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 18px 90px;}
+
+  header{text-align:center;padding:52px 0 24px;}
+  h1{font-family:'Shippori Mincho B1',serif;font-weight:800;font-size:40px;letter-spacing:.28em;padding-left:.28em;
+     background:linear-gradient(180deg,var(--shiro),var(--momo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .sub{font-size:11px;letter-spacing:.42em;color:var(--shiro-d);margin-top:13px;}
+  .lead{text-align:center;font-size:12.5px;font-weight:300;line-height:2.15;color:var(--shiro-d);letter-spacing:.06em;margin-bottom:30px;}
+
+  .card{background:linear-gradient(160deg,var(--sumi2),#100a0d);border:1px solid var(--line);border-top:2px solid var(--shu);padding:23px 19px;margin-bottom:15px;}
+  .card.kin-top{border-top-color:var(--kin-d);}
+  .lbl{font-size:11px;letter-spacing:.3em;color:var(--kin-d);margin-bottom:10px;}
+  .lbl .opt{color:#5c4a50;letter-spacing:.1em;font-size:10px;margin-left:8px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;}
+  select{background:#100a0d;color:var(--shiro);border:1px solid var(--line);padding:10px 12px;font-family:'Noto Serif JP',serif;font-size:15px;flex:1;min-width:70px;}
+  select:focus{outline:none;border-color:var(--momo);}
+  button{font-family:'Shippori Mincho B1',serif;cursor:pointer;border:none;}
+  .btn-main{display:block;width:100%;padding:16px 0;margin-top:14px;background:linear-gradient(160deg,#7d1f30,var(--shu));color:var(--shiro);border:1px solid var(--shu-b);font-size:18px;letter-spacing:.5em;padding-left:.5em;transition:.3s;}
+  .btn-main:hover{filter:brightness(1.2);box-shadow:0 0 28px rgba(166,41,63,.4);}
+  .btn-s{background:#100a0d;border:1px solid var(--line);color:var(--shiro-d);padding:8px 13px;font-size:12px;letter-spacing:.14em;font-family:'Noto Serif JP',serif;cursor:pointer;}
+  .btn-s:hover{border-color:var(--momo);color:var(--shiro);}
+  .btn-s.on{border-color:var(--momo);color:var(--momo);background:#1c1015;}
+
+  /* 本命 */
+  .honmei{display:flex;gap:9px;margin-bottom:14px;}
+  .hm{flex:1;border:1px solid var(--line);background:#100a0d;padding:13px 8px 11px;text-align:center;}
+  .hm .h-l{font-size:9.5px;letter-spacing:.22em;color:var(--kin-d);margin-bottom:7px;}
+  .hm .h-v{font-family:'Shippori Mincho B1',serif;font-size:23px;letter-spacing:.05em;color:var(--momo);}
+  .hm .h-s{font-size:9.5px;color:var(--shiro-d);margin-top:5px;letter-spacing:.12em;}
+
+  /* 方位盤 3x3 */
+  .ban{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:14px 0 12px;}
+  .cell{border:1px solid var(--line);background:#100a0d;aspect-ratio:1;padding:7px 5px;position:relative;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:.3s;}
+  .cell .c-d{font-size:10px;letter-spacing:.1em;color:var(--shiro-d);}
+  .cell .c-s{font-family:'Shippori Mincho B1',serif;font-size:21px;line-height:1;}
+  .cell .c-t{font-size:9px;letter-spacing:.06em;min-height:1em;}
+  .cell.center{background:#1a1015;border-color:var(--kin-d);}
+  .cell.center .c-s{color:var(--kin);}
+  .cell.open{border-color:var(--momo);background:linear-gradient(160deg,#2a141c,#160c11);box-shadow:0 0 18px rgba(212,132,155,.15) inset;}
+  .cell.open .c-s{color:var(--momo);}
+  .cell.open .c-t{color:var(--momo);}
+  .cell.kill{border-color:#3a2028;}
+  .cell.kill .c-s{color:#5c3a44;}
+  .cell.kill .c-t{color:#7d3a48;}
+  .cell.good .c-s{color:var(--kin);}
+  .cell.tou::after{content:'桃';position:absolute;top:4px;right:5px;font-size:9px;color:var(--momo);
+    font-family:'Shippori Mincho B1',serif;}
+
+  .verdict{text-align:center;padding:18px 14px;border:1px solid var(--line);background:#100a0d;margin-bottom:14px;}
+  .verdict .v-big{font-family:'Shippori Mincho B1',serif;font-size:30px;letter-spacing:.2em;padding-left:.2em;margin-bottom:9px;}
+  .verdict .v-t{font-size:12.5px;line-height:1.95;color:var(--shiro-d);letter-spacing:.04em;}
+  .verdict.op{border-color:var(--momo);}
+  .verdict.op .v-big{color:var(--momo);}
+  .verdict.hf .v-big{color:var(--kin);}
+  .verdict.cl .v-big{color:#7d3a48;}
+
+  .note{font-size:11.5px;color:#5c4a50;line-height:1.9;margin-top:11px;letter-spacing:.03em;}
+  .note b{color:var(--kin-d);font-weight:400;}
+  p.body{font-size:13.5px;font-weight:300;line-height:2.05;letter-spacing:.03em;margin-bottom:11px;}
+  p.body:last-child{margin-bottom:0;}
+  p.body .hl{color:var(--momo);}
+  p.body .kn{color:var(--kin);}
+
+  /* 予報 */
+  .fc{border:1px solid var(--line);background:#100a0d;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:12px;}
+  .fc.best{border-color:var(--momo);background:linear-gradient(160deg,#22101a,#120a0e);}
+  .fc .f-d{font-size:11px;color:var(--shiro-d);letter-spacing:.08em;width:78px;flex-shrink:0;}
+  .fc .f-r{font-family:'Shippori Mincho B1',serif;font-size:17px;width:52px;flex-shrink:0;}
+  .fc.best .f-r{color:var(--momo);}
+  .fc .f-x{font-size:11.5px;color:#5c4a50;flex:1;line-height:1.7;}
+  .fc.best .f-x{color:var(--shiro-d);}
+
+  /* 刻 */
+  .koku{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+  .kk{border:1px solid var(--line);background:#100a0d;padding:7px 9px;font-size:11px;letter-spacing:.06em;color:#5c4a50;}
+  .kk.on{border-color:var(--momo);color:var(--momo);background:#1c1015;}
+
+  details{border:1px solid var(--line);background:#100a0d;margin-bottom:8px;}
+  details summary{padding:12px 14px;cursor:pointer;font-family:'Shippori Mincho B1',serif;font-size:14.5px;letter-spacing:.1em;list-style:none;display:flex;align-items:center;gap:9px;}
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:'▸';color:var(--kin-d);font-size:11px;}
+  details[open] summary::before{content:'▾';}
+  .d-body{padding:2px 15px 16px;font-size:12.5px;font-weight:300;line-height:2;color:var(--shiro-d);}
+  .d-body b{color:var(--kin-d);font-weight:400;letter-spacing:.1em;}
+
+  /* 判定 */
+  .verdict{text-align:center;padding:26px 16px 22px;border:1px solid var(--line);background:linear-gradient(160deg,var(--sumi2),#100a0d);margin-bottom:15px;}
+  .verdict .v-date{font-size:11px;letter-spacing:.3em;color:#5c4a50;margin-bottom:12px;}
+  .verdict .v-big{font-family:'Shippori Mincho B1',serif;font-size:34px;letter-spacing:.16em;padding-left:.16em;margin-bottom:12px;line-height:1.25;}
+  .verdict .v-t{font-size:13px;line-height:1.95;color:var(--shiro-d);letter-spacing:.03em;}
+  .verdict .v-dir{font-family:'Shippori Mincho B1',serif;font-size:19px;color:var(--shiro);}
+  .verdict .v-w{display:block;margin-top:7px;font-size:11.5px;color:#6b555c;}
+  .verdict .v-sc{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:#5c4a50;letter-spacing:.05em;line-height:1.8;}
+  .verdict.t3{border-color:var(--momo);box-shadow:0 0 34px rgba(212,132,155,.16) inset;}
+  .verdict.t3 .v-big{color:#e79fb4;text-shadow:0 0 26px rgba(212,132,155,.5);}
+  .verdict.t2{border-color:#8f5568;}
+  .verdict.t2 .v-big{color:var(--momo);}
+  .verdict.t1 .v-big{color:var(--kin);}
+  .verdict.t0 .v-big{color:#6b555c;}
+
+  /* 序列 */
+  .rk{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:#100a0d;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:.22s;}
+  .rk:hover{border-color:#4a3038;}
+  .rk.sel{border-color:var(--momo);background:#1a1015;}
+  .rk .r-d{font-family:'Shippori Mincho B1',serif;font-size:17px;width:40px;flex-shrink:0;letter-spacing:.05em;}
+  .rk .r-k{font-size:11px;color:#5c4a50;width:20px;flex-shrink:0;}
+  .rk .r-s{font-size:12px;color:#5c4a50;width:34px;flex-shrink:0;text-align:right;}
+  .rk .r-x{font-size:11.5px;color:var(--shiro-d);flex:1;line-height:1.6;}
+  .rk .r-x .ng{color:#8f4a58;}
+  .rk.t3 .r-d{color:#e79fb4;} .rk.t2 .r-d{color:var(--momo);}
+  .rk.t1 .r-d{color:var(--kin);} .rk.t0 .r-d{color:#5c4a50;}
+
+  /* 刻 */
+  .koku{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:4px;}
+  .kk{border:1px solid var(--line);background:#100a0d;padding:9px 6px;text-align:center;}
+  .kk .k-t{display:block;font-size:11px;letter-spacing:.04em;color:#5c4a50;}
+  .kk .k-b{display:block;margin-top:4px;font-size:10px;letter-spacing:.14em;font-family:'Shippori Mincho B1',serif;}
+  .kk.h3{border-color:var(--momo);background:#22121a;} .kk.h3 .k-t{color:var(--shiro);} .kk.h3 .k-b{color:#e79fb4;}
+  .kk.h2{border-color:#7d4a5a;} .kk.h2 .k-t{color:var(--shiro-d);} .kk.h2 .k-b{color:var(--momo);}
+  .kk.h1 .k-b{color:var(--kin-d);}
+
+  /* 予報 */
+  .fc{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#100a0d;padding:9px 12px;margin-bottom:5px;}
+  .fc .f-d{font-size:11.5px;color:var(--shiro-d);width:62px;flex-shrink:0;letter-spacing:.04em;}
+  .fc .f-d span{color:#5c4a50;margin-left:4px;font-size:10px;}
+  .fc .f-r{font-family:'Shippori Mincho B1',serif;font-size:16px;width:40px;flex-shrink:0;}
+  .fc .f-t{font-size:12px;flex:1;letter-spacing:.08em;}
+  .fc .f-x{font-size:10.5px;color:#4a3a40;}
+  .fc.t3{border-color:var(--momo);background:#1e1017;} .fc.t3 .f-r,.fc.t3 .f-t{color:#e79fb4;}
+  .fc.t2{border-color:#6b3f4c;} .fc.t2 .f-r,.fc.t2 .f-t{color:var(--momo);}
+  .fc.t1 .f-r,.fc.t1 .f-t{color:var(--kin);}
+  .fc.t0 .f-r,.fc.t0 .f-t{color:#4a3a40;}
+
+  .cell.t3{border-color:var(--momo);background:linear-gradient(160deg,#2a141c,#160c11);}
+  .cell.t3 .c-s,.cell.t3 .c-t{color:#e79fb4;}
+  .cell.t2 .c-s,.cell.t2 .c-t{color:var(--momo);}
+  .cell.t1 .c-s{color:var(--kin);} .cell.t1 .c-t{color:var(--kin-d);}
+  .cell.t0 .c-s,.cell.t0 .c-t{color:#4a3a40;}
+  .cell.five .c-s{color:#8f4a58;}
+  .cell.sel{outline:1px solid var(--momo);outline-offset:-3px;}
+  .cell{cursor:pointer;}
+  .hidden{display:none;}
+  footer{margin-top:54px;text-align:center;font-size:11px;letter-spacing:.24em;color:#5c4a50;line-height:2.3;}
+  footer a{color:#5c4a50;}
+  @media(max-width:480px){h1{font-size:32px;}.cell .c-s{font-size:18px;}.hm .h-v{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<main>
+
+<header>
+  <h1>桃花盤</h1>
+  <div class="sub">とうかばん ・ 色事方位術</div>
+</header>
+
+<p class="lead">
+  咸池は色の星、紅鸞は縁の星。<br>
+  その在処に九星の盤を重ねれば、<br>
+  情の通う道が、方角として顕れる。
+</p>
+
+<div class="card" id="cardIn">
+  <div class="lbl">生年月日</div>
+  <div class="row"><select id="sY"></select><select id="sM"></select><select id="sD"></select></div>
+  <div class="lbl" style="margin-top:15px;">占う日<span class="opt">既定は今日</span></div>
+  <div class="row"><select id="tY"></select><select id="tM"></select><select id="tD"></select></div>
+  <button class="btn-main" id="btnGo">盤を立てる</button>
+</div>
+
+<div id="out" class="hidden">
+  <div class="verdict" id="verdict"></div>
+
+  <div class="card">
+    <div class="lbl">八方位の序列<span class="opt">押すとその方角の刻を見ます</span></div>
+    <div id="rankList"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">今宵の刻<span class="opt" id="kokuLbl"></span></div>
+    <div class="koku" id="koku"></div>
+    <div class="note" id="kokuNote"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">向こう二十一日</div>
+    <div id="fc"></div>
+  </div>
+
+  <div class="card kin-top">
+    <div class="lbl">本命の桃花<span class="opt">生涯を通じて情の宿る方位</span></div>
+    <div class="honmei" id="honmei"></div>
+    <div id="honmeiText"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">盤<span class="opt" id="banLbl"></span></div>
+    <div class="row" style="margin-bottom:4px;">
+      <button class="btn-s on" data-ban="day">日盤</button>
+      <button class="btn-s" data-ban="month">月盤</button>
+      <button class="btn-s" data-ban="year">年盤</button>
+    </div>
+    <div class="ban" id="ban"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">方位取りの作法</div>
+    <div id="sahou"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">術の組み立て</div>
+    <details><summary>咸池（桃花）とは</summary><div class="d-body" id="dKan"></div></details>
+    <details><summary>紅鸞・天喜</summary><div class="d-body" id="dKou"></div></details>
+    <details><summary>桃花スコアと段階</summary><div class="d-body" id="dKyu"></div></details>
+  </div>
+</div>
+
+<div class="card kin-top" style="margin-top:30px;text-align:center;">
+  <div class="lbl">個別鑑定</div>
+  <p class="body">方位だけでなく、二人の命式や時期の流れまで合わせて読みたい方へ。</p>
+  <a class="btn-main" href="https://mond.how/9ren_azusa" target="_blank" rel="noopener" style="text-decoration:none;font-size:15px;letter-spacing:.3em;padding-left:.3em;">九蓮梓に鑑定を依頼する</a>
+</div>
+
+<footer>
+  桃花盤 ── 色事方位術<br>
+  咸池・紅鸞天喜（神煞）／九星気学の年月日時盤<br>
+  <a href="../">← 9ren / azusa のトップへ</a>
+</footer>
+</main>
+
+<script>
+
+const ZHI=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const GAN=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const D2R=Math.PI/180,n360=a=>((a%360)+360)%360;
+function jdn(y,m,d){if(m<=2){y--;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524;}
+function sunLon(JD){const T=(JD-2451545)/36525;
+  const L0=n360(280.46646+36000.76983*T+0.0003032*T*T);
+  const M=n360(357.52911+35999.05029*T-0.0001537*T*T);
+  const C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(M*D2R)+(0.019993-0.000101*T)*Math.sin(2*M*D2R)+0.000289*Math.sin(3*M*D2R);
+  return n360(L0+C-0.00569-0.00478*Math.sin((125.04-1934.136*T)*D2R));}
+function jdEnd(y,m,d){return jdn(y,m,d)-0.5+(23.999-9)/24;}
+// 太陽黄経がtargetになる日(JST日付のJDN)
+function termJDN(year,target,gm,gd){
+  let J=jdn(year,gm,gd)-0.5;
+  for(let i=0;i<10;i++){let df=target-sunLon(J);while(df>180)df-=360;while(df<-180)df+=360;
+    J+=df/0.9856;if(Math.abs(df)<1e-8)break;}
+  return Math.floor(J+0.5+9/24); // JST日付のJDN
+}
+const dayGanIdx=J=>((J+9)%10+10)%10;   // 甲=0
+const dayZhiIdx=J=>((J+1)%12+12)%12;   // 子=0
+
+// ── 日家九星 ──
+// 冬至に最も近い甲子日=一白で陽遁開始 / 夏至に最も近い甲子日=九紫で陰遁開始
+function nearestKoushi(targetJDN){
+  // targetJDN に最も近い甲子日(日干支番号0)
+  const s=((targetJDN+49)%60+60)%60; // 甲子からの経過日数
+  const back=targetJDN-s, fwd=back+60;
+  return (targetJDN-back<=fwd-targetJDN)?back:fwd;
+}
+function tontenList(year){
+  // その年と前後年の変遁日を返す [{jdn, star, dir}]
+  const out=[];
+  for(const y of [year-1,year,year+1]){
+    out.push({jdn:nearestKoushi(termJDN(y,270,12,22)), star:1, dir:+1}); // 冬至=黄経270
+    out.push({jdn:nearestKoushi(termJDN(y,90,6,21)),  star:9, dir:-1}); // 夏至=黄経90
+  }
+  return out.sort((a,b)=>a.jdn-b.jdn);
+}
+function dayStar(J){
+  const y=new Date((J-2440588)*86400000).getUTCFullYear();
+  const ts=tontenList(y);
+  let cur=null;
+  for(const t of ts){ if(t.jdn<=J) cur=t; else break; }
+  if(!cur){cur=ts[0];}
+  const n=J-cur.jdn;
+  let s=cur.star+cur.dir*n;
+  s=((s-1)%9+9)%9+1;
+  return s;
+}
+// ── 年盤・月盤 ──
+function yearStar(J){
+  const y=new Date((J-2440588)*86400000).getUTCFullYear();
+  const eff=(J<termJDN(y,315,2,4))?y-1:y;
+  let n=(11-(eff%9))%9; if(n===0)n=9; return n;
+}
+function monthIdxOf(J){ // 0=寅月
+  const d=new Date((J-2440588)*86400000);
+  const lon=sunLon(jdEnd(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate()));
+  return Math.floor(n360(lon-315)/30);
+}
+function monthStar(J){
+  const yStar=yearStar(J), mi=monthIdxOf(J);
+  const grp=yStar%3; // 1,4,7→1 / 2,5,8→2 / 3,6,9→0
+  const start=(grp===1)?8:(grp===2)?2:5;
+  let n=start-mi; while(n<=0)n+=9;
+  return ((n-1)%9)+1;
+}
+// ── 時盤 ──
+function hourStar(J,hourZhi){
+  // 陽遁/陰遁の判定
+  const ts=tontenList(new Date((J-2440588)*86400000).getUTCFullYear());
+  let cur=null; for(const t of ts){ if(t.jdn<=J) cur=t; else break; }
+  const yang=cur.dir>0;
+  const dz=dayZhiIdx(J);
+  const grp=(dz%3===0)?0:(dz%3===2)?1:2; // 子午卯酉=0 / 寅申巳亥=1 / 辰戌丑未=2
+  const startYang=[1,7,4][grp], startIn=[9,3,6][grp];
+  let s=yang?(startYang+hourZhi):(startIn-hourZhi);
+  s=((s-1)%9+9)%9+1;
+  return s;
+}
+
+// ── 洛書の定位(後天八卦) ──
+// 方位index: 0=北 1=北東 2=東 3=南東 4=南 5=南西 6=西 7=北西
+const DIRS=["北","北東","東","南東","南","南西","西","北西"];
+const HOME={1:0,8:1,3:2,4:3,9:4,2:5,7:6,6:7}; // 星→定位方位
+const HOME_STAR=[1,8,3,4,9,2,7,6];            // 方位→定位星
+// 中宮star のとき、方位dirに回座する星
+function placeStar(center,dir){
+  // 五黄が中宮のときは定位。中宮がnなら各方位の星は 定位星+(n-5)
+  let s=HOME_STAR[dir]+(center-5);
+  s=((s-1)%9+9)%9+1;
+  return s;
+}
+function starDir(center,star){ // starがどの方位に回座するか(5は中宮)
+  for(let d=0;d<8;d++) if(placeStar(center,d)===star) return d;
+  return -1;
+}
+// 十二支→方位index(8方位)
+const ZHI_DIR={0:0,1:1,2:1,3:2,4:3,5:3,6:4,7:5,8:5,9:6,10:7,11:7};
+const opp=d=>(d+4)%8;
+
+// ── 咸池(桃花) ──
+// 申子辰→酉 / 巳酉丑→午 / 寅午戌→卯 / 亥卯未→子
+function kanchi(zhiIdx){
+  if([8,0,4].includes(zhiIdx))return 9;   // 酉
+  if([5,9,1].includes(zhiIdx))return 6;   // 午
+  if([2,6,10].includes(zhiIdx))return 3;  // 卯
+  return 0;                               // 亥卯未→子
+}
+// ── 紅鸞・天喜 ──
+const kouran=y=>((3-y)%12+12)%12;
+const tenki=y=>(kouran(y)+6)%12;
+
+// ── 五行相生相剋 ──
+const ELEM={1:"水",2:"土",3:"木",4:"木",5:"土",6:"金",7:"金",8:"土",9:"火"};
+const SHENG={"水":"木","木":"火","火":"土","土":"金","金":"水"};
+const KE={"水":"火","火":"金","金":"木","木":"土","土":"水"};
+function relation(me,other){ // 本命星から見た回座星の関係
+  const a=ELEM[me],b=ELEM[other];
+  if(me===other)return "同";
+  if(a===b)return "比和";
+  if(SHENG[b]===a)return "生じられる";  // 相手が自分を生む=吉
+  if(SHENG[a]===b)return "生じる";      // 自分が相手を生む=洩れ
+  if(KE[a]===b)return "剋す";
+  if(KE[b]===a)return "剋される";
+  return "";
+}
+const GOOD=["生じられる","比和","同"];
+
+
+
+/* ══ 桃花スコア ══ */
+const STAR_W={7:3.0,1:3.0,4:2.5,9:2.0,3:1.0,8:1.0,6:0.0,2:0.0,5:-99};
+const KA_W={6:1.0,4:0.8,0:0.8,2:0.3,3:0.3,1:0,5:0,7:-0.3};
+const STAR_NAME={1:"一白水星",2:"二黒土星",3:"三碧木星",4:"四緑木星",5:"五黄土星",6:"六白金星",7:"七赤金星",8:"八白土星",9:"九紫火星"};
+const DIR_MEAN={
+ 0:{ka:"坎",t:"水・夜・秘め事。人目を避けた場、暗がり、酒。表に出ない関係を招く。"},
+ 1:{ka:"艮",t:"山・変化・継ぎ目。関係の形が切り替わる。旧知が別の顔を見せる。"},
+ 2:{ka:"震",t:"雷・発動・若さ。突然に、勢いよく。年下、初対面、その場の熱。"},
+ 3:{ka:"巽",t:"風・縁・整う。紹介、評判、遠方からの便り。じわりと結ばれる。"},
+ 4:{ka:"離",t:"火・美・顕われ。見る見られる。明かりの下、一目で決まる。"},
+ 5:{ka:"坤",t:"地・受容。年上、世話を焼く相手、居心地から情に変わる。"},
+ 6:{ka:"兌",t:"沢・悦び・口。飲食、談笑、口説き。八卦のうち最も情欲に近い。"},
+ 7:{ka:"乾",t:"天・格。地位ある相手、年長、公の場。遊びには重い。"}};
+const STAR_TOU={1:"夜・酒・秘事を司り、九星のうち最も色情に近い。",2:"母性と労。情は穏やかで、世話から始まる。",
+ 3:"声と発動。出会いは速く、熱も速い。",4:"縁と信用。最も結ばれる力が強い。",5:"腐敗と支配。動くのは凶。",
+ 6:"天と格式。相手は年長か立場ある人。",7:"悦び、飲食、口舌。遊興の場での縁を司る。",
+ 8:"変化と継ぎ目。関係の形が変わるとき働く。",9:"美と顕示。見られること、華やぐこと。"};
+
+/* 本命星ごとの閾値。同じ配点でも本命星により得点の出方が偏るため、
+   四百人分×二百日の実測分布から、各星の上位5%／27%／62%を境に較正した。 */
+const TH={1:[9.9,7.5,5.3],2:[7.8,6.1,4.6],3:[8.2,6.2,4.9],4:[9.6,7.3,5.2],
+          5:[7.8,6.3,5.0],6:[7.7,6.1,4.8],7:[8.8,6.6,4.8],8:[7.8,5.9,4.6],9:[7.6,6.0,4.6]};
+function tierOf(s,honmei){
+  const t=TH[honmei]||[8.5,6.5,5.0];
+  if(s>=t[0])return{n:"超やれる",c:"t3"};
+  if(s>=t[1])return{n:"結構やれる",c:"t2"};
+  if(s>=t[2])return{n:"やれる",c:"t1"};
+  return{n:"見送り",c:"t0"};
+}
+const HTIERS=[{th:3.5,n:"絶好",c:"h3"},{th:2.5,n:"好",c:"h2"},{th:1.5,n:"可",c:"h1"},{th:-999,n:"",c:"h0"}];
+const htierOf=s=>HTIERS.find(t=>s>=t.th);
+
+function profile(by,bm,bd){
+  const bJ=jdn(by,bm,bd);
+  const yz=(()=>{const eff=(bJ<termJDN(by,315,2,4))?by-1:by;return ((eff-4)%12+12)%12;})();
+  const dz=dayZhiIdx(bJ);
+  return {honmei:yearStar(bJ),dz,yz,touZhi:kanchi(dz),touYearZhi:kanchi(yz),kouZhi:kouran(yz),tenZhi:tenki(yz),
+    touDir:ZHI_DIR[kanchi(dz)],touYearDir:ZHI_DIR[kanchi(yz)],kouDir:ZHI_DIR[kouran(yz)],tenDir:ZHI_DIR[tenki(yz)]};
+}
+function boards(ty,tm,td){
+  const J=jdn(ty,tm,td);
+  const yz=(()=>{const eff=(J<termJDN(ty,315,2,4))?ty-1:ty;return ((eff-4)%12+12)%12;})();
+  const mz=(monthIdxOf(J)+2)%12,dz=dayZhiIdx(J);
+  return {J,c:{year:yearStar(J),month:monthStar(J),day:dayStar(J)},
+    ha:{year:opp(ZHI_DIR[yz]),month:opp(ZHI_DIR[mz]),day:opp(ZHI_DIR[dz])}};
+}
+function score(P,B,dir){
+  let s=0;const why=[],kill=[],warn=[];
+  const dS=placeStar(B.c.day,dir),mS=placeStar(B.c.month,dir),yS=placeStar(B.c.year,dir);
+  s+=STAR_W[dS]; if(STAR_W[dS]>=2)why.push(STAR_NAME[dS]);
+  if(STAR_W[mS]>=2.5){s+=1.0;why.push("月盤も"+STAR_NAME[mS]);}else if(STAR_W[mS]>0)s+=0.3;
+  const rel=relation(P.honmei,dS);
+  if(rel==="生じられる"){s+=1.2;why.push("本命を生じる");}
+  else if(rel==="比和"||rel==="同"){s+=0.8;why.push("本命と比和");}
+  else if(rel==="生じる")s+=0.5; else if(rel==="剋される")s-=0.4; else if(rel==="剋す")s-=0.2;
+  if(dir===P.touDir){s+=3.0;why.push("咸池");}
+  if(dir===P.touYearDir){s+=1.0;why.push("年の咸池");}
+  if(dir===P.kouDir){s+=2.0;why.push("紅鸞");}
+  if(dir===P.tenDir){s+=2.0;why.push("天喜");}
+  s+=KA_W[dir];
+  if(dS===5){s-=9;kill.push("日盤の五黄殺");}
+  if(placeStar(B.c.day,opp(dir))===5){s-=7;kill.push("日盤の暗剣殺");}
+  if(B.ha.day===dir){s-=3.5;kill.push("日破");}
+  if(dS===P.honmei){s-=3.0;kill.push("本命殺");}
+  if(placeStar(B.c.day,opp(dir))===P.honmei){s-=2.5;kill.push("本命的殺");}
+  if(mS===5){s-=3.0;kill.push("月盤の五黄殺");}
+  if(placeStar(B.c.month,opp(dir))===5){s-=2.0;kill.push("月盤の暗剣殺");}
+  if(B.ha.month===dir){s-=1.5;kill.push("月破");}
+  if(yS===5){s-=1.2;warn.push("年盤の五黄殺");}
+  if(placeStar(B.c.year,opp(dir))===5){s-=0.8;warn.push("年盤の暗剣殺");}
+  if(B.ha.year===dir){s-=0.6;warn.push("歳破");}
+  return {s,why,kill,warn,dS,mS,yS,rel,dir};
+}
+function hourScore(P,B,dir,h){
+  const c=hourStar(B.J,h),st=placeStar(c,dir);
+  let s=STAR_W[st];const rel=relation(P.honmei,st);
+  if(rel==="生じられる")s+=1.5;else if(rel==="比和"||rel==="同")s+=0.8;else if(rel==="剋される")s-=0.8;
+  if(st===5)s-=9;
+  if(placeStar(c,opp(dir))===5)s-=6;
+  return {s,st};
+}
+function rank(P,B){const r=[];for(let d=0;d<8;d++)r.push(score(P,B,d));return r.slice().sort((a,b)=>b.s-a.s);}
+
+let ST={view:"day"};
+
+(function(){
+  const now=new Date();
+  const sY=document.getElementById("sY"),sM=document.getElementById("sM"),sD=document.getElementById("sD");
+  for(let y=now.getFullYear();y>=1925;y--)sY.add(new Option(y+"年",y));
+  for(let m=1;m<=12;m++)sM.add(new Option(m+"月",m));
+  const rd=()=>{const last=new Date(+sY.value,+sM.value,0).getDate(),cur=+sD.value;sD.innerHTML="";
+    for(let d=1;d<=last;d++)sD.add(new Option(d+"日",d));if(cur&&cur<=last)sD.value=cur;};
+  sY.onchange=rd;sM.onchange=rd;sY.value=1990;sM.value=1;rd();
+  const tY=document.getElementById("tY"),tM=document.getElementById("tM"),tD=document.getElementById("tD");
+  for(let y=now.getFullYear()+2;y>=now.getFullYear()-1;y--)tY.add(new Option(y+"年",y));
+  for(let m=1;m<=12;m++)tM.add(new Option(m+"月",m));
+  const rd2=()=>{const last=new Date(+tY.value,+tM.value,0).getDate(),cur=+tD.value;tD.innerHTML="";
+    for(let d=1;d<=last;d++)tD.add(new Option(d+"日",d));if(cur&&cur<=last)tD.value=cur;};
+  tY.onchange=rd2;tM.onchange=rd2;tY.value=now.getFullYear();tM.value=now.getMonth()+1;rd2();tD.value=now.getDate();
+  document.getElementById("btnGo").onclick=go;
+  document.querySelectorAll("[data-ban]").forEach(b=>b.onclick=()=>{
+    ST.view=b.dataset.ban;
+    document.querySelectorAll("[data-ban]").forEach(x=>x.classList.toggle("on",x===b));
+    drawBan();});
+})();
+
+function go(){
+  ST.birth=[+sY.value,+sM.value,+sD.value];
+  ST.target=[+document.getElementById("tY").value,+document.getElementById("tM").value,+document.getElementById("tD").value];
+  ST.P=profile.apply(null,ST.birth);ST.B=boards.apply(null,ST.target);
+  ST.R=rank(ST.P,ST.B);ST.pick=ST.R[0].dir;
+  render();
+  document.getElementById("out").classList.remove("hidden");
+  document.getElementById("out").scrollIntoView({behavior:"smooth"});
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function render(){
+  const P=ST.P,B=ST.B,R=ST.R,top=R[0],tier=tierOf(top.s,P.honmei);
+  const tm=ST.target[1],td=ST.target[2];
+
+  document.getElementById("honmei").innerHTML=`
+    <div class="hm"><div class="h-l">咸池・日</div><div class="h-v">${DIRS[P.touDir]}</div><div class="h-s">${ZHI[P.touZhi]}</div></div>
+    <div class="hm"><div class="h-l">咸池・年</div><div class="h-v">${DIRS[P.touYearDir]}</div><div class="h-s">${ZHI[P.touYearZhi]}</div></div>
+    <div class="hm"><div class="h-l">紅鸞</div><div class="h-v">${DIRS[P.kouDir]}</div><div class="h-s">${ZHI[P.kouZhi]}</div></div>
+    <div class="hm"><div class="h-l">天喜</div><div class="h-v">${DIRS[P.tenDir]}</div><div class="h-s">${ZHI[P.tenZhi]}</div></div>`;
+  const dm=DIR_MEAN[P.touDir];
+  document.getElementById("honmeiText").innerHTML=
+    `<p class="body">生日の支は <span class="kn">${ZHI[P.dz]}</span>。三合の理により咸池は <span class="hl">${ZHI[P.touZhi]}＝${DIRS[P.touDir]}</span>。生涯を通じて情の宿る方位です。</p>
+     <p class="body"><span class="kn">${DIRS[P.touDir]}／${dm.ka}</span>　${dm.t}</p>
+     <p class="body">咸池が肉の縁、紅鸞（<span class="hl">${DIRS[P.kouDir]}</span>）と天喜（<span class="hl">${DIRS[P.tenDir]}</span>）が情の縁を司ります。ただし日々の盤は動くので、その日いちばん開く方角は下で見ます。</p>`;
+
+  const V=document.getElementById("verdict");
+  V.className="verdict "+tier.c;
+  let vt=`<span class="v-dir">${DIRS[top.dir]}</span>へ。`;
+  if(top.why.length)vt+=`${top.why.join("・")}。`;
+  if(top.warn.length)vt+=`<span class="v-w">${top.warn.join("・")}が薄く掛かるが、近距離・日帰りなら影響は軽い。</span>`;
+  if(tier.c==="t0")vt=`八方位いずれも盤が塞がっています。最良は${DIRS[top.dir]}ですが、今日は動かないほうが賢明です。`;
+  V.innerHTML=`<div class="v-date">${tm}月${td}日</div><div class="v-big">${tier.n}</div>
+    <div class="v-t">${vt}</div><div class="v-sc">桃花 ${top.s.toFixed(1)}　／　${STAR_NAME[top.dS]}回座　${STAR_TOU[top.dS]}</div>`;
+
+  const rl=document.getElementById("rankList");rl.innerHTML="";
+  for(const r of R){
+    const t=tierOf(r.s,P.honmei);
+    const el=document.createElement("div");
+    el.className="rk "+t.c+(r.dir===ST.pick?" sel":"");
+    el.innerHTML=`<div class="r-d">${DIRS[r.dir]}</div><div class="r-k">${DIR_MEAN[r.dir].ka}</div>
+      <div class="r-s">${r.s.toFixed(1)}</div>
+      <div class="r-x">${r.kill.length?`<span class="ng">${r.kill[0]}</span>`:(r.why.join("・")||"—")}</div>`;
+    el.onclick=function(){ST.pick=r.dir;render();};
+    rl.appendChild(el);
+  }
+
+  drawBan();
+
+  const pick=ST.pick;
+  document.getElementById("kokuLbl").textContent=DIRS[pick]+"へ向かうなら";
+  const kk=document.getElementById("koku");kk.innerHTML="";
+  const KOKU=["子 23–1","丑 1–3","寅 3–5","卯 5–7","辰 7–9","巳 9–11","午 11–13","未 13–15","申 15–17","酉 17–19","戌 19–21","亥 21–23"];
+  const hrs=[];
+  for(let h=0;h<12;h++){const r=hourScore(P,B,pick,h);hrs.push({h:h,s:r.s,st:r.st,t:htierOf(r.s)});}
+  for(const x of hrs){
+    const el=document.createElement("div");
+    el.className="kk "+x.t.c;
+    el.innerHTML=`<span class="k-t">${KOKU[x.h]}</span>${x.t.n?`<span class="k-b">${x.t.n}</span>`:""}`;
+    el.title=STAR_NAME[x.st];
+    kk.appendChild(el);
+  }
+  const bestH=hrs.filter(x=>x.t.c!=="h0").sort((a,b)=>b.s-a.s);
+  document.getElementById("kokuNote").innerHTML=bestH.length
+    ? `最も濃いのは <b>${KOKU[bestH[0].h]}時</b>（${STAR_NAME[bestH[0].st]}）。夜に効かせたいなら戌・亥の刻が開く日を選ぶとよい。子の刻をまたぐと日が改まり、盤も入れ替わります。`
+    : `この方位は今日、どの刻も開きません。別の方角を選ぶか、日を改めてください。`;
+
+  const fc=document.getElementById("fc");fc.innerHTML="";
+  const base=new Date(ST.target[0],tm-1,td);
+  for(let i=0;i<21;i++){
+    const d=new Date(base);d.setDate(d.getDate()+i);
+    const BB=boards(d.getFullYear(),d.getMonth()+1,d.getDate());
+    const rr=rank(P,BB),t0=rr[0],t=tierOf(t0.s,P.honmei);
+    const el=document.createElement("div");
+    el.className="fc "+t.c;
+    const wd=["日","月","火","水","木","金","土"][d.getDay()];
+    el.innerHTML=`<div class="f-d">${d.getMonth()+1}/${d.getDate()}<span>${wd}</span></div>
+      <div class="f-r">${DIRS[t0.dir]}</div><div class="f-t">${t.n}</div><div class="f-x">${t0.s.toFixed(1)}</div>`;
+    fc.appendChild(el);
+  }
+
+  document.getElementById("sahou").innerHTML=`
+    <p class="body">方位取りは自宅を起点として、その方角へ実際に身体を運ぶことで成ります。地図の方角ではなく、住まいから見た方角です。</p>
+    <p class="body"><span class="kn">距離と時間</span>　日盤の作用は近距離で立ちます。二十キロ以上離れ、四時間以上滞在する。その土地で飲み食いすると効きが増すとされます。本術が年盤の凶殺を軽く見るのはこのためで、日帰り・近距離の移動に年盤の重い凶方は効きにくい。逆に引っ越しや長期滞在なら、年盤を最優先で見てください。</p>
+    <p class="body"><span class="kn">刻を合わせる</span>　上の刻表で開いている時間帯に、その方角にいること。色事の方位術において刻は軽くありません。</p>
+    <div class="note">方位術は機会の巡りを整えるものであって、特定の相手を動かす術ではありません。人の意思に働きかける類の使い方はできませんし、そういう術でもない。出向いた先で何が起きるかは、その場のあなた次第です。</div>`;
+
+  document.getElementById("dKan").innerHTML=
+    `咸池は<b>桃花星</b>とも呼ばれ、古典において色欲・情事・異性の縁を司る神煞です。生年または生日の支が属する三合局から求めます。<br><br>
+     申子辰（水局）→ 酉／巳酉丑（金局）→ 午／寅午戌（火局）→ 卯／亥卯未（木局）→ 子<br><br>
+     咸池が必ず<b>子午卯酉</b>の四正に落ちるのは偶然ではありません。四正は四季の中央、気が最も盛る位置であり、色の気もここに極まると考えられました。<br><br>
+     ただし咸池は生涯不動の星です。日々どこが開くかは九星の盤が決めるため、本術では咸池位に加点しつつ、八方位すべてを採点しています。`;
+  document.getElementById("dKou").innerHTML=
+    `<b>紅鸞</b>と<b>天喜</b>は婚姻・慶事・情の縁を司る一対の星で、生年支から求めます。子年生まれなら紅鸞は卯、以下逆行し、天喜は常にその対冲。<br><br>
+     咸池が肉の縁、紅鸞天喜が情の縁と分けて読みます。四隅にも落ちるため、咸池が塞がる時期の代替経路になります。両者が同方位に重なる生まれは、遊びがそのまま縁になりやすい人です。`;
+  document.getElementById("dKyu").innerHTML=
+    `八方位それぞれに<b>桃花スコア</b>を与え、その日の最良方位と段階を出しています。<br><br>
+     <b>加点</b>　日盤の回座星（七赤・一白＋3.0／四緑＋2.5／九紫＋2.0）、月盤の重なり、本命星との相生（生じられる＋1.2／比和＋0.8）、咸池＋3.0、紅鸞・天喜＋2.0、八卦の象意（兌＋1.0／離・坎＋0.8）。<br><br>
+     <b>減点</b>　日盤の五黄殺−9／暗剣殺−7／日破−3.5／本命殺−3.0／本命的殺−2.5、月盤の五黄殺−3.0／暗剣殺−2.0／月破−1.5、年盤の五黄殺−1.2／暗剣殺−0.8／歳破−0.6。<br><br>
+     年盤の凶殺を軽く扱うのは、<b>方位の作用が距離と滞在時間に比例する</b>という気学の原則によります。年盤は転居や長期滞在に効き、日帰り・近距離には日盤と時盤が主として働く。本術は夜の外出を想定しているため、日盤主体で判じています。<br><br>
+     <b>段階の較正</b>　同じ配点でも本命星により得点の出方が偏ります。色情を司る七赤（金）と一白（水）は、土性の本命星（二黒・五黄・八白）と相生にならないため、素の配点のままでは土の人に「超やれる」がまったく出ませんでした。そこで四百人分の生年月日を二百日ずつ計算し、<b>本命星ごとに実測分布の上位5％・27％・62％を境として閾値を較正</b>しています。誰であっても超やれるは年に十数日、結構やれるは月に六日前後、やれるを含めればおよそ六割の日が動ける日になります。<br><br>
+     日家九星の陽遁・陰遁は、冬至に最も近い甲子日を一白として順行、夏至に最も近い甲子日を九紫として逆行。変遁日に星が二日続く現象まで公開暦と一致することを確認済みです。`;
+}
+
+function drawBan(){
+  const P=ST.P,B=ST.B,which=ST.view,c=B.c[which];
+  document.getElementById("banLbl").textContent=
+    {day:"その日の盤",month:"その月の盤",year:"その年の盤"}[which]+"　中宮 "+STAR_NAME[c];
+  const LAYOUT=[3,4,5,2,-1,6,1,0,7];
+  const b=document.getElementById("ban");b.innerHTML="";
+  for(const dir of LAYOUT){
+    const el=document.createElement("div");
+    if(dir===-1){el.className="cell center";
+      el.innerHTML=`<div class="c-d">中宮</div><div class="c-s">${c}</div><div class="c-t">${STAR_NAME[c].slice(2)}</div>`;
+      b.appendChild(el);continue;}
+    const st=placeStar(c,dir);
+    const r=ST.R.find(x=>x.dir===dir),t=tierOf(r.s,P.honmei);
+    let cls="cell "+(which==="day"?t.c:"");
+    if(dir===P.touDir)cls+=" tou";
+    if(dir===ST.pick)cls+=" sel";
+    if(st===5)cls+=" five";
+    el.className=cls;
+    el.innerHTML=`<div class="c-d">${DIRS[dir]}</div><div class="c-s">${st}</div>
+      <div class="c-t">${which==="day"?(r.kill.length?r.kill[0].replace(/^(日|月|年)盤の/,""):t.n):STAR_NAME[st].slice(2)}</div>`;
+    el.title=STAR_NAME[st];
+    el.onclick=function(){ST.pick=dir;render();};
+    b.appendChild(el);
+  }
+}
+
+</script>
+</body>
+</html>
