@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>三重のダイモーン｜9ren / azusa</title>
+<meta name="description" content="トート・タロットで守護の働きを読む。出生図のASC・MCから守護のコートカードを割り出し、中央の柱の6枚で展開する。">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: 生命の樹の中央の柱を縦軸にした展開図を主役に、左に出生図の算出、右に展開と解釈。狭い画面では縦一列。 */
+:root{
+  --bg:#ECEAF1;          /* 薄い藤鼠の紙 */
+  --surface:#F7F6FA;
+  --ink:#231B33;         /* 茄子紺の墨 */
+  --muted:#5F5770;
+  --line:#CFC9DA;
+  --gold:#9A6A12;        /* ティファレトの金 */
+  --gold-soft:#F2E3C2;
+  --fire:#B4381F; --water:#2A5C9E; --air:#9A7A08; --earth:#4F6A2E;
+  --card:#FBFAFD;
+  --f-display:"Cormorant Garamond","Shippori Mincho",serif;
+  --f-jp:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-ui:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17131F;--surface:#201A2B;--ink:#ECE6F5;--muted:#A79DB8;--line:#3A3149;
+  --gold:#E2B65A;--gold-soft:#3A2E17;--fire:#E2694C;--water:#6C9BDA;--air:#D9BC4A;--earth:#93B266;--card:#272035;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17131F;--surface:#201A2B;--ink:#ECE6F5;--muted:#A79DB8;--line:#3A3149;
+  --gold:#E2B65A;--gold-soft:#3A2E17;--fire:#E2694C;--water:#6C9BDA;--air:#D9BC4A;--earth:#93B266;--card:#272035;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line);padding-bottom:20px}
+.eyebrow{font-size:12px;letter-spacing:.18em;color:var(--gold);font-weight:700}
+h1{font-family:var(--f-jp);font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1.25;margin:0;text-wrap:balance}
+h1 em{font-family:var(--f-display);font-style:italic;font-weight:500;color:var(--muted);font-size:.62em;margin-left:.4em;letter-spacing:.02em}
+.lead{color:var(--muted);max-width:62ch;margin:0}
+.grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+section{min-width:0}
+h2{font-family:var(--f-jp);font-size:19px;margin:0 0 12px;display:flex;align-items:baseline;gap:10px}
+h2 small{font-family:var(--f-ui);font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;gap:4px;background:var(--bg);padding:3px;border-radius:5px}
+.tabs button{flex:1;border:0;background:transparent;color:var(--muted);font:500 13px var(--f-ui);padding:7px 6px;border-radius:4px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields .full{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+input,select{font:15px var(--f-ui);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:7px 9px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin:0}
+.btn{font:700 14px var(--f-ui);border-radius:4px;padding:10px 14px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.genius{display:flex;flex-direction:column;gap:0}
+.gitem{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.gitem:first-child{border-top:0;padding-top:0}
+.gitem dt{font-size:12px;color:var(--muted);letter-spacing:.04em;padding-top:2px}
+.gitem dd{margin:0;min-width:0}
+.gname{font-family:var(--f-jp);font-weight:700}
+.gsub{font-size:12px;color:var(--muted)}
+.deg{font-variant-numeric:tabular-nums;font-family:var(--f-display);font-size:18px;font-weight:600}
+
+/* 展開図 */
+.spreadhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.status{font-size:12px;color:var(--muted)}
+.tree{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,auto);gap:14px clamp(10px,3vw,36px);
+  max-width:560px;margin:0 auto;padding:8px 0}
+.tree::before{content:"";position:absolute;left:50%;top:6%;bottom:6%;width:1px;background:linear-gradient(var(--gold),var(--line));transform:translateX(-.5px);z-index:0}
+.slot{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.slot .lab{font-size:11px;color:var(--muted);text-align:center;line-height:1.35;letter-spacing:.04em}
+.slot .lab b{display:block;color:var(--ink);font-family:var(--f-jp);font-size:12px;letter-spacing:0}
+.tcard{width:100%;max-width:128px;aspect-ratio:5/8;background:var(--card);border:1px solid var(--line);border-radius:5px;
+  display:flex;flex-direction:column;overflow:hidden;cursor:pointer;text-align:left;padding:0;font:inherit;color:inherit;transition:transform .2s}
+.tcard:hover{transform:translateY(-2px)}
+.tcard .band{height:7px;background:var(--el,var(--muted))}
+.tcard .body{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:8px 8px 9px;gap:4px;min-width:0}
+.tcard .num{font-family:var(--f-display);font-size:13px;color:var(--muted);font-weight:600}
+.tcard .en{font-family:var(--f-display);font-weight:600;font-size:clamp(13px,2.6vw,16px);line-height:1.1;overflow-wrap:anywhere}
+.tcard .jp{font-family:var(--f-jp);font-size:11px;color:var(--muted);line-height:1.3}
+.tcard .attr{font-size:10.5px;color:var(--el,var(--muted));font-weight:700;letter-spacing:.04em}
+.tcard.fixed{border-style:dashed}
+.tcard.art{border:1.5px solid var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.s4{grid-column:2;grid-row:1}.s3{grid-column:2;grid-row:2}.s2{grid-column:2;grid-row:3}.s1{grid-column:2;grid-row:4}
+.ssig{grid-column:1;grid-row:2}.s5{grid-column:1;grid-row:3}.smc{grid-column:3;grid-row:2}.s6{grid-column:3;grid-row:3}
+@media (prefers-reduced-motion:no-preference){.tcard.dealt{animation:deal .45s ease-out both}}
+@keyframes deal{from{opacity:.25;transform:translateY(6px) rotateY(40deg)}to{opacity:1;transform:none}}
+
+.signal{border:1px solid var(--gold);background:var(--gold-soft);border-radius:5px;padding:10px 14px;font-size:14px}
+.summary{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--surface);font-variant-numeric:tabular-nums}
+.chip i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--c)}
+.readings{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.rd{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:16px 0;border-top:1px solid var(--line);scroll-margin-top:16px}
+.rd .no{font-family:var(--f-display);font-size:26px;font-weight:600;color:var(--gold);line-height:1}
+.rd h3{margin:0;font-family:var(--f-jp);font-size:16px}
+.rd .q{font-size:12px;color:var(--muted);margin:0 0 6px}
+.rd .cn{font-family:var(--f-display);font-size:19px;font-weight:600}
+.rd .cn span{font-family:var(--f-jp);font-size:13px;color:var(--muted);margin-left:6px;font-weight:500}
+.rd p{margin:4px 0;max-width:66ch}
+.kv{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}
+.kv b{color:var(--ink);font-weight:500}
+.dig{font-size:12.5px}
+.dig.same,.dig.friend{color:var(--earth)}.dig.enemy{color:var(--fire)}
+textarea{width:100%;min-height:160px;font:13px var(--f-ui);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px}
+footer{border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+footer p{margin:0;max-width:80ch}
+.site-back{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}.site-back:hover{border-color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">THOTH TAROT · GUARDIAN DIVINATION</div>
+    <h1>三重のダイモーン<em>Triplex Daemon</em></h1>
+    <p class="lead">アグリッパの三重のダイモーン（聖なるダイモーン・出生のゲニウス・職業のゲニウス）を、黄金の夜明け団の照応でトート・タロットに落とし込んだ守護霊占いです。出生図のASCとMCから守護の姿を割り出し、中央の柱の6枚で今の守護の働きを読みます。</p>
+  </header>
+
+  <div class="grid">
+    <section aria-labelledby="h-natal">
+      <h2 id="h-natal">出生のゲニウス <small>出生図から算出</small></h2>
+      <div class="panel">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="tab-birth" aria-selected="true">出生データから</button>
+          <button type="button" role="tab" id="tab-manual" aria-selected="false">ASC・MCを入力</button>
+        </div>
+        <form id="f-birth" class="fields" autocomplete="off">
+          <label class="full">生年月日<input type="date" id="b-date" value="1990-01-01" required></label>
+          <label>出生時刻<input type="time" id="b-time" value="12:00" required></label>
+          <label>UTCとの時差（時間）<input type="number" id="b-tz" value="9" step="0.25" min="-12" max="14"></label>
+          <label>緯度（北緯＋）<input type="number" id="b-lat" value="35.6895" step="0.0001" min="-66" max="66"></label>
+          <label>経度（東経＋）<input type="number" id="b-lon" value="139.6917" step="0.0001" min="-180" max="180"></label>
+          <p class="note full">初期値はサンプル（1990年1月1日12:00・東京）です。日本の夏時間（1948〜1951年の夏期）に生まれた場合は時差を10にしてください。</p>
+        </form>
+        <form id="f-manual" class="fields" autocomplete="off" hidden>
+          <label>ASCの星座<select id="m-asc-s"></select></label>
+          <label>ASCの度数<input type="number" id="m-asc-d" value="10" step="0.01" min="0" max="29.99"></label>
+          <label>MCの星座<select id="m-mc-s"></select></label>
+          <label>MCの度数<input type="number" id="m-mc-d" value="10" step="0.01" min="0" max="29.99"></label>
+          <p class="note full">ASCとMCはハウスシステムに依存しないため、プラシーダスで出した値をそのまま入れられます。</p>
+        </form>
+        <dl class="genius" id="genius"></dl>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-spread">
+      <div class="spreadhead">
+        <div>
+          <h2 id="h-spread" style="margin:0">中央の柱の6枚 <small>MIDDLE PILLAR</small></h2>
+          <div class="status" id="status">サンプル展開です。問いを定めてから「カードを引く」を押してください。</div>
+        </div>
+        <div class="row">
+          <button type="button" class="btn gold" id="draw">カードを引く</button>
+          <button type="button" class="btn ghost" id="copy">結果をコピー</button>
+        </div>
+      </div>
+      <div class="tree" id="tree"></div>
+      <div id="signal"></div>
+      <div class="summary" id="summary"></div>
+      <div class="readings" id="readings"></div>
+      <textarea id="copybox" hidden readonly aria-label="コピー用テキスト"></textarea>
+    </section>
+  </div>
+
+  <footer>
+    <p><a class="site-back" href="../">← 9ren / azusa のトップへ</a></p>
+    <p>本法は伝統技法ではなく、アグリッパ『隠秘哲学』第3巻22章、イアンブリコス『秘儀論』第9巻、クロウリーの聖守護天使論（Liber Samekh）、黄金の夜明け団『Book T』の配当にもとづく新構築です。逆位置は採らず、元素の品位で強弱を読みます。</p>
+    <p>72天使は黄金の夜明け団式（獅子座0°起点）。天使名の綴りは文献により異なります。ASC・MCの計算精度はおおむね0.1°以内です。境界付近の度数はお手持ちのソフトで確認してください。</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const SIGNS=["牡羊座","牡牛座","双子座","蟹座","獅子座","乙女座","天秤座","蠍座","射手座","山羊座","水瓶座","魚座"];
+const SIGN_EL=["fire","earth","air","water"];
+const EL_JP={fire:"火",water:"水",air:"風",earth:"地"};
+const SUIT={fire:{en:"Wands",jp:"ワンズ"},water:{en:"Cups",jp:"カップ"},air:{en:"Swords",jp:"ソード"},earth:{en:"Disks",jp:"ディスク"}};
+const SIGNS_OF={fire:[0,4,8],earth:[9,1,5],air:[6,10,2],water:[3,7,11]}; // 活動・不動・柔軟
+const PLANETS=["火星","太陽","金星","水星","月","土星","木星"];
+const ANGELS=["Vehuiah","Yeliel","Sitael","Elemiah","Mahasiah","Lelahel","Achaiah","Cahetel","Haziel","Aladiah","Lauviah","Hahaiah","Yezalel","Mebahel","Hariel","Hakamiah","Lauviah","Caliel","Leuviah","Pahaliah","Nelchael","Yeiayel","Melahel","Haheuiah","Nith-Haiah","Haaiah","Yerathel","Seheiah","Reiyel","Omael","Lecabel","Vasariah","Yehuiah","Lehahiah","Chavakiah","Menadel","Aniel","Haamiah","Rehael","Yeiazel","Hahahel","Mikael","Veuliah","Yelahiah","Sealiah","Ariel","Asaliah","Mihael","Vehuel","Daniel","Hahasiah","Imamiah","Nanael","Nithael","Mebahiah","Poyel","Nemamiah","Yeialel","Harahel","Mitzrael","Umabel","Iah-hel","Anauel","Mehiel","Damabiah","Manakel","Eiael","Habuiah","Rochel","Jabamiah","Haiaiel","Mumiah"];
+// [roman, en, jp, hebrew, attribution, element or null, keyword]
+const MAJ=[
+ ["0","The Fool","愚者","アレフ","風","air","未知への跳躍、純粋な可能性"],
+ ["I","The Magus","魔術師","ベト","水星",null,"意志の伝達、言葉と技"],
+ ["II","The Priestess","女司祭","ギメル","月",null,"内なる純粋さ、受容と秘密"],
+ ["III","The Empress","女帝","ダレト","金星",null,"愛と豊穣、育む力"],
+ ["IV","The Emperor","皇帝","ツァダイ","牡羊座","fire","秩序の創設、主導"],
+ ["V","The Hierophant","神官","ヴァウ","牡牛座","earth","教えと啓示、伝統の継承"],
+ ["VI","The Lovers","恋人","ザイン","双子座","air","対立するものの結合、選択"],
+ ["VII","The Chariot","戦車","ケト","蟹座","water","聖杯を運ぶ者、守護と前進"],
+ ["VIII","Adjustment","調整","ラメド","天秤座","air","均衡、カルマの調整"],
+ ["IX","The Hermit","隠者","ヨド","乙女座","earth","内なる光、叡智の探求"],
+ ["X","Fortune","運命","カフ","木星",null,"変転と循環"],
+ ["XI","Lust","欲望","テト","獅子座","fire","情熱と活力、獣を御す喜び"],
+ ["XII","The Hanged Man","吊るされた男","メム","水","water","献身と犠牲、旧い形の解体"],
+ ["XIII","Death","死","ヌン","蠍座","water","変容、再生のための死"],
+ ["XIV","Art","技","サメク","射手座","fire","錬金術的統合、聖守護天使への径"],
+ ["XV","The Devil","悪魔","アイン","山羊座","earth","創造的エネルギー、物質への降下"],
+ ["XVI","The Tower","塔","ペー","火星",null,"破壊と解放、浄化"],
+ ["XVII","The Star","星","ヘー","水瓶座","air","希望、真の意志の星"],
+ ["XVIII","The Moon","月","コフ","魚座","water","幻影と境界、試練の夜"],
+ ["XIX","The Sun","太陽","レシュ","太陽",null,"光と自由、新しい始まり"],
+ ["XX","The Aeon","アイオン","シン","火・霊","fire","新しい時代、覚醒"],
+ ["XXI","The Universe","宇宙","タウ","土星・地","earth","完成、大いなる業の結実"]];
+const SIGN_MAJOR=[4,5,6,7,11,9,8,13,14,15,17,18];
+const TITLES={
+ fire:["Dominion|支配","Virtue|美徳","Completion|完成","Strife|闘争","Victory|勝利","Valour|勇気","Swiftness|迅速","Strength|強さ","Oppression|抑圧"],
+ water:["Love|愛","Abundance|豊かさ","Luxury|贅沢","Disappointment|失望","Pleasure|喜び","Debauch|堕落","Indolence|怠惰","Happiness|幸福","Satiety|飽満"],
+ air:["Peace|平和","Sorrow|悲しみ","Truce|休戦","Defeat|敗北","Science|科学","Futility|無益","Interference|干渉","Cruelty|残酷","Ruin|破滅"],
+ earth:["Change|変化","Works|作業","Power|力","Worry|心配","Success|成功","Failure|失敗","Prudence|慎重","Gain|獲得","Wealth|富"]};
+const ACE_KW={fire:"火の根源、意志の点火",water:"水の根源、愛の受容",air:"風の根源、知性の発動",earth:"地の根源、物質化の種"};
+const COURT_KW={
+ fire:{Knight:"迅速な行動力、炎の突進",Queen:"自信と統率、内なる炎",Prince:"創意と気迫、高貴な情熱",Princess:"大胆さ、火による変容"},
+ water:{Knight:"理想と献身、優雅な受容",Queen:"映し出す力、深い共感",Prince:"秘めた情熱、芸術性",Princess:"夢見る優しさ、想像力"},
+ air:{Knight:"鋭い知性、果断",Queen:"明晰な判断、仮面を剥ぐ",Prince:"知的創造、構想力",Princess:"実際的な知恵、決断"},
+ earth:{Knight:"勤勉と収穫、地道な実り",Queen:"忍耐と滋養、豊かさの守り",Prince:"着実な建設、粘り強さ",Princess:"生成、内に宿る可能性"}};
+const COURT_JP={Knight:"ナイト",Queen:"クイーン",Prince:"プリンス",Princess:"プリンセス"};
+const COURT_EL={Knight:"火",Queen:"水",Prince:"風",Princess:"地"};
+const COURT_MOD={Queen:0,Prince:1,Knight:2};
+
+// デッキ構築
+const DECK=[];
+MAJ.forEach((m,i)=>DECK.push({id:"M"+i,type:"major",idx:i,num:m[0],en:m[1],jp:m[2],heb:m[3],attr:m[4],el:m[5],kw:m[6]}));
+for(const el of ["fire","water","air","earth"]){
+  const s=SUIT[el];
+  DECK.push({id:el+"A",type:"ace",el,num:"Ace",en:"Ace of "+s.en,jp:s.jp+"のエース",attr:EL_JP[el]+"の根源",kw:ACE_KW[el]});
+  for(let n=2;n<=10;n++){
+    const mod=Math.floor((n-2)/3), d=(n-2)%3, sign=SIGNS_OF[el][mod];
+    const t=TITLES[el][n-2].split("|");
+    const pl=PLANETS[(sign*3+d)%7];
+    const lon=sign*30+d*10, q=Math.floor(lon/5);
+    const a1=ANGELS[(q-24+72)%72], a2=ANGELS[(q-23+72)%72];
+    DECK.push({id:el+n,type:"pip",el,num:String(n),en:n+" of "+s.en,jp:s.jp+"の"+n+"「"+t[1]+"」",title:t[0],
+      attr:pl+" in "+SIGNS[sign]+"（"+(d*10)+"–"+(d*10+10)+"°）",short:pl+"／"+SIGNS[sign],kw:t[1],angels:[a1,a2]});
+  }
+  for(const r of ["Knight","Queen","Prince","Princess"]){
+    let attr,short;
+    if(r==="Princess"){attr="天の四分円・"+EL_JP[el]+"の玉座";short=EL_JP[el]+"の"+COURT_EL[r];}
+    else{const sign=SIGNS_OF[el][COURT_MOD[r]];const prev=(sign+11)%12;attr=SIGNS[prev]+"21°〜"+SIGNS[sign]+"20°";short=EL_JP[el]+"の"+COURT_EL[r];}
+    DECK.push({id:el+r,type:"court",el,rank:r,num:COURT_JP[r],en:r+" of "+s.en,jp:s.jp+"の"+COURT_JP[r],attr,short,kw:COURT_KW[el][r]});
+  }
+}
+const byId=Object.fromEntries(DECK.map(c=>[c.id,c]));
+
+// 天文計算
+const rad=Math.PI/180, norm=x=>((x%360)+360)%360;
+function julian(y,m,d,h){if(m<=2){y--;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5+h/24;}
+function angles(dateStr,timeStr,tz,lat,lon){
+  const [y,m,d]=dateStr.split("-").map(Number),[hh,mm]=timeStr.split(":").map(Number);
+  const JD=julian(y,m,d,hh+mm/60-tz), T=(JD-2451545)/36525;
+  const gmst=norm(280.46061837+360.98564736629*(JD-2451545)+0.000387933*T*T-T*T*T/38710000);
+  const ramc=norm(gmst+lon)*rad, eps=(23.4392911-0.0130042*T)*rad, phi=lat*rad;
+  const mc=norm(Math.atan2(Math.sin(ramc),Math.cos(ramc)*Math.cos(eps))/rad);
+  const asc=norm(Math.atan2(Math.cos(ramc),-(Math.sin(ramc)*Math.cos(eps)+Math.tan(phi)*Math.sin(eps)))/rad);
+  return {asc,mc};
+}
+function fmt(lon){const s=Math.floor(lon/30),x=lon-s*30;let dg=Math.floor(x),mn=Math.round((x-dg)*60);if(mn===60){dg++;mn=0;}return SIGNS[s]+" "+dg+"°"+String(mn).padStart(2,"0")+"′";}
+function courtFor(lon){const cs=Math.floor(norm(lon+10)/30),el=SIGN_EL[cs%4],r=["Queen","Prince","Knight"][cs%3];return byId[el+r];}
+function decanFor(lon){const s=Math.floor(lon/30),d=Math.floor((lon-s*30)/10),el=SIGN_EL[s%4],mod=s%3;return byId[el+(2+mod*3+d)];}
+function majorFor(lon){return byId["M"+SIGN_MAJOR[Math.floor(lon/30)]];}
+function angelFor(lon){return ANGELS[(Math.floor(lon/5)-24+72)%72];}
+
+// 状態
+let mode="birth", natal=null, drawn=null, isSample=true;
+const $=id=>document.getElementById(id);
+["m-asc-s","m-mc-s"].forEach(id=>{$(id).innerHTML=SIGNS.map((s,i)=>`<option value="${i}">${s}</option>`).join("");});
+$("m-asc-s").value="7";$("m-mc-s").value="4";
+
+function computeNatal(){
+  let asc,mc;
+  if(mode==="birth"){
+    const lat=parseFloat($("b-lat").value),lon=parseFloat($("b-lon").value),tz=parseFloat($("b-tz").value);
+    if(!$("b-date").value||!$("b-time").value||[lat,lon,tz].some(Number.isNaN))return null;
+    if(Math.abs(lat)>66)return {error:"緯度66°を超える地域ではASCが定まらないため計算できません。"};
+    ({asc,mc}=angles($("b-date").value,$("b-time").value,tz,lat,lon));
+  }else{
+    const ad=Math.min(29.999,Math.max(0,parseFloat($("m-asc-d").value)||0)),md=Math.min(29.999,Math.max(0,parseFloat($("m-mc-d").value)||0));
+    asc=+$("m-asc-s").value*30+ad; mc=+$("m-mc-s").value*30+md;
+  }
+  return {asc,mc,sig:courtFor(asc),dec:decanFor(asc),maj:majorFor(asc),mcCourt:courtFor(mc),mcDec:decanFor(mc),ascAngel:angelFor(asc)};
+}
+function renderNatal(){
+  natal=computeNatal();const g=$("genius");
+  if(!natal){g.innerHTML='<p class="note">入力を確認してください。</p>';return;}
+  if(natal.error){g.innerHTML=`<p class="note">${natal.error}</p>`;natal=null;return;}
+  const n=natal,near=x=>{const r=x%30;return Math.abs(r-20)<0.5||r<0.5||r>29.5||Math.abs(r%10)<0.3||Math.abs(r%10-10)<0.3;};
+  g.innerHTML=`
+   <div class="gitem"><dt>ASC</dt><dd><div class="deg">${fmt(n.asc)}</div>${near(n.asc)?'<div class="gsub">境界付近です。度数を確認してください。</div>':""}</dd></div>
+   <div class="gitem"><dt>ゲニウスの姿</dt><dd><div class="gname">${n.sig.jp}</div><div class="gsub">${n.sig.en}・${n.sig.attr}・${n.sig.kw}</div></dd></div>
+   <div class="gitem"><dt>ゲニウスの働き</dt><dd><div class="gname">${n.dec.jp}</div><div class="gsub">${n.dec.attr}・天使 ${n.dec.angels.join("／")}（ASCの5°区分は ${n.ascAngel}）</div></dd></div>
+   <div class="gitem"><dt>原型</dt><dd><div class="gname">${n.maj.num} ${n.maj.jp}</div><div class="gsub">${n.maj.en}・${n.maj.heb}・${n.maj.kw}</div></dd></div>
+   <div class="gitem"><dt>MC</dt><dd><div class="deg">${fmt(n.mc)}</div></dd></div>
+   <div class="gitem"><dt>職業のゲニウス</dt><dd><div class="gname">${n.mcCourt.jp}</div><div class="gsub">${n.mcCourt.en}・${n.mcCourt.attr}・${n.mcCourt.kw}</div></dd></div>`;
+}
+
+// 展開
+const POS=[
+ {k:"1",cls:"s1",t:"マルクト",q:"守護を受け取る器としての今の自分"},
+ {k:"2",cls:"s2",t:"イェソド",q:"夢・直感・偶然に現れる守護のサイン"},
+ {k:"3",cls:"s3",t:"サメクの径",q:"守護との交信を開く鍵、または妨げているもの"},
+ {k:"4",cls:"s4",t:"ティファレト",q:"聖なるダイモーン（聖守護天使）からのメッセージ"},
+ {k:"5",cls:"s5",t:"出生のゲニウス",q:"出生のゲニウスが今していること"},
+ {k:"6",cls:"s6",t:"職業のゲニウス",q:"職業のゲニウスが今していること"}];
+const LAYER={major:"神的な層（ヘブライ文字の径）の働き。",court:"霊的存在の姿・気質として現れている。",pip:"デカンの働き。具体的な守護の仕事を示す。",ace:"元素の根源そのものが守護として働いている。"};
+function layerOf(c){return c.type==="court"&&c.rank==="Princess"?"エースの玉座。精霊的・元素的な守護。":LAYER[c.type];}
+function rel(a,b){if(!a||!b)return "neutral";if(a===b)return "same";const f={fire:"air",air:"fire",water:"earth",earth:"water"},e={fire:"water",water:"fire",air:"earth",earth:"air"};return f[a]===b?"friend":e[a]===b?"enemy":"neutral";}
+const REL_TXT={same:"同じ元素で強まる",friend:"友好の元素で強まる",enemy:"対立の元素で弱まる・妨げ",neutral:"中立"};
+function secureShuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const r=new Uint32Array(1);crypto.getRandomValues(r);const j=r[0]%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function draw(){
+  if(!natal)return;
+  const pool=DECK.filter(c=>c.id!==natal.sig.id&&c.id!==natal.mcCourt.id);
+  drawn=secureShuffle(pool).slice(0,6);
+}
+function cardHTML(c,extra,fixed){
+  const el=c.el?`var(--${c.el})`:"var(--muted)";
+  const cls=["tcard",fixed?"fixed":"dealt",c.id==="M14"?"art":""].join(" ");
+  const attr=c.type==="major"?c.heb+"・"+c.attr:(c.short||c.attr);
+  return `<button type="button" class="${cls}" style="--el:${el}" data-go="${extra}" aria-label="${c.jp}"><span class="band"></span><span class="body"><span class="num">${c.num}</span><span><span class="en" style="display:block">${c.type==="major"?c.en.replace(/^The /,""):c.en}</span><span class="jp" style="display:block">${c.jp}</span></span><span class="attr">${attr}</span></span></button>`;
+}
+function renderSpread(){
+  const t=$("tree");if(!natal||!drawn){t.innerHTML="";return;}
+  let h=`<div class="slot ssig"><div class="lab"><b>出生のゲニウス</b>ASC固定</div>${cardHTML(natal.sig,"rd5",true)}</div>
+         <div class="slot smc"><div class="lab"><b>職業の基底</b>MC固定</div>${cardHTML(natal.mcCourt,"rd6",true)}</div>`;
+  POS.forEach((p,i)=>{h+=`<div class="slot ${p.cls}"><div class="lab"><b>${p.k}. ${p.t}</b></div>${cardHTML(drawn[i],"rd"+p.k,false)}</div>`;});
+  t.innerHTML=h;
+  t.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{const el=$(b.dataset.go);if(el)el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});}));
+  renderReadings();
+}
+function digPairs(){
+  const d=drawn;return [[1,[[d[1],"2"]]],[2,[[d[0],"1"],[d[2],"3"]]],[3,[[d[1],"2"],[d[3],"4"]]],[4,[[d[2],"3"]]],[5,[[natal.sig,"出生のゲニウス"]]],[6,[[natal.mcCourt,"職業の基底"]]]];
+}
+function renderReadings(){
+  const d=drawn,pairs=digPairs();
+  const artPos=d.findIndex(c=>c.id==="M14");
+  $("signal").innerHTML=artPos<0?"":`<p class="signal"><b>「技」（XIV）が${POS[artPos].k}番に出ました。</b>${artPos===2?"サメクの径そのものに現れた、最も強い肯定です。聖守護天使との交信が開いています。":"聖守護天使との接触が開いている合図です。"}</p>`;
+  const counts={fire:0,water:0,air:0,earth:0};let maj=0;d.forEach(c=>{if(c.el)counts[c.el]++;if(c.type==="major")maj++;});
+  $("summary").innerHTML=`<span class="chip">大アルカナ ${maj}／6</span>`+Object.keys(counts).map(k=>`<span class="chip" style="--c:var(--${k})"><i></i>${EL_JP[k]} ${counts[k]}</span>`).join("");
+  $("readings").innerHTML=POS.map((p,i)=>{
+    const c=d[i];
+    const ang=c.angels?`<span>天使 <b>${c.angels.join("／")}</b></span>`:"";
+    const digs=pairs[i][1].map(([o,name])=>{const r=rel(c.el,o.el);return `<div class="dig ${r}">${name}（${o.jp}）と：${REL_TXT[r]}</div>`;}).join("");
+    const kwLead=c.type==="pip"?`トートの題「${c.title}／${c.kw}」`:c.kw;
+    return `<article class="rd" id="rd${p.k}"><div class="no">${p.k}</div><div>
+      <h3>${p.t}</h3><p class="q">${p.q}</p>
+      <div class="cn">${c.en}<span>${c.jp}</span></div>
+      <p>${kwLead}。${layerOf(c)}</p>
+      <div class="kv"><span>対応 <b>${c.type==="major"?c.heb+"・"+c.attr:c.attr}</b></span><span>元素 <b>${c.el?EL_JP[c.el]:"中立（惑星）"}</b></span>${ang}</div>
+      ${digs}</div></article>`;
+  }).join("");
+  $("copybox").hidden=true;
+}
+function resultText(){
+  if(!natal||!drawn)return "";
+  const n=natal,L=[];
+  L.push("【三重のダイモーン：トート・タロット守護霊占い】");
+  L.push(`ASC ${fmt(n.asc)}／MC ${fmt(n.mc)}`);
+  L.push(`出生のゲニウスの姿：${n.sig.jp}（${n.sig.en}）`);
+  L.push(`出生のゲニウスの働き：${n.dec.jp}（${n.dec.attr}／天使 ${n.dec.angels.join("・")}）`);
+  L.push(`原型：${n.maj.num} ${n.maj.jp}`);
+  L.push(`職業のゲニウスの基底：${n.mcCourt.jp}（${n.mcCourt.en}）`);
+  L.push("");
+  POS.forEach((p,i)=>{const c=drawn[i];L.push(`${p.k}. ${p.t}（${p.q}）：${c.jp}／${c.en}${c.angels?"／天使 "+c.angels.join("・"):""}`);});
+  if(drawn.some(c=>c.id==="M14"))L.push("※「技」（XIV）が出現：聖守護天使との接触の合図");
+  return L.join("\n");
+}
+
+// イベント
+function setMode(m){mode=m;$("tab-birth").setAttribute("aria-selected",m==="birth");$("tab-manual").setAttribute("aria-selected",m==="manual");$("f-birth").hidden=m!=="birth";$("f-manual").hidden=m!=="manual";refresh(false);}
+$("tab-birth").addEventListener("click",()=>setMode("birth"));
+$("tab-manual").addEventListener("click",()=>setMode("manual"));
+function refresh(redraw){
+  const prev=natal&&[natal.sig.id,natal.mcCourt.id].join();renderNatal();
+  if(!natal){renderSpread();return;}
+  const now=[natal.sig.id,natal.mcCourt.id].join();
+  if(redraw||!drawn||(prev!==now&&drawn.some(c=>c.id===natal.sig.id||c.id===natal.mcCourt.id)))draw();
+  renderSpread();
+}
+document.querySelectorAll("#f-birth input,#f-manual input,#f-manual select").forEach(el=>el.addEventListener("input",()=>refresh(false)));
+document.querySelectorAll("form").forEach(f=>f.addEventListener("submit",e=>e.preventDefault()));
+$("draw").addEventListener("click",()=>{if(!natal)return;draw();isSample=false;$("status").textContent="展開しました。カードを押すと解釈へ移動します。";renderSpread();});
+$("copy").addEventListener("click",()=>{
+  const txt=resultText();if(!txt)return;const box=$("copybox");box.value=txt;
+  const fallback=()=>{box.hidden=false;box.focus();box.select();$("status").textContent="自動コピーできませんでした。下の欄のテキストを選択してコピーしてください。";};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{$("status").textContent="結果をコピーしました。";},fallback);}else fallback();
+});
+refresh(true);
+})();
+</script>
+</body>
+</html>
