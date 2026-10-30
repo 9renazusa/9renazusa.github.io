@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>月の試練 ― 忘れ潮の村</title>
+<style>body{background:#0a1022;color:#e6c68d;font-family:system-ui,sans-serif}#loading{position:absolute;top:45%;left:0;width:100%;text-align:center}</style></head>
+<body><p id="loading">月の暦をひらいています……</p>
+<script>
+(async()=>{try{
+  const urls=['./source/part1.txt','./source/part2.txt'];
+  const chunks=await Promise.all(urls.map(async url=>{const response=await fetch(url);if(!response.ok)throw new Error('ファイルの読み込みに失敗しました: '+url);return response.text()}));
+  const html=chunks.join('');
+  if(!html.startsWith('<!doctype html>')||!html.includes('EPHEM_BASE64'))throw new Error('ゲームデータが壊れています');
+  document.open();document.write(html);document.close();
+}catch(error){document.getElementById('loading').textContent='読込エラー：'+error.message;console.error(error)}})();
+</script></body></html>
